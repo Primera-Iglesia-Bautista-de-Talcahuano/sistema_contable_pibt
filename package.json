@@ -9,13 +9,16 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:apply-sql": "prisma db execute --file prisma/migrations/0001_init/migration.sql --schema prisma/schema.prisma && prisma db execute --file prisma/migrations/0002_auditoria_sistema/migration.sql --schema prisma/schema.prisma",
     "prisma:seed": "prisma db seed",
     "db:init": "npm run prisma:apply-sql && npm run prisma:seed",
-    "prisma:studio": "prisma studio"
+    "prisma:studio": "prisma studio",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix",
+    "ci": "npm run lint && npm run typecheck"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
