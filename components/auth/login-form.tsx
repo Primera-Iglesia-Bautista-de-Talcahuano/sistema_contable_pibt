@@ -6,6 +6,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Loader2 } from "lucide-react";
 
 const loginSchema = z.object({
   email: z.email("Ingresa un email valido"),
@@ -51,45 +54,53 @@ export function LoginForm() {
   };
 
   return (
-    <form className="mt-5 space-y-4" onSubmit={handleSubmit(onSubmit)}>
-      <div>
-        <label className="mb-1 block text-sm font-medium text-slate-700" htmlFor="email">
-          Email
-        </label>
-        <input
-          id="email"
-          type="email"
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none ring-brand/25 focus:ring-2"
-          placeholder="admin@iglesia.local"
-          {...register("email")}
-        />
-        {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>}
-      </div>
-      <div>
-        <label className="mb-1 block text-sm font-medium text-slate-700" htmlFor="password">
-          Contrasena
-        </label>
-        <input
-          id="password"
-          type="password"
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none ring-brand/25 focus:ring-2"
-          placeholder="********"
-          {...register("password")}
-        />
-        {errors.password && (
-          <p className="mt-1 text-xs text-red-600">{errors.password.message}</p>
-        )}
+    <form className="mt-5 space-y-6" onSubmit={handleSubmit(onSubmit)}>
+      <div className="space-y-4">
+        <div>
+          <label className="mb-2 block text-sm font-medium tracking-wide text-on-surface" htmlFor="email">
+            Email
+          </label>
+          <Input
+            id="email"
+            type="email"
+            placeholder="admin@iglesia.local"
+            {...register("email")}
+          />
+          {errors.email && <p className="mt-2 text-xs font-semibold text-error">{errors.email.message}</p>}
+        </div>
+        <div>
+          <label className="mb-2 block text-sm font-medium tracking-wide text-on-surface" htmlFor="password">
+            Contrasena
+          </label>
+          <Input
+            id="password"
+            type="password"
+            placeholder="********"
+            {...register("password")}
+          />
+          {errors.password && (
+            <p className="mt-2 text-xs font-semibold text-error">{errors.password.message}</p>
+          )}
+        </div>
       </div>
 
-      {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
+      {error && <p className="rounded-xl bg-error-container px-4 py-3 text-sm font-medium text-on-error-container">{error}</p>}
 
-      <button
+      <Button
         type="submit"
+        variant="primary"
         disabled={isSubmitting}
-        className="w-full rounded-lg bg-brand px-4 py-2 font-medium text-white transition hover:opacity-90 disabled:opacity-70"
+        className="w-full"
       >
-        {isSubmitting ? "Ingresando..." : "Ingresar"}
-      </button>
+        {isSubmitting ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Ingresando...
+          </>
+        ) : (
+          "Ingresar"
+        )}
+      </Button>
     </form>
   );
 }
