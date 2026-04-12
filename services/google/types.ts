@@ -3,14 +3,11 @@ export type IntegrationStatus = "PENDIENTE" | "ENVIADO" | "ERROR";
 export type MovementIntegrationPayload = {
   movimientoId: string;
   folio: string;
-  tipo: "INGRESO" | "EGRESO";
-  fechaMovimiento: string;
-  fecha: string;
   tipoMovimiento: "INGRESO" | "EGRESO";
+  fechaMovimiento: string;
   monto: number;
   categoria: string;
   concepto: string;
-  descripcion: string;
   referente?: string | null;
   recibidoPor?: string | null;
   entregadoPor?: string | null;
@@ -19,10 +16,13 @@ export type MovementIntegrationPayload = {
   numeroRespaldo?: string | null;
   observaciones?: string | null;
   registradoPor: string;
-  usuario: string;
   registradoEmail: string;
   registradoEn: string;
   nombreOrganizacion?: string | null;
+  /** @deprecated use tipoMovimiento */ tipo?: "INGRESO" | "EGRESO";
+  /** @deprecated use fechaMovimiento */ fecha?: string;
+  /** @deprecated use concepto */ descripcion?: string;
+  /** @deprecated use registradoPor */ usuario?: string;
 };
 
 export type AppsScriptResponse = {

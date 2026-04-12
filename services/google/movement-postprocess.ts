@@ -26,14 +26,11 @@ function toPayload(m: {
   const payload: MovementIntegrationPayload = {
     movimientoId: m.id,
     folio: m.folioDisplay,
-    tipo: m.tipoMovimiento,
-    fechaMovimiento: m.fechaMovimiento.toISOString(),
-    fecha: m.fechaMovimiento.toISOString(),
     tipoMovimiento: m.tipoMovimiento,
+    fechaMovimiento: m.fechaMovimiento.toISOString(),
     monto: Number(m.monto),
     categoria: m.categoria,
     concepto: m.concepto,
-    descripcion: m.concepto,
     referente: m.referente,
     recibidoPor: m.recibidoPor,
     entregadoPor: m.entregadoPor,
@@ -42,7 +39,6 @@ function toPayload(m: {
     numeroRespaldo: m.numeroRespaldo,
     observaciones: m.observaciones,
     registradoPor: m.creadoPor.nombre,
-    usuario: m.creadoPor.nombre,
     registradoEmail: m.creadoPor.email,
     registradoEn: m.creadoEn.toISOString(),
     nombreOrganizacion: process.env.APP_NAME ?? "Sistema Contable Iglesia",
@@ -62,47 +58,39 @@ export async function processMovimientoIntegrations(movimientoId: string, userId
     tipoMovimiento: movement.tipoMovimiento as "INGRESO" | "EGRESO",
   });
 
-  const pdfResult = await generateMovementPdf(payload);
+  const [pdfResult, sheetResult, mailResult] = await Promise.all([
+    generateMovementPdf(payload),
+    syncMovementToSheet(payload),
+    sendMovementEmail(payload),
+  ]);
+
   await prisma.movimiento.update({
     where: { id: movimientoId },
     data: {
       pdfStatus: pdfResult.ok ? "GENERADO" : "ERROR",
       pdfUrl: pdfResult.pdfUrl ?? movement.pdfUrl,
       driveFileId: pdfResult.driveFileId ?? movement.driveFileId,
-      pdfError: pdfResult.ok ? null : pdfResult.error ?? "Fallo generación PDF",
-    },
-  });
-
-  await auditoriaService.registrarMovimiento({
-    movimientoId,
-    usuarioId: userId,
-    accion: "PDF_REGENERADO",
-    observacion: pdfResult.ok ? "PDF generado/regenerado" : `Error PDF: ${pdfResult.error ?? ""}`,
-  });
-
-  const sheetResult = await syncMovementToSheet(payload);
-  await prisma.movimiento.update({
-    where: { id: movimientoId },
-    data: {
+      pdfError: pdfResult.ok ? null : (pdfResult.error ?? "Fallo generación PDF"),
       syncedToSheet: Boolean(sheetResult.ok),
-      syncError: sheetResult.ok ? null : sheetResult.error ?? "Fallo sync Sheet",
-    },
-  });
-
-  const mailResult = await sendMovementEmail(payload);
-  await prisma.movimiento.update({
-    where: { id: movimientoId },
-    data: {
+      syncError: sheetResult.ok ? null : (sheetResult.error ?? "Fallo sync Sheet"),
       notificationStatus: mailResult.ok ? "ENVIADO" : "ERROR",
       notificationSentAt: mailResult.ok ? new Date() : null,
-      notificationError: mailResult.ok ? null : mailResult.error ?? "Fallo envío correo",
+      notificationError: mailResult.ok ? null : (mailResult.error ?? "Fallo envío correo"),
     },
   });
 
-  await auditoriaService.registrarMovimiento({
-    movimientoId,
-    usuarioId: userId,
-    accion: mailResult.ok ? "NOTIFICACION_ENVIADA" : "NOTIFICACION_ERROR",
-    observacion: mailResult.ok ? "Correo enviado por Apps Script" : `Error correo: ${mailResult.error ?? ""}`,
-  });
+  await Promise.all([
+    auditoriaService.registrarMovimiento({
+      movimientoId,
+      usuarioId: userId,
+      accion: "PDF_REGENERADO",
+      observacion: pdfResult.ok ? "PDF generado/regenerado" : `Error PDF: ${pdfResult.error ?? ""}`,
+    }),
+    auditoriaService.registrarMovimiento({
+      movimientoId,
+      usuarioId: userId,
+      accion: mailResult.ok ? "NOTIFICACION_ENVIADA" : "NOTIFICACION_ERROR",
+      observacion: mailResult.ok ? "Correo enviado por Apps Script" : `Error correo: ${mailResult.error ?? ""}`,
+    }),
+  ]);
 }

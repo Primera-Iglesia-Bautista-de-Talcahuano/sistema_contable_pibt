@@ -36,6 +36,7 @@ export async function PUT(request: Request, { params }: Params) {
     return NextResponse.json(updated);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Error inesperado";
-    return NextResponse.json({ message }, { status: 400 });
+    const status = message.includes("no encontrado") ? 404 : 500;
+    return NextResponse.json({ message }, { status });
   }
 }

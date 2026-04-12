@@ -1,16 +1,16 @@
 import { z } from "zod";
 
 export const createUsuarioSchema = z.object({
-  nombre: z.string().min(3, "Nombre requerido"),
-  email: z.email("Email invalido"),
-  password: z.string().min(8, "La contrasena debe tener al menos 8 caracteres"),
+  nombre: z.string().min(3, "Nombre requerido").max(150),
+  email: z.email("Email invalido").max(254),
+  password: z.string().min(8, "La contrasena debe tener al menos 8 caracteres").max(128),
   rol: z.enum(["ADMIN", "OPERADOR", "VISOR"]),
   activo: z.boolean().optional().default(true),
 });
 
 export const updateUsuarioSchema = z.object({
   id: z.string().min(1),
-  nombre: z.string().min(3, "Nombre requerido"),
+  nombre: z.string().min(3, "Nombre requerido").max(150),
   rol: z.enum(["ADMIN", "OPERADOR", "VISOR"]),
   activo: z.boolean(),
 });

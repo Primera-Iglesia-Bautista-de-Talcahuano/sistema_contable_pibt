@@ -17,6 +17,7 @@ export async function POST(_: Request, { params }: Params) {
     return NextResponse.json({ ok: true, message: "Regeneración iniciada/completada" });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Error regenerando PDF";
-    return NextResponse.json({ ok: false, message }, { status: 400 });
+    const status = message.includes("no encontrado") ? 404 : 500;
+    return NextResponse.json({ ok: false, message }, { status });
   }
 }

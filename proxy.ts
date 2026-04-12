@@ -22,6 +22,10 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
+  if (!token.activo) {
+    return NextResponse.redirect(new URL("/login?error=account_disabled", request.url));
+  }
+
   const isAdminOnly = adminOnlyPrefixes.some((prefix) => pathname.startsWith(prefix));
   if (isAdminOnly && token.role !== "ADMIN") {
     return NextResponse.redirect(new URL("/dashboard?forbidden=1", request.url));

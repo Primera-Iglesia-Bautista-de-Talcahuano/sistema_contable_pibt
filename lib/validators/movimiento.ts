@@ -3,16 +3,16 @@ import { z } from "zod";
 export const movimientoBaseSchema = z.object({
   fechaMovimiento: z.string().min(1, "La fecha es requerida"),
   tipoMovimiento: z.enum(["INGRESO", "EGRESO"]),
-  monto: z.coerce.number().positive("El monto debe ser mayor a 0"),
-  categoria: z.string().min(1, "La categoria es requerida"),
-  concepto: z.string().min(3, "El concepto es requerido"),
-  referente: z.string().optional().nullable(),
-  recibidoPor: z.string().optional().nullable(),
-  entregadoPor: z.string().optional().nullable(),
-  beneficiario: z.string().optional().nullable(),
-  medioPago: z.string().optional().nullable(),
-  numeroRespaldo: z.string().optional().nullable(),
-  observaciones: z.string().optional().nullable(),
+  monto: z.coerce.number().positive("El monto debe ser mayor a 0").max(999_999_999_999, "Monto fuera de rango"),
+  categoria: z.string().min(1, "La categoria es requerida").max(100),
+  concepto: z.string().min(3, "El concepto es requerido").max(500),
+  referente: z.string().max(200).optional().nullable(),
+  recibidoPor: z.string().max(200).optional().nullable(),
+  entregadoPor: z.string().max(200).optional().nullable(),
+  beneficiario: z.string().max(200).optional().nullable(),
+  medioPago: z.string().max(100).optional().nullable(),
+  numeroRespaldo: z.string().max(100).optional().nullable(),
+  observaciones: z.string().max(1000).optional().nullable(),
 });
 
 export const createMovimientoSchema = movimientoBaseSchema;
