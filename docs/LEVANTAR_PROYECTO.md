@@ -36,7 +36,6 @@ npm install
 DATABASE_URL="file:./dev.db"
 NEXTAUTH_SECRET="local_dev_secret_change_me"
 NEXTAUTH_URL="http://localhost:3000"
-APP_NAME="Sistema Contable Iglesia"
 DEFAULT_CURRENCY="CLP"
 SEED_DEFAULT_PASSWORD="Admin12345!"
 ```

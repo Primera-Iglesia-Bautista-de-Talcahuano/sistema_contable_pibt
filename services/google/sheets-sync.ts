@@ -1,15 +1,15 @@
-import { postToAppsScript } from "@/services/google/client";
-import type { AppsScriptResponse, MovementIntegrationPayload } from "@/services/google/types";
-import { movimientosService } from "@/services/movimientos/movimientos.service";
+import { postToAppsScript } from "@/services/google/client"
+import type { AppsScriptResponse, MovementIntegrationPayload } from "@/services/google/types"
+import { movimientosService } from "@/services/movimientos/movimientos.service"
 
 export async function syncMovementToSheet(
   /* eslint-disable @typescript-eslint/no-unused-vars */
-  _movement: MovementIntegrationPayload,
+  _movement: MovementIntegrationPayload
 ): Promise<AppsScriptResponse> {
-  const allMovements = await movimientosService.list({ status: "ACTIVE" });
+  const allMovements = await movimientosService.list({ status: "ACTIVE" })
 
   const movementsPayload = allMovements.map((m) => {
-    const createdBy = m.users as { full_name: string; email: string } | null;
+    const createdBy = m.users as { full_name: string; email: string } | null
     return {
       movimientoId: m.id,
       folio: m.folio_display,
@@ -32,9 +32,9 @@ export async function syncMovementToSheet(
       usuario: createdBy?.full_name ?? "",
       registradoEmail: createdBy?.email ?? "",
       registradoEn: m.created_at,
-      nombreOrganizacion: process.env.APP_NAME ?? "Sistema Contable Iglesia",
-    };
-  });
+      nombreOrganizacion: "Sistema contable PIBT"
+    }
+  })
 
-  return postToAppsScript("SYNC_SHEET", { movements: movementsPayload });
+  return postToAppsScript("SYNC_SHEET", { movements: movementsPayload })
 }

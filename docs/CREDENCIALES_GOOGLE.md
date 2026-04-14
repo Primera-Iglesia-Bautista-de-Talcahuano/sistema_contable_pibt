@@ -23,7 +23,6 @@ GOOGLE_APPS_SCRIPT_SECRET="tu_secreto_compartido_largo"
 GOOGLE_DRIVE_FOLDER_ID="id_carpeta_drive"
 GOOGLE_SHEET_ID="id_google_sheet"
 NOTIFICATION_EMAIL="tesoreria@tuiglesia.cl"
-GMAIL_SENDER_NAME="Tesoreria Iglesia"
 ```
 
 ## 2) Dónde configurar acceso real a Gmail/Drive

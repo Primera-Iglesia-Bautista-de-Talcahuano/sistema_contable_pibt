@@ -1,6 +1,13 @@
-import { LoginForm } from "@/components/auth/login-form";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookMarked } from "lucide-react";
+import { LoginForm } from "@/components/auth/login-form"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle
+} from "@/components/ui/card"
+import { BookMarked } from "lucide-react"
 
 export default async function LoginPage() {
   return (
@@ -10,8 +17,12 @@ export default async function LoginPage() {
           <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-primary-container/20 text-primary">
             <BookMarked className="h-8 w-8" />
           </div>
-          <CardTitle className="text-3xl font-bold tracking-tight text-on-surface">Sistema Contable Iglesia</CardTitle>
-          <CardDescription className="text-on-surface-variant font-medium text-base mt-2">Gestión Ministerial de Finanzas</CardDescription>
+          <CardTitle className="text-3xl font-bold tracking-tight text-on-surface">
+            Sistema Contable Iglesia
+          </CardTitle>
+          <CardDescription className="text-on-surface-variant font-medium text-base mt-2">
+            Gestión Ministerial de Finanzas
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <LoginForm />
@@ -20,8 +31,8 @@ export default async function LoginPage() {
           <blockquote className="text-center max-w-sm">
             <p className="text-xs italic leading-relaxed text-on-surface-variant/70">
               &ldquo;Evitamos que alguien nos censure en cuanto a esta ofrenda generosa...
-              procurando hacer lo que es honesto, no sólo delante del Señor,
-              sino también delante de los hombres.&rdquo;
+              procurando hacer lo que es honesto, no sólo delante del Señor, sino también delante de
+              los hombres.&rdquo;
             </p>
             <cite className="mt-2 block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/40 not-italic">
               2 Corintios 8:20-21
@@ -30,5 +41,5 @@ export default async function LoginPage() {
         </CardFooter>
       </Card>
     </main>
-  );
+  )
 }

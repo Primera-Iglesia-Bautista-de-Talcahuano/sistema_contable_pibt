@@ -22,12 +22,7 @@ pnpm ci
 pnpm test
 
 # Supabase local stack
-pnpm supabase:start        # start local Supabase
-pnpm supabase:stop         # stop local Supabase
-pnpm supabase:status       # show URLs, keys, and service status
-pnpm supabase:reset        # wipe and re-apply all migrations
-pnpm supabase:migrate      # push pending migrations (supabase db push)
-pnpm supabase:gen-types    # regenerate types/database.types.ts from local schema
+pnpm supabase <sub command>
 ```
 
 Always use `pnpm`, never `npm`.
@@ -69,6 +64,10 @@ Three outbound webhooks via Google Apps Script (configured via env vars): PDF ge
 **Database schema:**
 Migrations live in `supabase/migrations/`. Key tables: `users`, `movements`, `movement_audit_log`, `system_audit_log`, `folio_counter`. All tables have RLS enabled. Run `pnpm supabase:reset` to wipe and re-apply from scratch locally.
 
+Always use `pnpm supabase migration new ...` for new migrations
+
+Always make sure that types with `pnpm types:generate` are up to date 
+
 ## Key conventions
 
 - Always use `pnpm`, never `npm` or `yarn`.
@@ -89,8 +88,7 @@ See `.env.example`. Critical ones:
 - `SUPABASE_SECRET_KEY` — from `pnpm supabase:status` → Secret key (server-side only, never exposed to client)
 - `GOOGLE_APPS_SCRIPT_WEBHOOK_URL` / `GOOGLE_APPS_SCRIPT_SECRET` — Google integrations (optional locally)
 - `GOOGLE_DRIVE_FOLDER_ID` / `GOOGLE_SHEET_ID` — Google Drive and Sheets targets
-- `NOTIFICATION_EMAIL` / `GMAIL_SENDER_NAME` — email notification config
-- `APP_NAME` — organisation display name
+- `NOTIFICATION_EMAIL` — email notification config
 
 ## CI pipeline
 

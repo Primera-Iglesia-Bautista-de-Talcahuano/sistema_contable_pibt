@@ -79,17 +79,9 @@ function buildEmailHtml(movement: MovementIntegrationPayload): string {
 export async function sendMovementEmail(
   movement: MovementIntegrationPayload
 ): Promise<AppsScriptResponse> {
-  const to = process.env.NOTIFICATION_EMAIL
-  if (!to) {
-    // Recipient not configured — skip silently
-    return { ok: true, mailSent: false }
-  }
-
-  const from = process.env.RESEND_FROM_EMAIL ?? "Sistema contable PIBT <noreply@pibt.com>"
-
   const { error } = await resend.emails.send({
-    from,
-    to,
+    from: "Sistema contable PIBT <noreply@pibt.com>",
+    to: [process.env.NOTIFICATION_EMAIL, movement.registradoEmail].filter(Boolean) as string[],
     subject: `[${movement.tipo}] Folio ${movement.folio} - ${movement.concepto}`,
     html: buildEmailHtml(movement)
   })

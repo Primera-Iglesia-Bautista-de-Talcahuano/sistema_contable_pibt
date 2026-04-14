@@ -45,7 +45,7 @@ function toPayload(m: {
     usuario: m.created_by.full_name,
     registradoEmail: m.created_by.email,
     registradoEn: m.created_at,
-    nombreOrganizacion: process.env.APP_NAME ?? "Sistema Contable Iglesia"
+    nombreOrganizacion: "Sistema contable PIBT"
   }
 }
 
