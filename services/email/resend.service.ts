@@ -2,8 +2,6 @@ import { Resend } from "resend"
 
 import type { AppsScriptResponse, MovementIntegrationPayload } from "@/services/google/types"
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-
 const ORG_NAME = "Primera Iglesia Bautista de Talcahuano"
 
 function formatAmount(amount: number): string {
@@ -79,6 +77,7 @@ function buildEmailHtml(movement: MovementIntegrationPayload): string {
 export async function sendMovementEmail(
   movement: MovementIntegrationPayload
 ): Promise<AppsScriptResponse> {
+  const resend = new Resend(process.env.RESEND_API_KEY)
   const { error } = await resend.emails.send({
     from: "Sistema contable PIBT <noreply@pibt.com>",
     to: [process.env.NOTIFICATION_EMAIL, movement.registradoEmail].filter(Boolean) as string[],
