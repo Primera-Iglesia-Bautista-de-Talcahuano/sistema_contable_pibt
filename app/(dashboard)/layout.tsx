@@ -46,6 +46,17 @@ export default async function DashboardLayout({ children }: { children: React.Re
         <aside className="hidden md:block bg-surface-bright/80 backdrop-blur-[12px] p-8 shadow-[0px_20px_40px_-12px_rgba(25,28,30,0.05)] border-none">
           <h2 className="mb-10 font-bold tracking-tight text-xl text-primary">Sistema Contable Iglesia</h2>
           <DashboardNav links={allowedLinks} />
+          <div className="mt-auto pt-8 border-t border-surface-container-highest/10">
+            <blockquote>
+              <p className="text-[11px] italic leading-relaxed text-on-surface-variant/50">
+                &ldquo;...procurando hacer lo que es honesto, no sólo delante del Señor,
+                sino también delante de los hombres.&rdquo;
+              </p>
+              <cite className="mt-2 block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/30 not-italic">
+                2 Corintios 8:20-21
+              </cite>
+            </blockquote>
+          </div>
         </aside>
 
         <div className="flex flex-col bg-surface overflow-hidden">

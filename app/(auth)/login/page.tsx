@@ -16,10 +16,17 @@ export default async function LoginPage() {
         <CardContent>
           <LoginForm />
         </CardContent>
-        <CardFooter className="flex justify-center pt-8">
-          <p className="text-center text-xs tracking-wider text-on-surface-variant max-w-[250px]">
-            Usuario inicial: admin@iglesia.local / contrasena definida por seed.
-          </p>
+        <CardFooter className="flex justify-center pt-6 pb-8">
+          <blockquote className="text-center max-w-sm">
+            <p className="text-xs italic leading-relaxed text-on-surface-variant/70">
+              &ldquo;Evitamos que alguien nos censure en cuanto a esta ofrenda generosa...
+              procurando hacer lo que es honesto, no sólo delante del Señor,
+              sino también delante de los hombres.&rdquo;
+            </p>
+            <cite className="mt-2 block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/40 not-italic">
+              2 Corintios 8:20-21
+            </cite>
+          </blockquote>
         </CardFooter>
       </Card>
     </main>
