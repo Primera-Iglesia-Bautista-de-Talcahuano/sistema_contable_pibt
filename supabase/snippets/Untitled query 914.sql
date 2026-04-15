@@ -1,0 +1,1 @@
+  SELECT create_initial_admin('me@mfuentesg.dev', 'at_tLJZpLP2fHmn8', 'Marcelo Fuentes');

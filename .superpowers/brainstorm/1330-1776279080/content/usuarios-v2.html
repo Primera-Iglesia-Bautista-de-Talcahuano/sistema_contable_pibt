@@ -1,0 +1,245 @@
+<h2>Usuarios — Alternative Layouts</h2>
+<p class="subtitle">Three non-table approaches for user management. Same data, different feel.</p>
+
+<div class="cards">
+
+  <!-- Option A: Grid of person cards -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 14px; background: #f8faf8; font-family: sans-serif; font-size: 11px; border-radius: 8px 8px 0 0;">
+
+      <!-- Header strip -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <div>
+          <div style="font-weight: 700; color: #2d4a38; font-size: 13px;">Usuarios</div>
+          <div style="font-size: 9px; color: #7a8c82;">5 integrantes del equipo</div>
+        </div>
+        <button style="background: #5c8a6e; color: white; border: none; border-radius: 6px; padding: 6px 12px; font-size: 10px; font-weight: 600; cursor: pointer;">+ Invitar</button>
+      </div>
+
+      <!-- Card grid -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+
+        <!-- Card 1: Admin, active -->
+        <div style="background: white; border-radius: 10px; border: 1px solid #e0ebe5; padding: 12px; display: flex; flex-direction: column; gap: 8px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="width: 36px; height: 36px; border-radius: 50%; background: #c8dfd0; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #2d4a38; flex-shrink: 0;">MF</div>
+            <div style="min-width: 0;">
+              <div style="font-weight: 700; color: #2d4a38; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Marcelo Fuentes</div>
+              <div style="font-size: 9px; color: #7a8c82; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">marceloe.fuentes@gmail.com</div>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <span style="background: #eef5f1; color: #5c8a6e; font-size: 8px; font-weight: 700; padding: 3px 8px; border-radius: 20px; text-transform: uppercase;">Admin</span>
+            <div style="display: flex; align-items: center; gap: 5px;">
+              <div style="width: 26px; height: 14px; border-radius: 20px; background: #5c8a6e; padding: 2px; display: flex; align-items: center;"><div style="width: 10px; height: 10px; border-radius: 50%; background: white; margin-left: auto;"></div></div>
+              <span style="font-size: 8px; color: #5c8a6e; font-weight: 600;">Activo</span>
+            </div>
+          </div>
+          <div style="border-top: 1px solid #eef5f1; padding-top: 8px; display: flex; gap: 6px;">
+            <div style="flex: 1; background: #f8faf8; border: 1px solid #e0ebe5; border-radius: 6px; padding: 5px; text-align: center; font-size: 9px; color: #5c8a6e; font-weight: 600; cursor: pointer;">Editar</div>
+          </div>
+        </div>
+
+        <!-- Card 2: Operator, active -->
+        <div style="background: white; border-radius: 10px; border: 1px solid #e0ebe5; padding: 12px; display: flex; flex-direction: column; gap: 8px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="width: 36px; height: 36px; border-radius: 50%; background: #dde8e2; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #2d4a38; flex-shrink: 0;">AP</div>
+            <div style="min-width: 0;">
+              <div style="font-weight: 700; color: #2d4a38; font-size: 11px;">Ana Pérez</div>
+              <div style="font-size: 9px; color: #7a8c82; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">ana.perez@iglesia.cl</div>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <span style="background: #f5f3fa; color: #7c6fa0; font-size: 8px; font-weight: 700; padding: 3px 8px; border-radius: 20px; text-transform: uppercase;">Operador</span>
+            <div style="display: flex; align-items: center; gap: 5px;">
+              <div style="width: 26px; height: 14px; border-radius: 20px; background: #5c8a6e; padding: 2px; display: flex; align-items: center;"><div style="width: 10px; height: 10px; border-radius: 50%; background: white; margin-left: auto;"></div></div>
+              <span style="font-size: 8px; color: #5c8a6e; font-weight: 600;">Activo</span>
+            </div>
+          </div>
+          <div style="border-top: 1px solid #eef5f1; padding-top: 8px; display: flex; gap: 6px;">
+            <div style="flex: 1; background: #f8faf8; border: 1px solid #e0ebe5; border-radius: 6px; padding: 5px; text-align: center; font-size: 9px; color: #5c8a6e; font-weight: 600; cursor: pointer;">Editar</div>
+          </div>
+        </div>
+
+        <!-- Card 3: Viewer, inactive -->
+        <div style="background: white; border-radius: 10px; border: 1px solid #e0ebe5; padding: 12px; display: flex; flex-direction: column; gap: 8px; opacity: 0.55;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="width: 36px; height: 36px; border-radius: 50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #999; flex-shrink: 0;">CR</div>
+            <div style="min-width: 0;">
+              <div style="font-weight: 700; color: #7a8c82; font-size: 11px;">Carlos Rojas</div>
+              <div style="font-size: 9px; color: #aabfb3;">c.rojas@iglesia.cl</div>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <span style="background: #f5f5f5; color: #999; font-size: 8px; font-weight: 700; padding: 3px 8px; border-radius: 20px; text-transform: uppercase;">Visor</span>
+            <div style="display: flex; align-items: center; gap: 5px;">
+              <div style="width: 26px; height: 14px; border-radius: 20px; background: #e0e0e0; padding: 2px; display: flex; align-items: center;"><div style="width: 10px; height: 10px; border-radius: 50%; background: white;"></div></div>
+              <span style="font-size: 8px; color: #999; font-weight: 600;">Inactivo</span>
+            </div>
+          </div>
+          <div style="border-top: 1px solid #eef5f1; padding-top: 8px;">
+            <div style="background: #f8faf8; border: 1px solid #e0ebe5; border-radius: 6px; padding: 5px; text-align: center; font-size: 9px; color: #7a8c82; font-weight: 600; cursor: pointer;">Editar</div>
+          </div>
+        </div>
+
+        <!-- Add card -->
+        <div style="background: white; border-radius: 10px; border: 2px dashed #c8dfd0; padding: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; cursor: pointer; min-height: 110px;">
+          <div style="width: 32px; height: 32px; border-radius: 50%; background: #eef5f1; display: flex; align-items: center; justify-content: center; font-size: 18px; color: #5c8a6e;">+</div>
+          <div style="font-size: 10px; font-weight: 600; color: #5c8a6e;">Invitar usuario</div>
+        </div>
+
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Grid of person cards</h3>
+      <p>Each user is a card with avatar, name, email, role badge and active toggle. "Invitar usuario" is the last card with a dashed border. Works great on mobile too.</p>
+    </div>
+  </div>
+
+  <!-- Option B: Horizontal list cards -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 14px; background: #f8faf8; font-family: sans-serif; font-size: 11px; border-radius: 8px 8px 0 0;">
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <div>
+          <div style="font-weight: 700; color: #2d4a38; font-size: 13px;">Usuarios</div>
+          <div style="font-size: 9px; color: #7a8c82;">5 integrantes del equipo</div>
+        </div>
+        <button style="background: #5c8a6e; color: white; border: none; border-radius: 6px; padding: 6px 12px; font-size: 10px; font-weight: 600; cursor: pointer;">+ Invitar</button>
+      </div>
+
+      <!-- Horizontal cards -->
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+
+        <div style="background: white; border-radius: 10px; border: 1px solid #e0ebe5; padding: 12px 14px; display: flex; align-items: center; gap: 12px;">
+          <div style="width: 38px; height: 38px; border-radius: 50%; background: #c8dfd0; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #2d4a38; flex-shrink: 0;">MF</div>
+          <div style="flex: 1; min-width: 0;">
+            <div style="font-weight: 700; color: #2d4a38; font-size: 12px;">Marcelo Fuentes</div>
+            <div style="font-size: 9px; color: #7a8c82;">marceloe.fuentes@gmail.com</div>
+          </div>
+          <span style="background: #eef5f1; color: #5c8a6e; font-size: 8px; font-weight: 700; padding: 3px 8px; border-radius: 20px; text-transform: uppercase; flex-shrink: 0;">Admin</span>
+          <div style="display: flex; align-items: center; gap: 5px; flex-shrink: 0;">
+            <div style="width: 28px; height: 15px; border-radius: 20px; background: #5c8a6e; padding: 2px; display: flex; align-items: center;"><div style="width: 11px; height: 11px; border-radius: 50%; background: white; margin-left: auto;"></div></div>
+          </div>
+          <div style="background: #f8faf8; border: 1px solid #e0ebe5; border-radius: 6px; padding: 5px 10px; font-size: 9px; color: #5c8a6e; font-weight: 600; cursor: pointer; flex-shrink: 0;">Editar</div>
+        </div>
+
+        <div style="background: white; border-radius: 10px; border: 1px solid #e0ebe5; padding: 12px 14px; display: flex; align-items: center; gap: 12px;">
+          <div style="width: 38px; height: 38px; border-radius: 50%; background: #dde8e2; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #2d4a38; flex-shrink: 0;">AP</div>
+          <div style="flex: 1; min-width: 0;">
+            <div style="font-weight: 700; color: #2d4a38; font-size: 12px;">Ana Pérez</div>
+            <div style="font-size: 9px; color: #7a8c82;">ana.perez@iglesia.cl</div>
+          </div>
+          <span style="background: #f5f3fa; color: #7c6fa0; font-size: 8px; font-weight: 700; padding: 3px 8px; border-radius: 20px; text-transform: uppercase; flex-shrink: 0;">Operador</span>
+          <div style="display: flex; align-items: center; gap: 5px; flex-shrink: 0;">
+            <div style="width: 28px; height: 15px; border-radius: 20px; background: #5c8a6e; padding: 2px; display: flex; align-items: center;"><div style="width: 11px; height: 11px; border-radius: 50%; background: white; margin-left: auto;"></div></div>
+          </div>
+          <div style="background: #f8faf8; border: 1px solid #e0ebe5; border-radius: 6px; padding: 5px 10px; font-size: 9px; color: #5c8a6e; font-weight: 600; cursor: pointer; flex-shrink: 0;">Editar</div>
+        </div>
+
+        <div style="background: white; border-radius: 10px; border: 1px solid #e0ebe5; padding: 12px 14px; display: flex; align-items: center; gap: 12px; opacity: 0.55;">
+          <div style="width: 38px; height: 38px; border-radius: 50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #999; flex-shrink: 0;">CR</div>
+          <div style="flex: 1; min-width: 0;">
+            <div style="font-weight: 700; color: #7a8c82; font-size: 12px;">Carlos Rojas</div>
+            <div style="font-size: 9px; color: #aabfb3;">c.rojas@iglesia.cl</div>
+          </div>
+          <span style="background: #f5f5f5; color: #999; font-size: 8px; font-weight: 700; padding: 3px 8px; border-radius: 20px; text-transform: uppercase; flex-shrink: 0;">Visor</span>
+          <div style="display: flex; align-items: center; gap: 5px; flex-shrink: 0;">
+            <div style="width: 28px; height: 15px; border-radius: 20px; background: #e0e0e0; padding: 2px; display: flex; align-items: center;"><div style="width: 11px; height: 11px; border-radius: 50%; background: white;"></div></div>
+          </div>
+          <div style="background: #f8faf8; border: 1px solid #e0ebe5; border-radius: 6px; padding: 5px 10px; font-size: 9px; color: #7a8c82; font-weight: 600; cursor: pointer; flex-shrink: 0;">Editar</div>
+        </div>
+
+        <!-- Add row -->
+        <div style="border: 2px dashed #c8dfd0; border-radius: 10px; padding: 10px 14px; display: flex; align-items: center; gap: 10px; cursor: pointer;">
+          <div style="width: 38px; height: 38px; border-radius: 50%; background: #eef5f1; display: flex; align-items: center; justify-content: center; font-size: 18px; color: #5c8a6e; flex-shrink: 0;">+</div>
+          <div style="font-size: 11px; font-weight: 600; color: #5c8a6e;">Invitar nuevo usuario al equipo</div>
+        </div>
+
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Horizontal list cards</h3>
+      <p>Each user is a wide card: avatar + name + email on the left, role badge + toggle + edit button on the right. Spacious, readable, naturally adapts to mobile. Most similar to a contacts app.</p>
+    </div>
+  </div>
+
+  <!-- Option C: Grouped by role -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 14px; background: #f8faf8; font-family: sans-serif; font-size: 11px; border-radius: 8px 8px 0 0;">
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <div>
+          <div style="font-weight: 700; color: #2d4a38; font-size: 13px;">Usuarios</div>
+          <div style="font-size: 9px; color: #7a8c82;">5 integrantes del equipo</div>
+        </div>
+        <button style="background: #5c8a6e; color: white; border: none; border-radius: 6px; padding: 6px 12px; font-size: 10px; font-weight: 600; cursor: pointer;">+ Invitar</button>
+      </div>
+
+      <!-- Group: Administradores -->
+      <div style="margin-bottom: 12px;">
+        <div style="font-size: 9px; font-weight: 700; color: #5c8a6e; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+          <div style="height: 1px; width: 12px; background: #c8dfd0;"></div> Administradores
+          <div style="flex: 1; height: 1px; background: #c8dfd0;"></div>
+        </div>
+        <div style="background: white; border-radius: 10px; border: 1px solid #e0ebe5; padding: 10px 12px; display: flex; align-items: center; gap: 10px;">
+          <div style="width: 34px; height: 34px; border-radius: 50%; background: #c8dfd0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #2d4a38;">MF</div>
+          <div style="flex: 1;">
+            <div style="font-weight: 700; color: #2d4a38; font-size: 11px;">Marcelo Fuentes</div>
+            <div style="font-size: 9px; color: #7a8c82;">marceloe.fuentes@gmail.com</div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 5px;">
+            <div style="width: 26px; height: 14px; border-radius: 20px; background: #5c8a6e; padding: 2px; display: flex; align-items: center;"><div style="width: 10px; height: 10px; border-radius: 50%; background: white; margin-left: auto;"></div></div>
+          </div>
+          <div style="font-size: 9px; color: #5c8a6e; font-weight: 600; cursor: pointer;">Editar</div>
+        </div>
+      </div>
+
+      <!-- Group: Operadores -->
+      <div style="margin-bottom: 12px;">
+        <div style="font-size: 9px; font-weight: 700; color: #7c6fa0; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+          <div style="height: 1px; width: 12px; background: #ddd8ec;"></div> Operadores
+          <div style="flex: 1; height: 1px; background: #ddd8ec;"></div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <div style="background: white; border-radius: 10px; border: 1px solid #e0ebe5; padding: 10px 12px; display: flex; align-items: center; gap: 10px;">
+            <div style="width: 34px; height: 34px; border-radius: 50%; background: #dde8e2; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #2d4a38;">AP</div>
+            <div style="flex: 1;">
+              <div style="font-weight: 700; color: #2d4a38; font-size: 11px;">Ana Pérez</div>
+              <div style="font-size: 9px; color: #7a8c82;">ana.perez@iglesia.cl</div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 5px;">
+              <div style="width: 26px; height: 14px; border-radius: 20px; background: #5c8a6e; padding: 2px; display: flex; align-items: center;"><div style="width: 10px; height: 10px; border-radius: 50%; background: white; margin-left: auto;"></div></div>
+            </div>
+            <div style="font-size: 9px; color: #5c8a6e; font-weight: 600; cursor: pointer;">Editar</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Group: Visores (inactive) -->
+      <div>
+        <div style="font-size: 9px; font-weight: 700; color: #999; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+          <div style="height: 1px; width: 12px; background: #e0e0e0;"></div> Visores
+          <div style="flex: 1; height: 1px; background: #e0e0e0;"></div>
+        </div>
+        <div style="background: white; border-radius: 10px; border: 1px solid #e0ebe5; padding: 10px 12px; display: flex; align-items: center; gap: 10px; opacity: 0.55;">
+          <div style="width: 34px; height: 34px; border-radius: 50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #999;">CR</div>
+          <div style="flex: 1;">
+            <div style="font-weight: 700; color: #7a8c82; font-size: 11px;">Carlos Rojas</div>
+            <div style="font-size: 9px; color: #aabfb3;">c.rojas@iglesia.cl</div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 5px;">
+            <div style="width: 26px; height: 14px; border-radius: 20px; background: #e0e0e0; padding: 2px; display: flex; align-items: center;"><div style="width: 10px; height: 10px; border-radius: 50%; background: white;"></div></div>
+          </div>
+          <div style="font-size: 9px; color: #7a8c82; font-weight: 600; cursor: pointer;">Editar</div>
+        </div>
+      </div>
+
+    </div>
+    <div class="card-body">
+      <h3>C — Grouped by role</h3>
+      <p>Users grouped under colored section headers: Administradores, Operadores, Visores. Makes the permission structure immediately obvious. Great when roles matter more than individual names.</p>
+    </div>
+  </div>
+
+</div>

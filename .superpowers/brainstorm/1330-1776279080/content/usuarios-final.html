@@ -1,0 +1,228 @@
+<h2>Usuarios — Final Design</h2>
+<p class="subtitle">Horizontal list cards with search + invite button above. Mobile left, desktop right.</p>
+
+<div class="split">
+
+  <!-- Mobile -->
+  <div class="mockup">
+    <div class="mockup-header">Mobile</div>
+    <div class="mockup-body" style="padding: 0; font-family: sans-serif; font-size: 11px; background: #f8faf8; min-height: 560px; display: flex; flex-direction: column;">
+
+      <!-- Header -->
+      <div style="background: white; border-bottom: 1px solid #e0ebe5; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <button style="background: none; border: none; color: #5c8a6e; font-size: 16px;">☰</button>
+          <span style="font-weight: 700; color: #2d4a38; font-size: 13px;">Usuarios</span>
+        </div>
+        <div style="width: 26px; height: 26px; border-radius: 50%; background: #c8dfd0; display: flex; align-items: center; justify-content: center; color: #2d4a38; font-size: 9px; font-weight: 600;">MF</div>
+      </div>
+
+      <div style="flex: 1; overflow: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px;">
+
+        <!-- Search + invite bar -->
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <div style="flex: 1; background: white; border: 1.5px solid #e0ebe5; border-radius: 8px; padding: 8px 10px; display: flex; align-items: center; gap: 6px;">
+            <span style="color: #7a8c82; font-size: 12px;">🔍</span>
+            <span style="color: #aabfb3; font-size: 11px;">Buscar usuario...</span>
+          </div>
+          <button style="background: #5c8a6e; color: white; border: none; border-radius: 8px; padding: 8px 12px; font-size: 11px; font-weight: 700; cursor: pointer; white-space: nowrap; flex-shrink: 0;">+ Invitar</button>
+        </div>
+
+        <!-- Count -->
+        <div style="font-size: 10px; color: #7a8c82;">5 integrantes del equipo</div>
+
+        <!-- User cards -->
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+
+          <div style="background: white; border-radius: 10px; border: 1px solid #e0ebe5; padding: 12px; display: flex; align-items: center; gap: 10px;">
+            <div style="width: 38px; height: 38px; border-radius: 50%; background: #c8dfd0; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #2d4a38; flex-shrink: 0;">MF</div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-weight: 700; color: #2d4a38; font-size: 12px;">Marcelo Fuentes</div>
+              <div style="display: flex; align-items: center; gap: 6px; margin-top: 2px;">
+                <span style="background: #eef5f1; color: #5c8a6e; font-size: 8px; font-weight: 700; padding: 2px 7px; border-radius: 20px; text-transform: uppercase;">Admin</span>
+                <span style="font-size: 9px; color: #5c8a6e;">● Activo</span>
+              </div>
+            </div>
+            <span style="font-size: 11px; color: #c8dfd0;">›</span>
+          </div>
+
+          <div style="background: white; border-radius: 10px; border: 1px solid #e0ebe5; padding: 12px; display: flex; align-items: center; gap: 10px;">
+            <div style="width: 38px; height: 38px; border-radius: 50%; background: #dde8e2; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #2d4a38; flex-shrink: 0;">AP</div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-weight: 700; color: #2d4a38; font-size: 12px;">Ana Pérez</div>
+              <div style="display: flex; align-items: center; gap: 6px; margin-top: 2px;">
+                <span style="background: #f5f3fa; color: #7c6fa0; font-size: 8px; font-weight: 700; padding: 2px 7px; border-radius: 20px; text-transform: uppercase;">Operador</span>
+                <span style="font-size: 9px; color: #5c8a6e;">● Activo</span>
+              </div>
+            </div>
+            <span style="font-size: 11px; color: #c8dfd0;">›</span>
+          </div>
+
+          <div style="background: white; border-radius: 10px; border: 1px solid #e0ebe5; padding: 12px; display: flex; align-items: center; gap: 10px;">
+            <div style="width: 38px; height: 38px; border-radius: 50%; background: #dde8e2; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #2d4a38; flex-shrink: 0;">JP</div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-weight: 700; color: #2d4a38; font-size: 12px;">Jorge Pino</div>
+              <div style="display: flex; align-items: center; gap: 6px; margin-top: 2px;">
+                <span style="background: #f5f3fa; color: #7c6fa0; font-size: 8px; font-weight: 700; padding: 2px 7px; border-radius: 20px; text-transform: uppercase;">Operador</span>
+                <span style="font-size: 9px; color: #5c8a6e;">● Activo</span>
+              </div>
+            </div>
+            <span style="font-size: 11px; color: #c8dfd0;">›</span>
+          </div>
+
+          <div style="background: white; border-radius: 10px; border: 1px solid #e0ebe5; padding: 12px; display: flex; align-items: center; gap: 10px; opacity: 0.55;">
+            <div style="width: 38px; height: 38px; border-radius: 50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #999; flex-shrink: 0;">CR</div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-weight: 700; color: #7a8c82; font-size: 12px;">Carlos Rojas</div>
+              <div style="display: flex; align-items: center; gap: 6px; margin-top: 2px;">
+                <span style="background: #f5f5f5; color: #999; font-size: 8px; font-weight: 700; padding: 2px 7px; border-radius: 20px; text-transform: uppercase;">Visor</span>
+                <span style="font-size: 9px; color: #aabfb3;">● Inactivo</span>
+              </div>
+            </div>
+            <span style="font-size: 11px; color: #e0ebe5;">›</span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Desktop -->
+  <div class="mockup">
+    <div class="mockup-header">Desktop</div>
+    <div class="mockup-body" style="padding: 0; font-family: sans-serif; font-size: 11px; background: #f8faf8; min-height: 560px; display: flex;">
+
+      <!-- Sidebar -->
+      <div style="width: 160px; min-width: 160px; background: white; border-right: 1px solid #e0ebe5; display: flex; flex-direction: column;">
+        <div style="padding: 14px 12px 10px; border-bottom: 1px solid #eef5f1;"><div style="font-weight: 700; color: #2d4a38; font-size: 12px;">Finanzas PIBT</div></div>
+        <div style="padding: 8px 8px 6px;"><button style="width: 100%; background: #5c8a6e; color: white; border: none; border-radius: 6px; padding: 8px; font-size: 10px; font-weight: 600;">+ Nuevo Movimiento</button></div>
+        <nav style="flex: 1; padding: 4px 6px; display: flex; flex-direction: column; gap: 1px;">
+          <a style="display: flex; align-items: center; gap: 6px; padding: 7px 8px; border-radius: 6px; color: #7a8c82; font-size: 10px; text-decoration: none;">⊞ Dashboard</a>
+          <a style="display: flex; align-items: center; gap: 6px; padding: 7px 8px; border-radius: 6px; color: #7a8c82; font-size: 10px; text-decoration: none;">↕ Movimientos</a>
+          <a style="display: flex; align-items: center; gap: 6px; padding: 7px 8px; border-radius: 6px; background: #eef5f1; color: #2d4a38; font-weight: 600; font-size: 10px; text-decoration: none;">👥 Usuarios</a>
+          <a style="display: flex; align-items: center; gap: 6px; padding: 7px 8px; border-radius: 6px; color: #7a8c82; font-size: 10px; text-decoration: none;">⚙ Config</a>
+        </nav>
+        <div style="padding: 8px; border-top: 1px solid #eef5f1;">
+          <div style="display: flex; align-items: center; gap: 6px; padding: 6px; border-radius: 6px; background: #f8faf8;">
+            <div style="width: 22px; height: 22px; border-radius: 50%; background: #c8dfd0; display: flex; align-items: center; justify-content: center; color: #2d4a38; font-size: 8px; font-weight: 600;">MF</div>
+            <div><div style="font-weight: 600; color: #2d4a38; font-size: 9px;">Marcelo F.</div><div style="font-size: 8px; color: #7a8c82;">Admin</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main -->
+      <div style="flex: 1; display: flex; flex-direction: column; overflow: hidden;">
+
+        <!-- Page header -->
+        <div style="background: white; border-bottom: 1px solid #e0ebe5; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <div style="font-weight: 700; color: #2d4a38; font-size: 14px;">Usuarios</div>
+            <div style="font-size: 10px; color: #7a8c82;">Gestión de accesos — solo administradores</div>
+          </div>
+        </div>
+
+        <div style="flex: 1; overflow: auto; padding: 16px 20px; display: flex; flex-direction: column; gap: 12px;">
+
+          <!-- Stats row -->
+          <div style="display: flex; gap: 10px;">
+            <div style="flex: 1; background: white; border-radius: 10px; border: 1px solid #e0ebe5; padding: 12px 14px;">
+              <div style="font-size: 8px; color: #7a8c82; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px;">Personal activo</div>
+              <div style="display: flex; align-items: baseline; gap: 4px;">
+                <div style="font-size: 22px; font-weight: 700; color: #5c8a6e;">4</div>
+                <div style="font-size: 10px; color: #7a8c82;">de 5 usuarios</div>
+              </div>
+            </div>
+            <div style="flex: 1; background: white; border-radius: 10px; border: 1px solid #e0ebe5; padding: 12px 14px;">
+              <div style="font-size: 8px; color: #7a8c82; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px;">Administradores</div>
+              <div style="display: flex; align-items: baseline; gap: 4px;">
+                <div style="font-size: 22px; font-weight: 700; color: #2d4a38;">1</div>
+                <div style="font-size: 10px; color: #7a8c82;">cuenta de control</div>
+              </div>
+            </div>
+            <div style="flex: 1; background: white; border-radius: 10px; border: 1px solid #e0ebe5; padding: 12px 14px;">
+              <div style="font-size: 8px; color: #7a8c82; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px;">Trazabilidad</div>
+              <div style="display: flex; align-items: baseline; gap: 4px;">
+                <div style="font-size: 22px; font-weight: 700; color: #2d4a38;">100%</div>
+                <div style="font-size: 10px; color: #5c8a6e;">auditado</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Search + invite bar -->
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <div style="flex: 1; background: white; border: 1.5px solid #e0ebe5; border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
+              <span style="color: #7a8c82; font-size: 13px;">🔍</span>
+              <span style="color: #aabfb3; font-size: 11px;">Buscar por nombre o correo...</span>
+            </div>
+            <button style="background: #5c8a6e; color: white; border: none; border-radius: 8px; padding: 9px 16px; font-size: 11px; font-weight: 700; cursor: pointer; white-space: nowrap; flex-shrink: 0;">+ Invitar usuario</button>
+          </div>
+
+          <!-- Count label -->
+          <div style="font-size: 10px; color: #7a8c82; margin-top: -4px;">5 integrantes del equipo</div>
+
+          <!-- User list -->
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+
+            <div style="background: white; border-radius: 10px; border: 1px solid #e0ebe5; padding: 12px 16px; display: flex; align-items: center; gap: 12px;">
+              <div style="width: 40px; height: 40px; border-radius: 50%; background: #c8dfd0; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #2d4a38; flex-shrink: 0;">MF</div>
+              <div style="flex: 1; min-width: 0;">
+                <div style="font-weight: 700; color: #2d4a38; font-size: 12px;">Marcelo Fuentes</div>
+                <div style="font-size: 9px; color: #7a8c82; margin-top: 1px;">marceloe.fuentes@gmail.com</div>
+              </div>
+              <span style="background: #eef5f1; color: #5c8a6e; font-size: 8px; font-weight: 700; padding: 3px 9px; border-radius: 20px; text-transform: uppercase; flex-shrink: 0;">Admin</span>
+              <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+                <div style="width: 30px; height: 16px; border-radius: 20px; background: #5c8a6e; padding: 2px; display: flex; align-items: center;"><div style="width: 12px; height: 12px; border-radius: 50%; background: white; margin-left: auto;"></div></div>
+                <span style="font-size: 9px; color: #5c8a6e; font-weight: 600;">Activo</span>
+              </div>
+              <div style="background: #f8faf8; border: 1px solid #e0ebe5; border-radius: 6px; padding: 5px 12px; font-size: 10px; color: #5c8a6e; font-weight: 600; cursor: pointer; flex-shrink: 0;">Editar</div>
+            </div>
+
+            <div style="background: white; border-radius: 10px; border: 1px solid #e0ebe5; padding: 12px 16px; display: flex; align-items: center; gap: 12px;">
+              <div style="width: 40px; height: 40px; border-radius: 50%; background: #dde8e2; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #2d4a38; flex-shrink: 0;">AP</div>
+              <div style="flex: 1; min-width: 0;">
+                <div style="font-weight: 700; color: #2d4a38; font-size: 12px;">Ana Pérez</div>
+                <div style="font-size: 9px; color: #7a8c82; margin-top: 1px;">ana.perez@iglesia.cl</div>
+              </div>
+              <span style="background: #f5f3fa; color: #7c6fa0; font-size: 8px; font-weight: 700; padding: 3px 9px; border-radius: 20px; text-transform: uppercase; flex-shrink: 0;">Operador</span>
+              <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+                <div style="width: 30px; height: 16px; border-radius: 20px; background: #5c8a6e; padding: 2px; display: flex; align-items: center;"><div style="width: 12px; height: 12px; border-radius: 50%; background: white; margin-left: auto;"></div></div>
+                <span style="font-size: 9px; color: #5c8a6e; font-weight: 600;">Activo</span>
+              </div>
+              <div style="background: #f8faf8; border: 1px solid #e0ebe5; border-radius: 6px; padding: 5px 12px; font-size: 10px; color: #5c8a6e; font-weight: 600; cursor: pointer; flex-shrink: 0;">Editar</div>
+            </div>
+
+            <div style="background: white; border-radius: 10px; border: 1px solid #e0ebe5; padding: 12px 16px; display: flex; align-items: center; gap: 12px;">
+              <div style="width: 40px; height: 40px; border-radius: 50%; background: #dde8e2; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #2d4a38; flex-shrink: 0;">JP</div>
+              <div style="flex: 1; min-width: 0;">
+                <div style="font-weight: 700; color: #2d4a38; font-size: 12px;">Jorge Pino</div>
+                <div style="font-size: 9px; color: #7a8c82; margin-top: 1px;">j.pino@iglesia.cl</div>
+              </div>
+              <span style="background: #f5f3fa; color: #7c6fa0; font-size: 8px; font-weight: 700; padding: 3px 9px; border-radius: 20px; text-transform: uppercase; flex-shrink: 0;">Operador</span>
+              <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+                <div style="width: 30px; height: 16px; border-radius: 20px; background: #5c8a6e; padding: 2px; display: flex; align-items: center;"><div style="width: 12px; height: 12px; border-radius: 50%; background: white; margin-left: auto;"></div></div>
+                <span style="font-size: 9px; color: #5c8a6e; font-weight: 600;">Activo</span>
+              </div>
+              <div style="background: #f8faf8; border: 1px solid #e0ebe5; border-radius: 6px; padding: 5px 12px; font-size: 10px; color: #5c8a6e; font-weight: 600; cursor: pointer; flex-shrink: 0;">Editar</div>
+            </div>
+
+            <div style="background: white; border-radius: 10px; border: 1px solid #e0ebe5; padding: 12px 16px; display: flex; align-items: center; gap: 12px; opacity: 0.55;">
+              <div style="width: 40px; height: 40px; border-radius: 50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #999; flex-shrink: 0;">CR</div>
+              <div style="flex: 1; min-width: 0;">
+                <div style="font-weight: 700; color: #7a8c82; font-size: 12px;">Carlos Rojas</div>
+                <div style="font-size: 9px; color: #aabfb3; margin-top: 1px;">c.rojas@iglesia.cl</div>
+              </div>
+              <span style="background: #f5f5f5; color: #999; font-size: 8px; font-weight: 700; padding: 3px 9px; border-radius: 20px; text-transform: uppercase; flex-shrink: 0;">Visor</span>
+              <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+                <div style="width: 30px; height: 16px; border-radius: 20px; background: #e0e0e0; padding: 2px; display: flex; align-items: center;"><div style="width: 12px; height: 12px; border-radius: 50%; background: white;"></div></div>
+                <span style="font-size: 9px; color: #999; font-weight: 600;">Inactivo</span>
+              </div>
+              <div style="background: #f8faf8; border: 1px solid #e0ebe5; border-radius: 6px; padding: 5px 12px; font-size: 10px; color: #7a8c82; font-weight: 600; cursor: pointer; flex-shrink: 0;">Editar</div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
