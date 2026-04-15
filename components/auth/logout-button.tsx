@@ -1,18 +1,18 @@
-"use client";
+"use client"
 
-import { useRouter } from "next/navigation";
-import { createSupabaseBrowserClient } from "@/lib/supabase/client";
-import { Button } from "@/components/ui/button";
-import { LogOut } from "lucide-react";
+import { useRouter } from "next/navigation"
+import { createSupabaseBrowserClient } from "@/lib/supabase/client"
+import { Button } from "@/components/ui/button"
+import { LogOut } from "lucide-react"
 
 export function LogoutButton() {
-  const router = useRouter();
+  const router = useRouter()
 
   async function handleSignOut() {
-    const supabase = createSupabaseBrowserClient();
-    await supabase.auth.signOut();
-    router.push("/");
-    router.refresh();
+    const supabase = createSupabaseBrowserClient()
+    await supabase.auth.signOut()
+    router.push("/")
+    router.refresh()
   }
 
   return (
@@ -24,5 +24,5 @@ export function LogoutButton() {
       <LogOut className="h-4 w-4" />
       <span className="text-xs font-bold uppercase tracking-widest">Cerrar Sesión</span>
     </Button>
-  );
+  )
 }

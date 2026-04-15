@@ -105,9 +105,7 @@ export function LoginForm() {
             {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
           </button>
         </div>
-        {errors.password && (
-          <p className="text-xs text-destructive">{errors.password.message}</p>
-        )}
+        {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
       </div>
 
       {/* Auth error */}
