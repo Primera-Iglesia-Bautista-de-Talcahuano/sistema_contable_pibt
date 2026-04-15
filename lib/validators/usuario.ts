@@ -1,18 +1,18 @@
 import { z } from "zod";
 
 export const createUsuarioSchema = z.object({
-  nombre: z.string().min(3, "Nombre requerido"),
+  full_name: z.string().min(3, "Nombre requerido"),
   email: z.email("Email invalido"),
   password: z.string().min(8, "La contrasena debe tener al menos 8 caracteres"),
-  rol: z.enum(["ADMIN", "OPERADOR", "VISOR"]),
-  activo: z.boolean().optional().default(true),
+  role: z.enum(["ADMIN", "OPERATOR", "VIEWER"]),
+  active: z.boolean().optional().default(true),
 });
 
 export const updateUsuarioSchema = z.object({
   id: z.string().min(1),
-  nombre: z.string().min(3, "Nombre requerido"),
-  rol: z.enum(["ADMIN", "OPERADOR", "VISOR"]),
-  activo: z.boolean(),
+  full_name: z.string().min(3, "Nombre requerido"),
+  role: z.enum(["ADMIN", "OPERATOR", "VIEWER"]),
+  active: z.boolean(),
 });
 
 export type CreateUsuarioInput = z.infer<typeof createUsuarioSchema>;

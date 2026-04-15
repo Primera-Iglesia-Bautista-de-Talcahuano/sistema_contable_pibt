@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/auth/session";
+import { getCurrentUser } from "@/lib/supabase/server";
 import { canCreateOrEditMovements, canViewMovements } from "@/lib/permissions/rbac";
 import { movimientosService } from "@/services/movimientos/movimientos.service";
 import { updateMovimientoSchema } from "@/lib/validators/movimiento";

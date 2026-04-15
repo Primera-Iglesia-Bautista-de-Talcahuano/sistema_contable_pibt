@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/auth/session";
+import { getCurrentUser } from "@/lib/supabase/server";
 import { canViewMovements } from "@/lib/permissions/rbac";
 import { dashboardService } from "@/services/dashboard/dashboard.service";
 

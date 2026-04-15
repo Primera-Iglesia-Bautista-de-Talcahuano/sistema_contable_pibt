@@ -1,108 +1,114 @@
-import { prisma } from "@/lib/db/prisma";
-import { auditoriaService } from "@/services/auditoria/auditoria.service";
-import { generateMovementPdf } from "@/services/google/apps-script-documents";
-import { sendMovementEmail } from "@/services/google/apps-script-mail";
-import { syncMovementToSheet } from "@/services/google/sheets-sync";
-import type { MovementIntegrationPayload } from "@/services/google/types";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin"
+import { auditoriaService } from "@/services/auditoria/auditoria.service"
+import { generateMovementPdf } from "@/services/google/apps-script-documents"
+import { sendMovementEmail } from "@/services/email/resend.service"
+import { syncMovementToSheet } from "@/services/google/sheets-sync"
+import type { MovementIntegrationPayload } from "@/services/google/types"
 
 function toPayload(m: {
-  id: string;
-  folioDisplay: string;
-  fechaMovimiento: Date;
-  tipoMovimiento: "INGRESO" | "EGRESO";
-  monto: { toString(): string } | number;
-  categoria: string;
-  concepto: string;
-  referente: string | null;
-  recibidoPor: string | null;
-  entregadoPor: string | null;
-  beneficiario: string | null;
-  medioPago: string | null;
-  numeroRespaldo: string | null;
-  observaciones: string | null;
-  creadoEn: Date;
-  creadoPor: { nombre: string; email: string };
-}) {
-  const payload: MovementIntegrationPayload = {
+  id: string
+  folio_display: string | null
+  movement_date: string
+  movement_type: "INCOME" | "EXPENSE"
+  amount: number
+  category: string
+  concept: string
+  reference_person: string | null
+  received_by: string | null
+  delivered_by: string | null
+  beneficiary: string | null
+  payment_method: string | null
+  support_number: string | null
+  notes: string | null
+  created_at: string
+  created_by: { full_name: string; email: string }
+}): MovementIntegrationPayload {
+  return {
     movimientoId: m.id,
-    folio: m.folioDisplay,
-    tipo: m.tipoMovimiento,
-    fechaMovimiento: m.fechaMovimiento.toISOString(),
-    fecha: m.fechaMovimiento.toISOString(),
-    tipoMovimiento: m.tipoMovimiento,
-    monto: Number(m.monto),
-    categoria: m.categoria,
-    concepto: m.concepto,
-    descripcion: m.concepto,
-    referente: m.referente,
-    recibidoPor: m.recibidoPor,
-    entregadoPor: m.entregadoPor,
-    beneficiario: m.beneficiario,
-    medioPago: m.medioPago,
-    numeroRespaldo: m.numeroRespaldo,
-    observaciones: m.observaciones,
-    registradoPor: m.creadoPor.nombre,
-    usuario: m.creadoPor.nombre,
-    registradoEmail: m.creadoPor.email,
-    registradoEn: m.creadoEn.toISOString(),
-    nombreOrganizacion: process.env.APP_NAME ?? "Sistema Contable Iglesia",
-  };
-  return payload;
+    folio: m.folio_display ?? "",
+    tipo: m.movement_type === "INCOME" ? "INGRESO" : "EGRESO",
+    fechaMovimiento: m.movement_date,
+    fecha: m.movement_date,
+    tipoMovimiento: m.movement_type === "INCOME" ? "INGRESO" : "EGRESO",
+    monto: Number(m.amount),
+    categoria: m.category,
+    concepto: m.concept,
+    descripcion: m.concept,
+    referente: m.reference_person,
+    recibidoPor: m.received_by,
+    entregadoPor: m.delivered_by,
+    beneficiario: m.beneficiary,
+    medioPago: m.payment_method,
+    numeroRespaldo: m.support_number,
+    observaciones: m.notes,
+    registradoPor: m.created_by.full_name,
+    usuario: m.created_by.full_name,
+    registradoEmail: m.created_by.email,
+    registradoEn: m.created_at,
+    nombreOrganizacion: "Sistema contable PIBT"
+  }
 }
 
 export async function processMovimientoIntegrations(movimientoId: string, userId: string) {
-  const movement = await prisma.movimiento.findUnique({
-    where: { id: movimientoId },
-    include: { creadoPor: { select: { nombre: true, email: true } } },
-  });
-  if (!movement) throw new Error("Movimiento no encontrado para integración");
+  const admin = createSupabaseAdminClient()
 
-  const payload = toPayload({
-    ...movement,
-    tipoMovimiento: movement.tipoMovimiento as "INGRESO" | "EGRESO",
-  });
+  const { data: movement, error } = await admin
+    .from("movements")
+    .select("*, created_by:users!created_by_id(full_name, email)")
+    .eq("id", movimientoId)
+    .single()
 
-  const pdfResult = await generateMovementPdf(payload);
-  await prisma.movimiento.update({
-    where: { id: movimientoId },
-    data: {
-      pdfStatus: pdfResult.ok ? "GENERADO" : "ERROR",
-      pdfUrl: pdfResult.pdfUrl ?? movement.pdfUrl,
-      driveFileId: pdfResult.driveFileId ?? movement.driveFileId,
-      pdfError: pdfResult.ok ? null : pdfResult.error ?? "Fallo generación PDF",
-    },
-  });
+  if (error || !movement) throw new Error("Movimiento no encontrado para integración")
 
-  await auditoriaService.registrarMovimiento({
-    movimientoId,
-    usuarioId: userId,
-    accion: "PDF_REGENERADO",
-    observacion: pdfResult.ok ? "PDF generado/regenerado" : `Error PDF: ${pdfResult.error ?? ""}`,
-  });
+  const created_by = movement.created_by as { full_name: string; email: string }
+  const payload = toPayload({ ...movement, created_by })
 
-  const sheetResult = await syncMovementToSheet(payload);
-  await prisma.movimiento.update({
-    where: { id: movimientoId },
-    data: {
-      syncedToSheet: Boolean(sheetResult.ok),
-      syncError: sheetResult.ok ? null : sheetResult.error ?? "Fallo sync Sheet",
-    },
-  });
+  // PDF generation
+  const pdfResult = await generateMovementPdf(payload)
+  await admin
+    .from("movements")
+    .update({
+      pdf_status: pdfResult.ok ? "GENERATED" : "ERROR",
+      pdf_url: pdfResult.pdfUrl ?? movement.pdf_url,
+      drive_file_id: pdfResult.driveFileId ?? movement.drive_file_id,
+      pdf_error: pdfResult.ok ? null : (pdfResult.error ?? "Fallo generación PDF")
+    })
+    .eq("id", movimientoId)
 
-  const mailResult = await sendMovementEmail(payload);
-  await prisma.movimiento.update({
-    where: { id: movimientoId },
-    data: {
-      notificationStatus: mailResult.ok ? "ENVIADO" : "ERROR",
-      notificationSentAt: mailResult.ok ? new Date() : null,
-      notificationError: mailResult.ok ? null : mailResult.error ?? "Fallo envío correo",
-    },
-  });
+  await auditoriaService.logMovement({
+    movement_id: movimientoId,
+    user_id: userId,
+    action: "PDF_REGENERATED",
+    note: pdfResult.ok ? "PDF generado/regenerado" : `Error PDF: ${pdfResult.error ?? ""}`
+  })
 
-  await auditoriaService.registrarMovimiento({
-    movimientoId,
-    usuarioId: userId,
-    accion: mailResult.ok ? "NOTIFICACION_ENVIADA" : "NOTIFICACION_ERROR",
-    observacion: mailResult.ok ? "Correo enviado por Apps Script" : `Error correo: ${mailResult.error ?? ""}`,
-  });
+  // Sheets sync
+  const sheetResult = await syncMovementToSheet(payload)
+  await admin
+    .from("movements")
+    .update({
+      synced_to_sheet: Boolean(sheetResult.ok),
+      sync_error: sheetResult.ok ? null : (sheetResult.error ?? "Fallo sync Sheet")
+    })
+    .eq("id", movimientoId)
+
+  // Email notification
+  const mailResult = await sendMovementEmail(payload)
+  await admin
+    .from("movements")
+    .update({
+      notification_status: mailResult.ok ? "SENT" : "ERROR",
+      notification_sent_at: mailResult.ok ? new Date().toISOString() : null,
+      notification_error: mailResult.ok ? null : (mailResult.error ?? "Fallo envío correo")
+    })
+    .eq("id", movimientoId)
+
+  await auditoriaService.logMovement({
+    movement_id: movimientoId,
+    user_id: userId,
+    action: mailResult.ok ? "NOTIFICATION_SENT" : "NOTIFICATION_ERROR",
+    note: mailResult.ok
+      ? "Correo enviado por Apps Script"
+      : `Error correo: ${mailResult.error ?? ""}`
+  })
 }

@@ -1,6 +1,6 @@
 # Sistema Contable Iglesia
 
-MVP local serio, mantenible y escalable para contabilidad de iglesia.
+Sistema serio, mantenible y escalable de contabilidad para iglesia.
 
 ## Estado
 
@@ -13,7 +13,7 @@ MVP local serio, mantenible y escalable para contabilidad de iglesia.
 - TypeScript estricto
 - Tailwind CSS
 - Prisma ORM
-- SQLite (MVP local)
+- SQLite (local)
 - NextAuth (credentials)
 - React Hook Form + Zod
 - Recharts
@@ -55,7 +55,6 @@ Variables clave:
 - `DATABASE_URL`
 - `NEXTAUTH_SECRET`
 - `NEXTAUTH_URL`
-- `APP_NAME`
 - `DEFAULT_CURRENCY`
 - `SEED_DEFAULT_PASSWORD`
 - `GOOGLE_APPS_SCRIPT_WEBHOOK_URL`
@@ -63,7 +62,6 @@ Variables clave:
 - `GOOGLE_DRIVE_FOLDER_ID`
 - `GOOGLE_SHEET_ID`
 - `NOTIFICATION_EMAIL`
-- `GMAIL_SENDER_NAME`
 
 ## Instalacion local
 

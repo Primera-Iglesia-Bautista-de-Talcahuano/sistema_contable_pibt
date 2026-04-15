@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/auth/session";
+import { getCurrentUser } from "@/lib/supabase/server";
 import { canCreateOrEditMovements } from "@/lib/permissions/rbac";
 import { movimientosService } from "@/services/movimientos/movimientos.service";
 import { anularMovimientoSchema } from "@/lib/validators/movimiento";
@@ -24,7 +24,7 @@ export async function POST(request: Request, { params }: Params) {
       );
     }
 
-    const result = await movimientosService.anular(id, parsed.data, user.id);
+    const result = await movimientosService.cancel(id, parsed.data, user.id);
     void processMovimientoIntegrations(result.id, user.id).catch(() => {
       // Mantener regla de negocio: si falla integración externa, movimiento queda guardado.
     });

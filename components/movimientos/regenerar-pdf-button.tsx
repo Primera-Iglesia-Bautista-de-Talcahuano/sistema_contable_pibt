@@ -28,7 +28,7 @@ export function RegenerarPdfButton({ movimientoId }: { movimientoId: string }) {
       type="button"
       disabled={loading}
       onClick={onClick}
-      className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm disabled:opacity-60"
+      className="inline-flex h-11 items-center px-5 rounded-xl border-none bg-surface-container-low hover:bg-surface-container-high text-on-surface text-sm font-bold transition-colors disabled:opacity-60"
     >
       {loading ? "Procesando..." : "Regenerar PDF"}
     </button>

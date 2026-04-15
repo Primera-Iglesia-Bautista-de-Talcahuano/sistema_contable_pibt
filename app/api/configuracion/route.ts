@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/auth/session";
+import { getCurrentUser } from "@/lib/supabase/server";
 import { canManageUsers } from "@/lib/permissions/rbac";
 import { auditoriaService } from "@/services/auditoria/auditoria.service";
 
@@ -9,6 +9,6 @@ export async function GET() {
     return NextResponse.json({ message: "No autorizado" }, { status: 401 });
   }
 
-  const auditoria = await auditoriaService.listarSistema(80);
+  const auditoria = await auditoriaService.listSystem(80);
   return NextResponse.json({ auditoria });
 }

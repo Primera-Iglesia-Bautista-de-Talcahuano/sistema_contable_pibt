@@ -1,6 +1,6 @@
 # Sistema Contable Iglesia (MVP Local)
 
-MVP local de un sistema web de contabilidad para iglesia, construido para evolucionar a produccion sin rehacer arquitectura.
+Sistema web de contabilidad para iglesia, construido para evolucionar a produccion sin rehacer arquitectura.
 
 ## Stack
 
@@ -8,7 +8,7 @@ MVP local de un sistema web de contabilidad para iglesia, construido para evoluc
 - TypeScript estricto
 - Tailwind CSS
 - Prisma ORM
-- SQLite (MVP local)
+- SQLite (local)
 - React Hook Form + Zod (preparado)
 - Recharts (preparado)
 - NextAuth (preparado para ETAPA 2)
@@ -52,7 +52,6 @@ Variables clave:
 - `DATABASE_URL`
 - `NEXTAUTH_SECRET`
 - `NEXTAUTH_URL`
-- `APP_NAME`
 - `DEFAULT_CURRENCY`
 - `GOOGLE_APPS_SCRIPT_WEBHOOK_URL`
 - `GOOGLE_APPS_SCRIPT_SECRET`

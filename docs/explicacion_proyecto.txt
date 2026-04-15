@@ -78,7 +78,6 @@ Este es un MVP local de un sistema web de contabilidad para iglesia, disenado pa
   DATABASE_URL="file:./dev.db"
   NEXTAUTH_SECRET="local_dev_secret_change_me"
   NEXTAUTH_URL="http://localhost:3000"
-  APP_NAME="Sistema Contable Iglesia"
   DEFAULT_CURRENCY="CLP"
   SEED_DEFAULT_PASSWORD="Admin12345!"
   GOOGLE_APPS_SCRIPT_WEBHOOK_URL="https://script.google.com/macros/s/AKfycbyQTbBd_Gt6TbHEfRJwyQXISpWXkxUp2AtbYmlDPkVj1b39dzEW5Gr_STA57QcIbLOc/exec"
@@ -86,7 +85,6 @@ Este es un MVP local de un sistema web de contabilidad para iglesia, disenado pa
   GOOGLE_DRIVE_FOLDER_ID="1L8Ozx4KTtSiKMJtSq7t1Yn4hQweuSOQO"
   GOOGLE_SHEET_ID="1xgacb9O2Jwegnsv1bNoWQHtqPJWg1VLO7hn0WYvgysU"
   NOTIFICATION_EMAIL="contabilidadpibt@gmail.com"
-  GMAIL_SENDER_NAME="Sistema Contable Iglesia 1 Bautista Talcahuano"
 - Base de datos:
   1. npm run db:init (aplica SQL y seed).
   2. Usuarios demo: email como arriba, password de SEED_DEFAULT_PASSWORD.
@@ -107,7 +105,6 @@ Esta es la parte critica para integraciones futuras. No guardar credenciales de 
   - GOOGLE_DRIVE_FOLDER_ID: ID de la carpeta en Drive donde guardar PDFs.
   - GOOGLE_SHEET_ID: ID de la hoja de calculo para sincronizacion completa de movimientos.
   - NOTIFICATION_EMAIL: Email destino para notificaciones.
-  - GMAIL_SENDER_NAME: Nombre del remitente.
 
 - Donde configurar acceso real a Gmail/Drive:
   - En Google Apps Script (proyecto separado):

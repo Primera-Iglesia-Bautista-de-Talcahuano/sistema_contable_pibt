@@ -2,17 +2,23 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useForm, useWatch } from "react-hook-form";
+import { useForm, useWatch, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createMovimientoSchema } from "@/lib/validators/movimiento";
 import type { CreateMovimientoInput } from "@/lib/validators/movimiento";
-import { CATEGORIAS_EGRESO, CATEGORIAS_INGRESO } from "@/types/movimientos";
+import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "@/types/movimientos";
 import { z } from "zod";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { DatePicker } from "@/components/ui/date-picker";
+import { format } from "date-fns";
 
 type Props = {
   mode: "create" | "edit";
   movimientoId?: string;
   initialValues?: Partial<CreateMovimientoInput>;
+  onSuccess?: () => void;
 };
 
 function toDateValue(value?: string) {
@@ -20,31 +26,31 @@ function toDateValue(value?: string) {
   return value.slice(0, 10);
 }
 
-export function MovimientoForm({ mode, movimientoId, initialValues }: Props) {
+export function MovimientoForm({ mode, movimientoId, initialValues, onSuccess }: Props) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
 
   const form = useForm<MovimientoFormInput, unknown, CreateMovimientoInput>({
     resolver: zodResolver(createMovimientoSchema),
     defaultValues: {
-      fechaMovimiento: toDateValue(initialValues?.fechaMovimiento),
-      tipoMovimiento: initialValues?.tipoMovimiento ?? "INGRESO",
-      monto: initialValues?.monto ?? 0,
-      categoria: initialValues?.categoria ?? "",
-      concepto: initialValues?.concepto ?? "",
-      referente: initialValues?.referente ?? "",
-      recibidoPor: initialValues?.recibidoPor ?? "",
-      entregadoPor: initialValues?.entregadoPor ?? "",
-      beneficiario: initialValues?.beneficiario ?? "",
-      medioPago: initialValues?.medioPago ?? "",
-      numeroRespaldo: initialValues?.numeroRespaldo ?? "",
-      observaciones: initialValues?.observaciones ?? "",
+      movement_date: toDateValue(initialValues?.movement_date),
+      movement_type: initialValues?.movement_type ?? "INCOME",
+      amount: initialValues?.amount ?? 0,
+      category: initialValues?.category ?? "",
+      concept: initialValues?.concept ?? "",
+      reference_person: initialValues?.reference_person ?? "",
+      received_by: initialValues?.received_by ?? "",
+      delivered_by: initialValues?.delivered_by ?? "",
+      beneficiary: initialValues?.beneficiary ?? "",
+      payment_method: initialValues?.payment_method ?? "",
+      support_number: initialValues?.support_number ?? "",
+      notes: initialValues?.notes ?? "",
     },
   });
 
-  const tipo = useWatch({ control: form.control, name: "tipoMovimiento" });
+  const tipo = useWatch({ control: form.control, name: "movement_type" });
   const categorias = useMemo(
-    () => (tipo === "INGRESO" ? CATEGORIAS_INGRESO : CATEGORIAS_EGRESO),
+    () => (tipo === "INCOME" ? INCOME_CATEGORIES : EXPENSE_CATEGORIES),
     [tipo],
   );
 
@@ -65,96 +71,215 @@ export function MovimientoForm({ mode, movimientoId, initialValues }: Props) {
     }
 
     const payload = (await res.json()) as { id?: string };
-    if (mode === "create") {
-      router.push(`/movimientos/${payload.id}`);
+    if (onSuccess) {
+      onSuccess();
     } else {
-      router.push(`/movimientos/${movimientoId}`);
+      if (mode === "create") {
+        router.push(`/movimientos/${payload.id}`);
+      } else {
+        router.push(`/movimientos/${movimientoId}`);
+      }
     }
     router.refresh();
   }
 
   return (
-    <form className="space-y-4 rounded-2xl border border-slate-200 bg-surface p-4" onSubmit={form.handleSubmit(onSubmit)}>
-      <div className="grid gap-4 md:grid-cols-4">
-        <Field label="Fecha">
-          <input className="input" type="date" {...form.register("fechaMovimiento")} />
-        </Field>
-        <Field label="Tipo">
-          <select className="input" {...form.register("tipoMovimiento")}>
-            <option value="INGRESO">Ingreso</option>
-            <option value="EGRESO">Egreso</option>
-          </select>
-        </Field>
-        <Field label="Monto">
-          <input className="input" type="number" min="1" {...form.register("monto", { valueAsNumber: true })} />
-        </Field>
-        <Field label="Categoria">
-          <select className="input" {...form.register("categoria")}>
-            <option value="">Selecciona</option>
-            {categorias.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
-        </Field>
+    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 sm:space-y-10">
+      {/* SECCIÓN 1: DATOS PRINCIPALES */}
+      <div className="space-y-6">
+        <div className="flex items-center gap-4 px-1">
+          <div className="h-px flex-1 bg-on-surface-variant/10" />
+          <h3 className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-on-surface-variant opacity-50">
+            Datos Principales
+          </h3>
+          <div className="h-px flex-1 bg-on-surface-variant/10" />
+        </div>
+
+        <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="space-y-2">
+            <Label className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/80 ml-1">Fecha de Registro</Label>
+            <Controller
+              name="movement_date"
+              control={form.control}
+              render={({ field }) => (
+                <DatePicker
+                  value={field.value ? new Date(`${field.value}T12:00:00Z`) : undefined}
+                  onChange={(date) => field.onChange(date ? format(date, "yyyy-MM-dd") : "")}
+                />
+              )}
+            />
+            {form.formState.errors.movement_date && (
+              <p className="text-xs font-medium text-error mt-1 ml-1">{form.formState.errors.movement_date.message}</p>
+            )}
+          </div>
+          <div className="space-y-2">
+            <Label className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/80 ml-1">Tipo de Operación</Label>
+            <select
+              className="flex h-12 sm:h-14 w-full items-center justify-between rounded-2xl border-none bg-surface-container-low px-5 py-2 text-base font-medium text-on-surface outline-none focus:ring-2 focus:ring-primary-fixed appearance-none transition-all"
+              {...form.register("movement_type")}
+            >
+              <option value="INCOME">Ingreso (Entrada)</option>
+              <option value="EXPENSE">Egreso (Gasto)</option>
+            </select>
+          </div>
+          <div className="space-y-2">
+            <Label className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/80 ml-1">Monto (CLP)</Label>
+            <Input
+              type="number"
+              min="1"
+              className="h-12 sm:h-14 text-lg font-bold"
+              placeholder="0"
+              {...form.register("amount", { valueAsNumber: true })}
+            />
+            {form.formState.errors.amount && (
+              <p className="text-xs font-medium text-error mt-1 ml-1">{form.formState.errors.amount.message}</p>
+            )}
+          </div>
+          <div className="space-y-2">
+            <Label className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/80 ml-1">Categoría</Label>
+            <select
+              className="flex h-12 sm:h-14 w-full items-center justify-between rounded-2xl border-none bg-surface-container-low px-5 py-2 text-base font-medium text-on-surface outline-none focus:ring-2 focus:ring-primary-fixed appearance-none transition-all"
+              {...form.register("category")}
+            >
+              <option value="">Seleccione Categoría</option>
+              {categorias.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+            {form.formState.errors.category && (
+              <p className="text-xs font-medium text-error mt-1 ml-1">{form.formState.errors.category.message}</p>
+            )}
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/80 ml-1">Concepto / Glosa</Label>
+          <Input
+            className="h-12 sm:h-14 font-medium"
+            placeholder="Descripción breve del movimiento..."
+            {...form.register("concept")}
+          />
+          {form.formState.errors.concept && (
+            <p className="text-[10px] font-medium text-error mt-1 ml-1">{form.formState.errors.concept.message}</p>
+          )}
+        </div>
       </div>
 
-      <Field label="Concepto">
-        <input className="input" {...form.register("concepto")} />
-      </Field>
+      {/* SECCIÓN 2: PARTICIPANTES */}
+      <div className="space-y-6">
+        <div className="flex items-center gap-4 px-1">
+          <div className="h-px flex-1 bg-on-surface-variant/10" />
+          <h3 className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-on-surface-variant opacity-50">
+            Personas Involucradas
+          </h3>
+          <div className="h-px flex-1 bg-on-surface-variant/10" />
+        </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <Field label="Referente">
-          <input className="input" {...form.register("referente")} />
-        </Field>
-        <Field label="Recibido por">
-          <input className="input" {...form.register("recibidoPor")} />
-        </Field>
-        <Field label="Entregado por">
-          <input className="input" {...form.register("entregadoPor")} />
-        </Field>
+        <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="space-y-2">
+            <Label className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/80 ml-1">Referente / Entidad</Label>
+            <Input
+              className="h-12 sm:h-14 bg-surface-container-low/50"
+              placeholder="Opcional"
+              {...form.register("reference_person")}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/80 ml-1">Recibido por</Label>
+            <Input
+              className="h-12 sm:h-14 bg-surface-container-low/50"
+              placeholder="Opcional"
+              {...form.register("received_by")}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/80 ml-1">Entregado por</Label>
+            <Input
+              className="h-12 sm:h-14 bg-surface-container-low/50"
+              placeholder="Opcional"
+              {...form.register("delivered_by")}
+            />
+          </div>
+        </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <Field label="Beneficiario">
-          <input className="input" {...form.register("beneficiario")} />
-        </Field>
-        <Field label="Medio de pago">
-          <input className="input" {...form.register("medioPago")} />
-        </Field>
-        <Field label="Numero de respaldo">
-          <input className="input" {...form.register("numeroRespaldo")} />
-        </Field>
+      {/* SECCIÓN 3: RESPALDO Y OBSERVACIONES */}
+      <div className="space-y-6">
+        <div className="flex items-center gap-4 px-1">
+          <div className="h-px flex-1 bg-on-surface-variant/10" />
+          <h3 className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-on-surface-variant opacity-50">
+            Respaldo & Detalles
+          </h3>
+          <div className="h-px flex-1 bg-on-surface-variant/10" />
+        </div>
+
+        <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="space-y-2">
+            <Label className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/80 ml-1">Beneficiario</Label>
+            <Input
+              className="h-12 sm:h-14 bg-surface-container-low/50"
+              placeholder="Opcional"
+              {...form.register("beneficiary")}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/80 ml-1">Medio de Pago</Label>
+            <Input
+              className="h-12 sm:h-14 bg-surface-container-low/50"
+              placeholder="Efectivo, Transferencia, etc."
+              {...form.register("payment_method")}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/80 ml-1">N° Documento Respaldo</Label>
+            <Input
+              className="h-12 sm:h-14 bg-surface-container-low/50"
+              placeholder="Boleta, Factura, etc."
+              {...form.register("support_number")}
+            />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/80 ml-1">Observaciones Adicionales</Label>
+          <textarea
+            className="flex min-h-[100px] sm:min-h-[120px] w-full rounded-2xl border-none bg-surface-container-low/50 px-5 py-4 text-base font-medium text-on-surface placeholder:text-on-surface-variant/30 focus:outline-none focus:ring-2 focus:ring-primary-fixed transition-all"
+            placeholder="Algún detalle adicional relevante..."
+            {...form.register("notes")}
+          />
+        </div>
       </div>
 
-      <Field label="Observaciones">
-        <textarea className="input min-h-24" {...form.register("observaciones")} />
-      </Field>
+        {error && <p className="rounded-lg bg-error-container text-on-error-container px-4 py-3 text-sm font-semibold">{error}</p>}
 
-      {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
-
-      <button
-        type="submit"
-        disabled={form.formState.isSubmitting}
-        className="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white"
-      >
-        {form.formState.isSubmitting
-          ? "Guardando..."
-          : mode === "create"
-            ? "Guardar movimiento"
-            : "Guardar cambios"}
-      </button>
+        <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-on-surface-variant/5">
+          <Button
+            type="submit"
+            disabled={form.formState.isSubmitting}
+            variant="primary"
+            className="h-10 sm:h-11 px-6 sm:px-8 text-sm sm:text-base shadow-lg shadow-primary/20 rounded-xl flex-1 sm:flex-none"
+          >
+            {form.formState.isSubmitting
+              ? "Procesando Registro..."
+              : mode === "create"
+                ? "Confirmar y Guardar Movimiento"
+                : "Actualizar Información"}
+          </Button>
+          {onSuccess && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onSuccess?.()}
+              className="h-10 sm:h-11 border-none bg-surface-container-low hover:bg-surface-container-high transition-colors rounded-xl flex-1 sm:flex-none"
+            >
+              Cerrar Formulario
+            </Button>
+          )}
+        </div>
     </form>
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <label className="block text-sm">
-      <span className="mb-1 block text-slate-700">{label}</span>
-      {children}
-    </label>
-  );
-}
 type MovimientoFormInput = z.input<typeof createMovimientoSchema>;

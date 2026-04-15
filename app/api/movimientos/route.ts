@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createMovimientoSchema } from "@/lib/validators/movimiento";
 import { movimientosService } from "@/services/movimientos/movimientos.service";
-import { getCurrentUser } from "@/lib/auth/session";
+import { getCurrentUser } from "@/lib/supabase/server";
 import { canCreateOrEditMovements, canViewMovements } from "@/lib/permissions/rbac";
 import { processMovimientoIntegrations } from "@/services/google/movement-postprocess";
 
@@ -13,13 +13,13 @@ export async function GET(request: Request) {
 
   const { searchParams } = new URL(request.url);
   const search = searchParams.get("search") ?? undefined;
-  const tipo = searchParams.get("tipo") as "INGRESO" | "EGRESO" | "ALL" | null;
-  const estado = searchParams.get("estado") as "ACTIVO" | "ANULADO" | "ALL" | null;
+  const movement_type = searchParams.get("movement_type") as "INCOME" | "EXPENSE" | "ALL" | null;
+  const status = searchParams.get("status") as "ACTIVE" | "CANCELLED" | "ALL" | null;
 
   const rows = await movimientosService.list({
     search,
-    tipo: tipo ?? "ALL",
-    estado: estado ?? "ALL",
+    movement_type: movement_type ?? "ALL",
+    status: status ?? "ALL",
   });
 
   return NextResponse.json(rows);

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/auth/session";
+import { getCurrentUser } from "@/lib/supabase/server";
 import { canCreateOrEditMovements } from "@/lib/permissions/rbac";
 import { processMovimientoIntegrations } from "@/services/google/movement-postprocess";
 

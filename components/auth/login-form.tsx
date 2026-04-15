@@ -1,11 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { signIn } from "next-auth/react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Loader2 } from "lucide-react";
 
 const loginSchema = z.object({
   email: z.email("Ingresa un email valido"),
@@ -16,8 +19,6 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export function LoginForm() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") ?? "/dashboard";
   const [error, setError] = useState<string | null>(null);
 
   const {
@@ -26,70 +27,76 @@ export function LoginForm() {
     formState: { errors, isSubmitting },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
+    defaultValues: { email: "", password: "" },
   });
 
   const onSubmit = async (values: LoginFormValues) => {
     setError(null);
-    const result = await signIn("credentials", {
-      email: values.email,
+    const supabase = createSupabaseBrowserClient();
+    const { error: authError } = await supabase.auth.signInWithPassword({
+      email: values.email.toLowerCase().trim(),
       password: values.password,
-      redirect: false,
-      callbackUrl,
     });
 
-    if (!result || result.error) {
+    if (authError) {
       setError("Credenciales invalidas o usuario inactivo.");
       return;
     }
 
-    router.push(callbackUrl);
+    router.push("/dashboard");
     router.refresh();
   };
 
   return (
-    <form className="mt-5 space-y-4" onSubmit={handleSubmit(onSubmit)}>
-      <div>
-        <label className="mb-1 block text-sm font-medium text-slate-700" htmlFor="email">
-          Email
-        </label>
-        <input
-          id="email"
-          type="email"
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none ring-brand/25 focus:ring-2"
-          placeholder="admin@iglesia.local"
-          {...register("email")}
-        />
-        {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>}
-      </div>
-      <div>
-        <label className="mb-1 block text-sm font-medium text-slate-700" htmlFor="password">
-          Contrasena
-        </label>
-        <input
-          id="password"
-          type="password"
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none ring-brand/25 focus:ring-2"
-          placeholder="********"
-          {...register("password")}
-        />
-        {errors.password && (
-          <p className="mt-1 text-xs text-red-600">{errors.password.message}</p>
-        )}
+    <form className="mt-8 space-y-8" onSubmit={handleSubmit(onSubmit)}>
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <label className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/80 ml-1" htmlFor="email">
+            Correo Electrónico
+          </label>
+          <Input
+            id="email"
+            type="email"
+            placeholder="admin@iglesia.local"
+            className="h-14 bg-surface-container-low border-none rounded-2xl px-5 text-base font-medium"
+            {...register("email")}
+          />
+          {errors.email && <p className="mt-1.5 text-[10px] font-bold text-error ml-1 uppercase">{errors.email.message}</p>}
+        </div>
+        <div className="space-y-2">
+          <label className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/80 ml-1" htmlFor="password">
+            Contraseña Segura
+          </label>
+          <Input
+            id="password"
+            type="password"
+            placeholder="••••••••"
+            className="h-14 bg-surface-container-low border-none rounded-2xl px-5 text-base font-medium"
+            {...register("password")}
+          />
+          {errors.password && (
+            <p className="mt-1.5 text-[10px] font-bold text-error ml-1 uppercase">{errors.password.message}</p>
+          )}
+        </div>
       </div>
 
-      {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
+      {error && <p className="rounded-2xl bg-error-container/50 border border-error/10 px-4 py-3 text-sm font-bold text-on-error-container text-center">{error}</p>}
 
-      <button
+      <Button
         type="submit"
+        variant="primary"
         disabled={isSubmitting}
-        className="w-full rounded-lg bg-brand px-4 py-2 font-medium text-white transition hover:opacity-90 disabled:opacity-70"
+        className="h-12 w-full text-base sm:text-lg shadow-xl shadow-primary/20 rounded-xl"
       >
-        {isSubmitting ? "Ingresando..." : "Ingresar"}
-      </button>
+        {isSubmitting ? (
+          <>
+            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+            Verificando Acceso...
+          </>
+        ) : (
+          "Acceder al Sistema"
+        )}
+      </Button>
     </form>
   );
 }

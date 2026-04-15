@@ -7,7 +7,7 @@ No continuar a la siguiente etapa sin confirmacion explicita del usuario.
 
 ## Prompt principal del proyecto
 
-Desarrollar un MVP local, serio, mantenible y escalable de un sistema web de contabilidad para iglesia con:
+Desarrollar un sistema local, serio, mantenible y escalable de contabilidad para iglesia con:
 
 1. Login de usuarios
 2. Gestion basica de usuarios
@@ -32,7 +32,7 @@ Stack obligatorio:
 - TypeScript estricto
 - Tailwind CSS
 - Prisma ORM
-- SQLite (MVP local)
+- SQLite (local)
 - React Hook Form + Zod
 - Recharts
 - Servicios desacoplados para Google Apps Script
@@ -153,7 +153,7 @@ Stack obligatorio:
 
 ## Pendientes por etapa
 
-No hay etapas pendientes del plan MVP (0 a 8 completadas).  
+No hay etapas pendientes (etapas 0 a 8 completadas).  
 Siguientes lineas sugeridas: despliegue productivo, observabilidad, backups y pruebas automatizadas E2E.
 
 ## Regla operativa de avance

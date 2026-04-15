@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/auth/session";
+import { getCurrentUser } from "@/lib/supabase/server";
 import { canManageUsers } from "@/lib/permissions/rbac";
 import { usuariosService } from "@/services/usuarios/usuarios.service";
 import { createUsuarioSchema } from "@/lib/validators/usuario";
-import { auditoriaService } from "@/services/auditoria/auditoria.service";
 
 export async function GET() {
   const user = await getCurrentUser();
@@ -31,15 +30,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const created = await usuariosService.create(parsed.data);
-    await auditoriaService.registrarSistema({
-      entidad: "USUARIO",
-      accion: "CREAR",
-      entidadId: created.id,
-      usuarioId: user.id,
-      valorNuevo: created,
-      observacion: "Usuario creado desde panel admin",
-    });
+    const created = await usuariosService.create(parsed.data, user.id);
     return NextResponse.json(created, { status: 201 });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Error inesperado";
