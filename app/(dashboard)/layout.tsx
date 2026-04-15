@@ -17,7 +17,7 @@ import {
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentUser()
   if (!user) {
-    redirect("/login")
+    redirect("/")
   }
 
   const links = [

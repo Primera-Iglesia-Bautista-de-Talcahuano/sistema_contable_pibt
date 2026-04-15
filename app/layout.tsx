@@ -8,16 +8,16 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 const manrope = Manrope({
   subsets: ["latin"],
   variable: "--font-manrope",
-  display: "swap",
+  display: "swap"
 })
 
 export const metadata: Metadata = {
   title: "Sistema Contable Iglesia",
-  description: "Sistema de contabilidad para iglesia",
+  description: "Sistema de contabilidad para iglesia"
 }
 
 export default function RootLayout({
-  children,
+  children
 }: Readonly<{
   children: React.ReactNode
 }>) {
