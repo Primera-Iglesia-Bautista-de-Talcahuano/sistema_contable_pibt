@@ -43,7 +43,7 @@ Always use `pnpm`, never `npm`.
   - `admin.ts` — service role client (bypasses RLS; used only for user management)
 - `lib/permissions/rbac.ts` — role checks (`ADMIN`, `OPERATOR`, `VIEWER`)
 - `lib/validators/` — Zod schemas shared between API routes and forms
-- `middleware.ts` — route protection; unauthenticated requests redirect to `/login`
+- `proxy.ts` — route protection (Next.js 16 convention); unauthenticated requests redirect to `/`
 - `types/` — Shared TypeScript types; `types/database.types.ts` is auto-generated (do not edit manually)
 
 **Data flow for mutations:**
