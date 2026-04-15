@@ -1,147 +1,182 @@
-import Link from "next/link";
-import { cn } from "@/lib/utils";
-import { dashboardService } from "@/services/dashboard/dashboard.service";
-import { getCurrentUser } from "@/lib/supabase/server";
-import { canCreateOrEditMovements } from "@/lib/permissions/rbac";
-import { IngresosEgresosChart, CategoriaChart } from "@/components/dashboard/dashboard-charts";
-import { MovimientosTable } from "@/components/movimientos/movimientos-table";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { DatePicker } from "@/components/ui/date-picker";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "next/link"
+import { dashboardService } from "@/services/dashboard/dashboard.service"
+import { getCurrentUser } from "@/lib/supabase/server"
+import { canCreateOrEditMovements } from "@/lib/permissions/rbac"
+import { IngresosEgresosChart, CategoriaChart } from "@/components/dashboard/dashboard-charts"
+import { MovimientosTable } from "@/components/movimientos/movimientos-table"
+import { Label } from "@/components/ui/label"
+import { DatePicker } from "@/components/ui/date-picker"
+import { Button } from "@/components/ui/button"
+import { TrendingUp, TrendingDown } from "lucide-react"
 
-const clp = new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 });
+const clp = new Intl.NumberFormat("es-CL", {
+  style: "currency",
+  currency: "CLP",
+  maximumFractionDigits: 0,
+})
 
 type DashboardSearchParams = {
-  from?: string;
-  to?: string;
-};
+  from?: string
+  to?: string
+}
 
-export default async function DashboardPage({ searchParams }: { searchParams?: DashboardSearchParams }) {
-  const from = (await searchParams)?.from;
-  const to = (await searchParams)?.to;
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams?: DashboardSearchParams
+}) {
+  const from = (await searchParams)?.from
+  const to = (await searchParams)?.to
   const [data, user] = await Promise.all([
     dashboardService.getResumen({ from, to }),
     getCurrentUser(),
-  ]);
-  const canWrite = canCreateOrEditMovements(user?.role);
+  ])
+  const canWrite = canCreateOrEditMovements(user?.role)
 
   return (
-    <section className="mx-auto max-w-6xl space-y-8">
-      <Card className="bg-surface-container-lowest p-6 sm:p-10 shadow-[0px_20px_40px_-12px_rgba(25,28,30,0.08)]">
-        <div className="flex flex-wrap items-center justify-between gap-3 mb-8">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-on-surface">Dashboard</h1>
-            <p className="mt-1 text-sm text-on-surface-variant font-medium">Resumen financiero de actividades.</p>
-          </div>
-          <div className="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-xs font-semibold">
-            Status: Activo
-          </div>
+    <div className="flex flex-col gap-6 max-w-6xl mx-auto">
+      {/* ── Page header ───────────────────────────────────────────── */}
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className="flex flex-col gap-0.5">
+          <h1 className="font-heading text-3xl font-bold tracking-tight text-foreground">Dashboard</h1>
+          <p className="text-sm text-muted-foreground">Resumen financiero de actividades</p>
         </div>
 
-        <form className="mt-8 flex flex-wrap items-end gap-3 w-full" method="get">
-          <div className="min-w-[160px] flex-1">
-            <Label className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/80 ml-1" htmlFor="from">
-              Periodo Inicial
+        {/* Date filter */}
+        <form className="flex flex-wrap items-end gap-3" method="get">
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="from" className="text-[11px] uppercase tracking-[0.05em] text-muted-foreground">
+              Desde
             </Label>
             <DatePicker name="from" defaultValue={from} />
           </div>
-
-          <div className="min-w-[160px] flex-1">
-            <Label className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/80 ml-1" htmlFor="to">
-              Periodo Final
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="to" className="text-[11px] uppercase tracking-[0.05em] text-muted-foreground">
+              Hasta
             </Label>
             <DatePicker name="to" defaultValue={to} />
           </div>
-
-          <div className="flex gap-2 w-full sm:w-auto">
-            <Button type="submit" variant="primary" className="flex-1 sm:flex-none h-11 whitespace-nowrap px-6 shadow-lg shadow-primary/10 rounded-xl">
-              Filtrar Datos
+          <div className="flex gap-2">
+            <Button type="submit" variant="outline" className="h-9 px-4 text-sm">
+              Filtrar
             </Button>
-            <Link href="/dashboard" className="flex-1 sm:flex-none inline-flex h-11 px-6 items-center justify-center rounded-xl bg-surface-container-low border-none text-on-surface hover:bg-surface-container-high text-sm font-bold transition-all duration-200 whitespace-nowrap">
-              Limpiar Filtros
-            </Link>
+            <Button render={<Link href="/dashboard" />} variant="ghost" className="h-9 px-4 text-sm">
+              Limpiar
+            </Button>
           </div>
         </form>
-      </Card>
-
-      <div className="mt-4 grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-        <KpiCard label="Total Ingresos" value={clp.format(data.kpis.totalIngresos)} variant="primary" />
-        <KpiCard label="Total Egresos" value={clp.format(data.kpis.totalEgresos)} variant="tertiary" />
-        <KpiCard label="Saldo Actual" value={clp.format(data.kpis.saldoActual)} variant="secondary" />
-        <KpiCard label="Movimientos" value={String(data.kpis.cantidadMovimientos)} variant="neutral" />
       </div>
 
-      <div className="mt-4 grid gap-6 lg:grid-cols-2">
-        <Card className="p-0 min-w-0">
-          <CardHeader>
-            <CardTitle className="text-xl">Ingresos vs Egresos</CardTitle>
-          </CardHeader>
-          <CardContent className="min-h-0">
-            <IngresosEgresosChart data={data.serieIngresosEgresos} />
-          </CardContent>
-        </Card>
-        <Card className="p-0 min-w-0">
-          <CardHeader>
-            <CardTitle className="text-xl">Resumen por Categoria</CardTitle>
-          </CardHeader>
-          <CardContent className="min-h-0">
-            <CategoriaChart data={data.resumenPorCategoria} />
-          </CardContent>
-        </Card>
+      {/* ── Hero saldo + KPIs ─────────────────────────────────────── */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {/* Hero — saldo actual */}
+        <div className="rounded-xl bg-primary p-6 flex flex-col gap-3 text-primary-foreground">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-primary-foreground/70">
+            Saldo actual
+          </p>
+          <p className="font-heading text-3xl font-bold tracking-tight tabular-nums">
+            {clp.format(data.kpis.saldoActual)}
+          </p>
+          <div className="flex flex-wrap gap-3 mt-1">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-semibold">
+              <TrendingUp className="size-3" />
+              {clp.format(data.kpis.totalIngresos)}
+            </span>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-semibold">
+              <TrendingDown className="size-3" />
+              {clp.format(data.kpis.totalEgresos)}
+            </span>
+          </div>
+        </div>
+
+        {/* Income */}
+        <div className="rounded-xl bg-card border border-border p-6 flex flex-col gap-3">
+          <div className="flex items-center justify-between">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+              Ingresos
+            </p>
+            <TrendingUp className="size-4 text-primary" />
+          </div>
+          <p className="font-heading text-2xl font-bold tracking-tight text-primary tabular-nums">
+            {clp.format(data.kpis.totalIngresos)}
+          </p>
+          <p className="text-xs text-muted-foreground">
+            {data.kpis.cantidadMovimientos} movimientos en el período
+          </p>
+        </div>
+
+        {/* Expenses */}
+        <div className="rounded-xl bg-card border border-border p-6 flex flex-col gap-3">
+          <div className="flex items-center justify-between">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+              Egresos
+            </p>
+            <TrendingDown className="size-4 text-destructive" />
+          </div>
+          <p className="font-heading text-2xl font-bold tracking-tight text-destructive tabular-nums">
+            {clp.format(data.kpis.totalEgresos)}
+          </p>
+          <p className="text-xs text-muted-foreground">En el período seleccionado</p>
+        </div>
       </div>
 
-      <div className="space-y-4">
-        <div className="flex items-center justify-between px-1">
-          <h2 className="text-lg font-bold tracking-tight text-on-surface">Últimos Movimientos</h2>
+      {/* ── Charts ────────────────────────────────────────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="rounded-xl bg-card border border-border p-6 flex flex-col gap-4">
+          <div className="flex flex-col gap-0.5">
+            <h2 className="text-base font-semibold text-foreground">Ingresos vs Egresos</h2>
+            <p className="text-xs text-muted-foreground">Tendencia por período</p>
+          </div>
+          <IngresosEgresosChart data={data.serieIngresosEgresos} />
+        </div>
+        <div className="rounded-xl bg-card border border-border p-6 flex flex-col gap-4">
+          <div className="flex flex-col gap-0.5">
+            <h2 className="text-base font-semibold text-foreground">Por categoría</h2>
+            <p className="text-xs text-muted-foreground">Distribución del período</p>
+          </div>
+          <CategoriaChart data={data.resumenPorCategoria} />
+        </div>
+      </div>
+
+      {/* ── Recent movements ──────────────────────────────────────── */}
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-base font-semibold text-foreground">Últimos movimientos</h2>
           <Link
             href="/movimientos"
-            className="text-sm font-semibold text-primary hover:text-primary/70 transition-colors"
+            className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
           >
             Ver todos →
           </Link>
         </div>
-        <MovimientosTable
-          canWrite={canWrite}
-          rows={data.ultimosMovimientos.map((row) => ({
-            id: row.id,
-            folio_display: row.folio_display ?? String(row.folio),
-            movement_date: row.movement_date,
-            movement_type: row.movement_type,
-            amount: String(row.amount),
-            category: row.category,
-            concept: row.concept,
-            reference_person: null,
-            received_by: null,
-            delivered_by: null,
-            beneficiary: null,
-            payment_method: null,
-            support_number: null,
-            notes: null,
-            cancellation_reason: null,
-            status: row.status,
-            created_by: { full_name: (row.created_by as { full_name: string } | null)?.full_name ?? "" },
-          }))}
-        />
+        <div className="rounded-xl bg-card border border-border overflow-hidden">
+          <MovimientosTable
+            canWrite={canWrite}
+            rows={data.ultimosMovimientos.map((row) => ({
+              id: row.id,
+              folio_display: row.folio_display ?? String(row.folio),
+              movement_date: row.movement_date,
+              movement_type: row.movement_type,
+              amount: String(row.amount),
+              category: row.category,
+              concept: row.concept,
+              reference_person: null,
+              received_by: null,
+              delivered_by: null,
+              beneficiary: null,
+              payment_method: null,
+              support_number: null,
+              notes: null,
+              cancellation_reason: null,
+              status: row.status,
+              created_by: {
+                full_name:
+                  (row.created_by as { full_name: string } | null)?.full_name ?? "",
+              },
+            }))}
+          />
+        </div>
       </div>
-    </section>
-  );
-}
-
-function KpiCard({ label, value, variant }: { label: string; value: string; variant?: "primary" | "secondary" | "tertiary" | "neutral" }) {
-  const colors = {
-    primary: "text-primary bg-primary/5",
-    secondary: "text-secondary bg-secondary/5",
-    tertiary: "text-tertiary bg-tertiary/5",
-    neutral: "text-on-surface-variant bg-surface-container-high/50",
-  }[variant || "neutral"];
-
-  return (
-    <Card className={cn("flex flex-col gap-3 p-5 sm:p-8 transition-all hover:translate-y-[-4px] hover:shadow-[0px_30px_60px_-15px_rgba(25,28,30,0.12)] border-none min-w-0")}>
-      <div className={cn("max-w-full overflow-hidden px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest truncate", colors)}>
-        {label}
-      </div>
-      <p className="text-2xl sm:text-3xl font-black tracking-tight text-on-surface tabular-nums">{value}</p>
-    </Card>
-  );
+    </div>
+  )
 }
