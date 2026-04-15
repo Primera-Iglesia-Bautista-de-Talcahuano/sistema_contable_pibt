@@ -23,7 +23,7 @@ type DashboardSearchParams = {
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams?: DashboardSearchParams
+  searchParams?: Promise<DashboardSearchParams>
 }) {
   const from = (await searchParams)?.from
   const to = (await searchParams)?.to
