@@ -22,8 +22,15 @@ export default async function LoginPage() {
 
         <div className="relative z-10 max-w-sm text-center flex flex-col gap-5">
           {/* Cross icon */}
-          <div className="mx-auto flex size-14 items-center justify-center rounded-xl bg-white/15 text-3xl">
-            ✝
+          <div className="mx-auto flex size-14 items-center justify-center rounded-xl bg-white/15">
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              className="size-7"
+              fill="currentColor"
+            >
+              <path d="M11 2h2v7h7v2h-7v11h-2V11H4V9h7V2z" />
+            </svg>
           </div>
 
           {/* Church name */}
