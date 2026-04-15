@@ -31,16 +31,10 @@ export async function middleware(request: NextRequest) {
   const isLoginPage = pathname === "/"
 
   // Unauthenticated user trying to access a protected page → send to login
+  // Authenticated users at "/" are handled by the page component (server-side redirect)
   if (!user && !isLoginPage) {
     const url = request.nextUrl.clone()
     url.pathname = "/"
-    return NextResponse.redirect(url)
-  }
-
-  // Authenticated user landing on login → send to dashboard
-  if (user && isLoginPage) {
-    const url = request.nextUrl.clone()
-    url.pathname = "/dashboard"
     return NextResponse.redirect(url)
   }
 

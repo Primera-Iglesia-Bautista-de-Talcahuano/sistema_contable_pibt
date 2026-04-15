@@ -1,6 +1,17 @@
+import { redirect } from "next/navigation"
+import { createSupabaseServerClient } from "@/lib/supabase/server"
 import { LoginForm } from "@/components/auth/login-form"
 
-export default function LoginPage() {
+export default async function LoginPage() {
+  const supabase = await createSupabaseServerClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (user) {
+    redirect("/dashboard")
+  }
+
   return (
     <main className="min-h-[100dvh] flex flex-col md:flex-row">
       {/* ── Left panel: verse (green) ─────────────────────────────── */}
@@ -44,7 +55,6 @@ export default function LoginPage() {
       {/* ── Right panel: login form (white) ──────────────────────── */}
       <div className="flex flex-1 flex-col justify-center px-8 py-12 md:px-16 bg-white">
         <div className="mx-auto w-full max-w-sm space-y-8">
-          {/* Heading */}
           <div className="space-y-1">
             <h1 className="font-heading text-2xl font-bold tracking-tight text-[#2d4a38]">
               Bienvenido
