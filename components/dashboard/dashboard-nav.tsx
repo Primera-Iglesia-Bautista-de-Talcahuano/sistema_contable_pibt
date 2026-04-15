@@ -1,38 +1,38 @@
-"use client";
+"use client"
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { cn } from "@/lib/utils"
 
 export type NavLink = {
-  href: string;
-  label: string;
-  icon: React.ReactNode;
-};
+  href: string
+  label: string
+  icon: React.ReactNode
+}
 
 export function DashboardNav({ links }: { links: NavLink[] }) {
-  const pathname = usePathname();
+  const pathname = usePathname()
 
   return (
-    <nav className="space-y-2">
+    <div className="flex flex-col gap-1">
       {links.map((link) => {
-        const isActive = pathname === link.href || pathname.startsWith(`${link.href}/`);
+        const isActive = pathname === link.href || pathname.startsWith(`${link.href}/`)
         return (
           <Link
             key={link.href}
             href={link.href}
             className={cn(
-              "flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 hover:shadow-sm",
+              "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
               isActive
-                ? "bg-primary text-primary-foreground shadow-sm"
-                : "text-on-surface-variant hover:bg-surface-container-lowest hover:text-primary"
+                ? "bg-primary/10 text-primary"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
             )}
           >
             {link.icon}
             <span>{link.label}</span>
           </Link>
-        );
+        )
       })}
-    </nav>
-  );
+    </div>
+  )
 }
