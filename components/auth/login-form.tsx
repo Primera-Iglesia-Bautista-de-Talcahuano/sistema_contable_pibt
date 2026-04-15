@@ -13,7 +13,7 @@ import { Eye, EyeOff, Loader2 } from "lucide-react"
 
 const loginSchema = z.object({
   email: z.email("Ingresa un email válido"),
-  password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
+  password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres")
 })
 
 type LoginFormValues = z.infer<typeof loginSchema>
@@ -26,10 +26,10 @@ export function LoginForm() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting }
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: "", password: "" },
+    defaultValues: { email: "", password: "" }
   })
 
   const onSubmit = async (values: LoginFormValues) => {
@@ -37,7 +37,7 @@ export function LoginForm() {
     const supabase = createSupabaseBrowserClient()
     const { error: authError } = await supabase.auth.signInWithPassword({
       email: values.email.toLowerCase().trim(),
-      password: values.password,
+      password: values.password
     })
 
     if (authError) {
@@ -53,7 +53,10 @@ export function LoginForm() {
     <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
       {/* Email */}
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="email" className="text-[10px] uppercase tracking-[0.05em] text-muted-foreground">
+        <Label
+          htmlFor="email"
+          className="text-[11px] uppercase tracking-[0.05em] text-muted-foreground"
+        >
           Correo electrónico
         </Label>
         <Input
@@ -63,21 +66,22 @@ export function LoginForm() {
           aria-invalid={!!errors.email}
           {...register("email")}
         />
-        {errors.email && (
-          <p className="text-[11px] text-destructive">{errors.email.message}</p>
-        )}
+        {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
       </div>
 
       {/* Password */}
       <div className="flex flex-col gap-1.5">
         <div className="flex items-center justify-between">
-          <Label htmlFor="password" className="text-[10px] uppercase tracking-[0.05em] text-muted-foreground">
+          <Label
+            htmlFor="password"
+            className="text-[11px] uppercase tracking-[0.05em] text-muted-foreground"
+          >
             Contraseña
           </Label>
           <button
             type="button"
             aria-disabled
-            className="text-[11px] text-primary opacity-60 cursor-not-allowed"
+            className="text-xs text-primary opacity-60 cursor-not-allowed"
             tabIndex={-1}
           >
             ¿Olvidaste tu contraseña?
@@ -102,7 +106,7 @@ export function LoginForm() {
           </button>
         </div>
         {errors.password && (
-          <p className="text-[11px] text-destructive">{errors.password.message}</p>
+          <p className="text-xs text-destructive">{errors.password.message}</p>
         )}
       </div>
 
@@ -114,11 +118,7 @@ export function LoginForm() {
       )}
 
       {/* Submit */}
-      <Button
-        type="submit"
-        disabled={isSubmitting}
-        className="w-full transition-colors"
-      >
+      <Button type="submit" disabled={isSubmitting} className="w-full transition-colors">
         {isSubmitting ? (
           <>
             <Loader2 className="size-4 animate-spin" data-icon="inline-start" />
