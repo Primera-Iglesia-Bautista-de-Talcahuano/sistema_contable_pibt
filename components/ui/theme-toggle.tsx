@@ -32,7 +32,13 @@ export function ThemeToggle() {
   }
 
   return (
-    <Button variant="ghost" size="icon-sm" onClick={toggle} aria-label="Cambiar tema" suppressHydrationWarning>
+    <Button
+      variant="ghost"
+      size="icon-sm"
+      onClick={toggle}
+      aria-label="Cambiar tema"
+      suppressHydrationWarning
+    >
       {dark ? <Sun className="size-4" /> : <Moon className="size-4" />}
     </Button>
   )

@@ -4,50 +4,51 @@
 
 
 @theme inline {
-  /* Cobalt & Coral palette */
+  /* Cobalt & Coral palette — accent/brand colors stay fixed */
   --color-primary: #1558b0;
   --color-primary-light: #5a9de0;
-  --color-primary-surface: #f0f7ff;
-  --color-primary-border: #a8ccf0;
-  --color-primary-container: #ddeeff;
+  --color-primary-surface: var(--muted);
+  --color-primary-border: var(--input);
+  --color-primary-container: var(--border);
   --color-on-primary: #ffffff;
   --color-on-primary-container: #0a2a58;
-  --color-primary-fixed: #f0f7ff;
+  --color-primary-fixed: var(--muted);
 
-  --color-background: #ffffff;
-  --color-surface: #ffffff;
-  --color-surface-bright: #ffffff;
-  --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #f0f7ff;
-  --color-surface-container: #f0f7ff;
-  --color-surface-container-high: #ddeeff;
-  --color-surface-container-highest: #c8dff8;
-  --color-surface-dim: #ddeeff;
-  --color-surface-variant: #f0f7ff;
+  /* Surfaces — reference :root/:dark cascade vars so dark mode works */
+  --color-background: var(--background);
+  --color-surface: var(--card);
+  --color-surface-bright: var(--card);
+  --color-surface-container-lowest: var(--background);
+  --color-surface-container-low: var(--muted);
+  --color-surface-container: var(--muted);
+  --color-surface-container-high: var(--border);
+  --color-surface-container-highest: var(--muted);
+  --color-surface-dim: var(--border);
+  --color-surface-variant: var(--muted);
   --color-surface-tint: #1558b0;
 
-  --color-on-background: #0a2a58;
-  --color-on-surface: #0a2a58;
-  --color-on-surface-variant: #4a7ab0;
-  --color-inverse-surface: #0a2a58;
-  --color-inverse-on-surface: #f0f7ff;
+  --color-on-background: var(--foreground);
+  --color-on-surface: var(--foreground);
+  --color-on-surface-variant: var(--muted-foreground);
+  --color-inverse-surface: var(--foreground);
+  --color-inverse-on-surface: var(--muted);
   --color-inverse-primary: #5a9de0;
 
-  --color-outline: #4a7ab0;
-  --color-outline-variant: #ddeeff;
+  --color-outline: var(--muted-foreground);
+  --color-outline-variant: var(--border);
 
   --color-error: #e85040;
   --color-error-container: #fde8e6;
   --color-on-error: #ffffff;
   --color-on-error-container: #5a0a00;
 
-  --color-secondary: #f0f7ff;
-  --color-secondary-container: #f0f7ff;
-  --color-on-secondary: #0a2a58;
-  --color-on-secondary-container: #0a2a58;
-  --color-secondary-fixed: #f0f7ff;
-  --color-secondary-fixed-dim: #ddeeff;
-  --color-on-secondary-fixed: #0a2a58;
+  --color-secondary: var(--secondary);
+  --color-secondary-container: var(--secondary);
+  --color-on-secondary: var(--secondary-foreground);
+  --color-on-secondary-container: var(--secondary-foreground);
+  --color-secondary-fixed: var(--muted);
+  --color-secondary-fixed-dim: var(--border);
+  --color-on-secondary-fixed: var(--foreground);
   --color-on-secondary-fixed-variant: #1558b0;
 
   --color-tertiary: #22a060;
@@ -194,32 +195,6 @@
 }
 
 .dark {
-  /* @theme inline token overrides — surfaces and text change in dark mode */
-  --color-background: #0d1829;
-  --color-surface: #132040;
-  --color-surface-bright: #132040;
-  --color-surface-container-lowest: #0d1829;
-  --color-surface-container-low: #132040;
-  --color-surface-container: #132040;
-  --color-surface-container-high: #1e3a68;
-  --color-surface-container-highest: #1e3a68;
-  --color-surface-dim: #0d1829;
-  --color-surface-variant: #132040;
-  --color-on-background: #c8dff8;
-  --color-on-surface: #c8dff8;
-  --color-on-surface-variant: #5a8abf;
-  --color-inverse-surface: #c8dff8;
-  --color-inverse-on-surface: #132040;
-  --color-outline: #5a8abf;
-  --color-outline-variant: #1e3a68;
-  --color-primary-container: #1e3a68;
-  --color-primary-surface: #132040;
-  --color-primary-border: #1e3a68;
-  --color-secondary: #1e3a68;
-  --color-secondary-container: #1e3a68;
-  --color-on-secondary: #c8dff8;
-  --color-on-secondary-container: #c8dff8;
-
   /* shadcn vars */
   --background: #0d1829;
   --foreground: #c8dff8;
