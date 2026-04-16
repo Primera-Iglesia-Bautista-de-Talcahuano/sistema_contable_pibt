@@ -1,57 +1,77 @@
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { redirect } from "next/navigation"
+import { createSupabaseServerClient } from "@/lib/supabase/server"
+import { LoginForm } from "@/components/auth/login-form"
 
-export default async function Home() {
+export default async function LoginPage() {
+  const supabase = await createSupabaseServerClient()
+  const {
+    data: { user }
+  } = await supabase.auth.getUser()
+
+  if (user) {
+    redirect("/dashboard")
+  }
+
   return (
-    <main className="min-h-[100dvh] bg-[radial-gradient(circle_at_top_right,_var(--color-primary-fixed),_#f7f9fb_40%)] flex items-center justify-center p-6">
-      <Card className="mx-auto max-w-4xl p-16 shadow-[0px_40px_80px_-20px_rgba(0,104,95,0.12)] border-none bg-surface-container-lowest/80 backdrop-blur-xl">
-        <div className="flex flex-col items-center text-center space-y-6">
-          <div className="space-y-2">
-             <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">Sistema Contable Iglesia</p>
-             <h1 className="text-5xl font-bold tracking-tight text-on-surface leading-tight">
-               Gracia & Precisión <br />
-               en la <span className="text-transparent bg-clip-text bg-gradient-to-br from-primary to-primary-container">Gestión Ministerial</span>
-             </h1>
+    <main className="min-h-[100dvh] flex flex-col md:flex-row">
+      {/* ── Left panel: verse (green) ─────────────────────────────── */}
+      <div className="relative flex flex-col justify-center items-center overflow-hidden px-8 py-10 md:py-0 md:w-1/2 bg-primary text-primary-foreground">
+        {/* Decorative circles */}
+        <div className="pointer-events-none absolute -top-16 -right-16 size-64 rounded-full bg-white/5" />
+        <div className="pointer-events-none absolute -bottom-20 -left-20 size-80 rounded-full bg-white/5" />
+
+        <div className="relative z-10 max-w-sm text-center flex flex-col gap-5">
+          {/* Cross icon */}
+          <div className="mx-auto flex size-14 items-center justify-center rounded-xl bg-white/15">
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              className="size-7"
+              fill="currentColor"
+            >
+              <path d="M11 2h2v7h7v2h-7v11h-2V11H4V9h7V2z" />
+            </svg>
           </div>
 
-          <p className="max-w-2xl text-lg font-medium text-on-surface-variant leading-relaxed">
-            Una plataforma diseñada para trascender la frialdad de la contabilidad tradicional, brindando claridad y transparencia a la administración de su congregación.
+          {/* Church name */}
+          <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-primary-foreground/60">
+            Primera Iglesia Bautista de Talcahuano
           </p>
 
-          <div className="pt-8 flex flex-wrap items-center justify-center gap-6">
-            <Button
-              variant="primary"
-              className="h-14 px-10 text-lg shadow-xl shadow-primary/20"
-              render={<Link href="/login" />}
-            >
-              Iniciar Sesión
-            </Button>
-            <Button
-              variant="outline"
-              className="h-14 px-10 text-lg border-none bg-surface-container-low hover:bg-surface-container-high transition-colors"
-              render={<Link href="/dashboard" />}
-            >
-              Panel de Control
-            </Button>
+          {/* Divider */}
+          <div className="mx-auto h-px w-10 bg-primary-foreground/30" />
+
+          {/* Bible verse */}
+          <blockquote className="flex flex-col gap-3">
+            <p className="text-sm italic leading-relaxed text-primary-foreground/85 md:text-base [text-wrap:balance]">
+              &ldquo;Evitamos que alguien nos censure en cuanto a esta ofrenda generosa… procurando
+              hacer lo que es honesto, no sólo delante del Señor, sino también delante de los
+              hombres.&rdquo;
+            </p>
+            <cite className="block text-[11px] font-bold uppercase tracking-widest text-primary-foreground/50 not-italic">
+              2 Corintios 8:20–21
+            </cite>
+          </blockquote>
+        </div>
+      </div>
+
+      {/* ── Right panel: login form ───────────────────────────────── */}
+      <div className="flex flex-1 flex-col justify-center px-8 py-12 md:px-16 bg-card">
+        <div className="mx-auto w-full max-w-sm flex flex-col gap-8">
+          <div className="flex flex-col gap-1">
+            <h1 className="font-heading text-3xl font-bold tracking-tight text-foreground">
+              Bienvenido
+            </h1>
+            <p className="text-sm text-muted-foreground">Ingresa tus credenciales para continuar</p>
           </div>
 
-          <div className="pt-16 grid grid-cols-3 gap-12 border-t border-outline-variant/20 w-full opacity-60">
-             <div className="space-y-1">
-                <p className="text-2xl font-bold text-on-surface">V1.0</p>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Sistema Activo</p>
-             </div>
-             <div className="space-y-1">
-                <p className="text-2xl font-bold text-on-surface">V2.0</p>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Diseño Moderno</p>
-             </div>
-             <div className="space-y-1">
-                <p className="text-2xl font-bold text-on-surface">100%</p>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Privacidad</p>
-             </div>
-          </div>
+          <LoginForm />
+
+          <p className="text-center text-xs text-muted-foreground">
+            Acceso restringido a personal autorizado
+          </p>
         </div>
-      </Card>
+      </div>
     </main>
-  );
+  )
 }

@@ -1,0 +1,245 @@
+<h2>Movimientos Page</h2>
+<p class="subtitle">The main list — search, filter, and browse all income/expense records. Mobile left, desktop right.</p>
+
+<div class="split">
+
+  <!-- Mobile -->
+  <div class="mockup">
+    <div class="mockup-header">Mobile</div>
+    <div class="mockup-body" style="padding: 0; font-family: sans-serif; font-size: 11px; background: #f8faf8; min-height: 580px; display: flex; flex-direction: column; position: relative;">
+
+      <!-- Header -->
+      <div style="background: white; border-bottom: 1px solid #e0ebe5; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 5;">
+        <button style="background: none; border: none; color: #5c8a6e; font-size: 16px;">☰</button>
+        <span style="font-weight: 700; color: #2d4a38; font-size: 12px;">Movimientos</span>
+        <div style="width: 26px; height: 26px; border-radius: 50%; background: #c8dfd0; display: flex; align-items: center; justify-content: center; color: #2d4a38; font-size: 9px; font-weight: 600;">MF</div>
+      </div>
+
+      <!-- Search + filter bar -->
+      <div style="background: white; padding: 10px 12px; border-bottom: 1px solid #e0ebe5; display: flex; gap: 8px; align-items: center;">
+        <div style="flex: 1; background: #f8faf8; border: 1px solid #e0ebe5; border-radius: 8px; padding: 7px 10px; display: flex; align-items: center; gap: 6px;">
+          <span style="color: #7a8c82; font-size: 12px;">🔍</span>
+          <span style="color: #aabfb3; font-size: 11px;">Buscar folio, concepto...</span>
+        </div>
+        <div style="background: #f8faf8; border: 1px solid #e0ebe5; border-radius: 8px; padding: 7px 10px; font-size: 11px; color: #5c8a6e; font-weight: 600; white-space: nowrap;">
+          Filtros ▾
+        </div>
+      </div>
+
+      <!-- Active filters chips -->
+      <div style="background: white; padding: 6px 12px 8px; border-bottom: 1px solid #e0ebe5; display: flex; gap: 6px; overflow-x: auto;">
+        <div style="background: #eef5f1; border: 1px solid #c8dfd0; border-radius: 20px; padding: 3px 10px; font-size: 9px; color: #5c8a6e; font-weight: 600; white-space: nowrap; display: flex; align-items: center; gap: 4px;">Ingresos ×</div>
+        <div style="background: #eef5f1; border: 1px solid #c8dfd0; border-radius: 20px; padding: 3px 10px; font-size: 9px; color: #5c8a6e; font-weight: 600; white-space: nowrap; display: flex; align-items: center; gap: 4px;">Abril 2026 ×</div>
+        <div style="border: 1px dashed #c8dfd0; border-radius: 20px; padding: 3px 10px; font-size: 9px; color: #7a8c82; white-space: nowrap;">+ Añadir filtro</div>
+      </div>
+
+      <!-- Results summary -->
+      <div style="padding: 8px 14px; font-size: 10px; color: #7a8c82;">
+        28 movimientos encontrados
+      </div>
+
+      <!-- Movement list -->
+      <div style="flex: 1; overflow: auto; padding: 0 12px 80px; display: flex; flex-direction: column; gap: 6px;">
+
+        <!-- Row -->
+        <div style="background: white; border-radius: 10px; border: 1px solid #e0ebe5; padding: 12px; display: flex; align-items: center; gap: 10px;">
+          <div style="width: 36px; height: 36px; min-width: 36px; border-radius: 9px; background: #eef5f1; display: flex; align-items: center; justify-content: center; font-size: 16px;">↑</div>
+          <div style="flex: 1; min-width: 0;">
+            <div style="font-weight: 600; color: #2d4a38; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Ofrenda dominical</div>
+            <div style="font-size: 9px; color: #7a8c82; margin-top: 1px;">000045 · 14 Abr 2026 · Ofrenda</div>
+          </div>
+          <div style="text-align: right; flex-shrink: 0;">
+            <div style="font-weight: 700; color: #5c8a6e; font-size: 13px;">+$85.000</div>
+            <div style="background: #eef5f1; color: #5c8a6e; font-size: 8px; font-weight: 600; padding: 1px 6px; border-radius: 10px; margin-top: 2px; display: inline-block;">Activo</div>
+          </div>
+        </div>
+
+        <div style="background: white; border-radius: 10px; border: 1px solid #e0ebe5; padding: 12px; display: flex; align-items: center; gap: 10px;">
+          <div style="width: 36px; height: 36px; min-width: 36px; border-radius: 9px; background: #fdf0ee; display: flex; align-items: center; justify-content: center; font-size: 16px;">↓</div>
+          <div style="flex: 1; min-width: 0;">
+            <div style="font-weight: 600; color: #2d4a38; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Arriendo sala multipropósito</div>
+            <div style="font-size: 9px; color: #7a8c82; margin-top: 1px;">000044 · 12 Abr 2026 · Arriendo</div>
+          </div>
+          <div style="text-align: right; flex-shrink: 0;">
+            <div style="font-weight: 700; color: #b56b5e; font-size: 13px;">-$120.000</div>
+            <div style="background: #eef5f1; color: #5c8a6e; font-size: 8px; font-weight: 600; padding: 1px 6px; border-radius: 10px; margin-top: 2px; display: inline-block;">Activo</div>
+          </div>
+        </div>
+
+        <div style="background: white; border-radius: 10px; border: 1px solid #e0ebe5; padding: 12px; display: flex; align-items: center; gap: 10px; opacity: 0.6;">
+          <div style="width: 36px; height: 36px; min-width: 36px; border-radius: 9px; background: #f5f5f5; display: flex; align-items: center; justify-content: center; font-size: 16px;">↑</div>
+          <div style="flex: 1; min-width: 0;">
+            <div style="font-weight: 600; color: #2d4a38; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-decoration: line-through;">Diezmos</div>
+            <div style="font-size: 9px; color: #7a8c82; margin-top: 1px;">000043 · 10 Abr 2026 · Diezmos</div>
+          </div>
+          <div style="text-align: right; flex-shrink: 0;">
+            <div style="font-weight: 700; color: #7a8c82; font-size: 13px;">$210.000</div>
+            <div style="background: #f5f5f5; color: #999; font-size: 8px; font-weight: 600; padding: 1px 6px; border-radius: 10px; margin-top: 2px; display: inline-block;">Anulado</div>
+          </div>
+        </div>
+
+        <div style="background: white; border-radius: 10px; border: 1px solid #e0ebe5; padding: 12px; display: flex; align-items: center; gap: 10px;">
+          <div style="width: 36px; height: 36px; min-width: 36px; border-radius: 9px; background: #eef5f1; display: flex; align-items: center; justify-content: center; font-size: 16px;">↑</div>
+          <div style="flex: 1; min-width: 0;">
+            <div style="font-weight: 600; color: #2d4a38; font-size: 12px;">Donación especial</div>
+            <div style="font-size: 9px; color: #7a8c82; margin-top: 1px;">000042 · 8 Abr 2026 · Donación</div>
+          </div>
+          <div style="text-align: right; flex-shrink: 0;">
+            <div style="font-weight: 700; color: #5c8a6e; font-size: 13px;">+$50.000</div>
+            <div style="background: #eef5f1; color: #5c8a6e; font-size: 8px; font-weight: 600; padding: 1px 6px; border-radius: 10px; margin-top: 2px; display: inline-block;">Activo</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- FAB -->
+      <div style="position: absolute; bottom: 20px; right: 16px; width: 46px; height: 46px; background: #5c8a6e; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; box-shadow: 0 4px 16px rgba(92,138,110,0.45); z-index: 10;">+</div>
+    </div>
+  </div>
+
+  <!-- Desktop -->
+  <div class="mockup">
+    <div class="mockup-header">Desktop</div>
+    <div class="mockup-body" style="padding: 0; font-family: sans-serif; font-size: 11px; background: #f8faf8; min-height: 580px; display: flex;">
+
+      <!-- Sidebar -->
+      <div style="width: 180px; min-width: 180px; background: white; border-right: 1px solid #e0ebe5; display: flex; flex-direction: column;">
+        <div style="padding: 16px 14px 12px; border-bottom: 1px solid #eef5f1;">
+          <div style="font-weight: 700; color: #2d4a38; font-size: 13px;">Finanzas PIBT</div>
+          <div style="font-size: 9px; color: #7a8c82;">Primera Iglesia Bautista</div>
+        </div>
+        <div style="padding: 10px 10px 6px;">
+          <button style="width: 100%; background: #5c8a6e; color: white; border: none; border-radius: 7px; padding: 9px 8px; font-size: 10px; font-weight: 600; cursor: pointer;">+ Nuevo Movimiento</button>
+        </div>
+        <nav style="flex: 1; padding: 4px 6px; display: flex; flex-direction: column; gap: 1px;">
+          <div style="font-size: 8px; color: #7a8c82; text-transform: uppercase; letter-spacing: 0.8px; padding: 6px 6px 3px; font-weight: 600;">Menú</div>
+          <a style="display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 7px; color: #7a8c82; text-decoration: none; font-size: 11px;">⊞ Dashboard</a>
+          <a style="display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 7px; background: #eef5f1; color: #2d4a38; text-decoration: none; font-weight: 600; font-size: 11px;">↕ Movimientos</a>
+          <a style="display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 7px; color: #7a8c82; text-decoration: none; font-size: 11px;">👥 Usuarios</a>
+          <a style="display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 7px; color: #7a8c82; text-decoration: none; font-size: 11px;">⚙ Configuración</a>
+        </nav>
+        <div style="padding: 10px; border-top: 1px solid #eef5f1;">
+          <div style="display: flex; align-items: center; gap: 8px; padding: 7px 8px; border-radius: 7px; background: #f8faf8;">
+            <div style="width: 26px; height: 26px; min-width: 26px; border-radius: 50%; background: #c8dfd0; display: flex; align-items: center; justify-content: center; color: #2d4a38; font-size: 9px; font-weight: 600;">MF</div>
+            <div><div style="font-weight: 600; color: #2d4a38; font-size: 10px;">Marcelo F.</div><div style="font-size: 9px; color: #7a8c82;">Admin</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main -->
+      <div style="flex: 1; display: flex; flex-direction: column; overflow: hidden;">
+        <!-- Page header -->
+        <div style="background: white; border-bottom: 1px solid #e0ebe5; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <div style="font-weight: 700; color: #2d4a38; font-size: 14px;">Movimientos</div>
+            <div style="font-size: 10px; color: #7a8c82;">28 registros encontrados</div>
+          </div>
+        </div>
+
+        <!-- Toolbar -->
+        <div style="background: white; border-bottom: 1px solid #e0ebe5; padding: 10px 20px; display: flex; gap: 8px; align-items: center;">
+          <div style="flex: 1; background: #f8faf8; border: 1px solid #e0ebe5; border-radius: 7px; padding: 6px 10px; display: flex; align-items: center; gap: 6px;">
+            <span style="color: #7a8c82; font-size: 12px;">🔍</span>
+            <span style="color: #aabfb3; font-size: 11px;">Buscar folio, concepto, persona...</span>
+          </div>
+          <select style="background: #f8faf8; border: 1px solid #e0ebe5; border-radius: 7px; padding: 6px 10px; font-size: 10px; color: #5c8a6e; font-weight: 600;">
+            <option>Todos los tipos</option>
+          </select>
+          <select style="background: #f8faf8; border: 1px solid #e0ebe5; border-radius: 7px; padding: 6px 10px; font-size: 10px; color: #5c8a6e; font-weight: 600;">
+            <option>Todos los estados</option>
+          </select>
+          <div style="background: #f8faf8; border: 1px solid #e0ebe5; border-radius: 7px; padding: 6px 10px; font-size: 10px; color: #5c8a6e; font-weight: 600;">📅 Abril 2026</div>
+        </div>
+
+        <!-- Table -->
+        <div style="flex: 1; overflow: auto; padding: 0;">
+          <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+              <tr style="background: #f8faf8; border-bottom: 1px solid #e0ebe5;">
+                <th style="padding: 8px 14px; text-align: left; font-size: 8px; color: #7a8c82; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Folio</th>
+                <th style="padding: 8px 8px; text-align: left; font-size: 8px; color: #7a8c82; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Concepto</th>
+                <th style="padding: 8px 8px; text-align: left; font-size: 8px; color: #7a8c82; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Categoría</th>
+                <th style="padding: 8px 8px; text-align: left; font-size: 8px; color: #7a8c82; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Fecha</th>
+                <th style="padding: 8px 8px; text-align: right; font-size: 8px; color: #7a8c82; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Monto</th>
+                <th style="padding: 8px 8px; text-align: left; font-size: 8px; color: #7a8c82; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Estado</th>
+                <th style="padding: 8px 14px; text-align: left; font-size: 8px; color: #7a8c82; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom: 1px solid #f5f9f6; cursor: pointer;">
+                <td style="padding: 9px 14px; font-size: 10px; color: #7a8c82; font-family: monospace;">000045</td>
+                <td style="padding: 9px 8px;">
+                  <div style="font-size: 10px; font-weight: 600; color: #2d4a38;">Ofrenda dominical</div>
+                  <div style="font-size: 9px; color: #7a8c82;">Ingreso</div>
+                </td>
+                <td style="padding: 9px 8px; font-size: 10px; color: #7a8c82;">Ofrenda</td>
+                <td style="padding: 9px 8px; font-size: 10px; color: #7a8c82;">14 Abr 2026</td>
+                <td style="padding: 9px 8px; font-size: 10px; font-weight: 700; color: #5c8a6e; text-align: right;">+$85.000</td>
+                <td style="padding: 9px 8px;"><span style="background: #eef5f1; color: #5c8a6e; font-size: 8px; font-weight: 600; padding: 2px 7px; border-radius: 20px;">Activo</span></td>
+                <td style="padding: 9px 14px; font-size: 12px; color: #c8dfd0;">›</td>
+              </tr>
+              <tr style="border-bottom: 1px solid #f5f9f6; cursor: pointer;">
+                <td style="padding: 9px 14px; font-size: 10px; color: #7a8c82; font-family: monospace;">000044</td>
+                <td style="padding: 9px 8px;">
+                  <div style="font-size: 10px; font-weight: 600; color: #2d4a38;">Arriendo sala multipropósito</div>
+                  <div style="font-size: 9px; color: #7a8c82;">Egreso</div>
+                </td>
+                <td style="padding: 9px 8px; font-size: 10px; color: #7a8c82;">Arriendo</td>
+                <td style="padding: 9px 8px; font-size: 10px; color: #7a8c82;">12 Abr 2026</td>
+                <td style="padding: 9px 8px; font-size: 10px; font-weight: 700; color: #b56b5e; text-align: right;">-$120.000</td>
+                <td style="padding: 9px 8px;"><span style="background: #eef5f1; color: #5c8a6e; font-size: 8px; font-weight: 600; padding: 2px 7px; border-radius: 20px;">Activo</span></td>
+                <td style="padding: 9px 14px; font-size: 12px; color: #c8dfd0;">›</td>
+              </tr>
+              <tr style="border-bottom: 1px solid #f5f9f6; cursor: pointer; opacity: 0.6;">
+                <td style="padding: 9px 14px; font-size: 10px; color: #7a8c82; font-family: monospace;">000043</td>
+                <td style="padding: 9px 8px;">
+                  <div style="font-size: 10px; font-weight: 600; color: #2d4a38; text-decoration: line-through;">Diezmos</div>
+                  <div style="font-size: 9px; color: #7a8c82;">Ingreso</div>
+                </td>
+                <td style="padding: 9px 8px; font-size: 10px; color: #7a8c82;">Diezmos</td>
+                <td style="padding: 9px 8px; font-size: 10px; color: #7a8c82;">10 Abr 2026</td>
+                <td style="padding: 9px 8px; font-size: 10px; font-weight: 700; color: #999; text-align: right;">$210.000</td>
+                <td style="padding: 9px 8px;"><span style="background: #f5f5f5; color: #999; font-size: 8px; font-weight: 600; padding: 2px 7px; border-radius: 20px;">Anulado</span></td>
+                <td style="padding: 9px 14px; font-size: 12px; color: #c8dfd0;">›</td>
+              </tr>
+              <tr style="cursor: pointer;">
+                <td style="padding: 9px 14px; font-size: 10px; color: #7a8c82; font-family: monospace;">000042</td>
+                <td style="padding: 9px 8px;">
+                  <div style="font-size: 10px; font-weight: 600; color: #2d4a38;">Donación especial</div>
+                  <div style="font-size: 9px; color: #7a8c82;">Ingreso</div>
+                </td>
+                <td style="padding: 9px 8px; font-size: 10px; color: #7a8c82;">Donación</td>
+                <td style="padding: 9px 8px; font-size: 10px; color: #7a8c82;">8 Abr 2026</td>
+                <td style="padding: 9px 8px; font-size: 10px; font-weight: 700; color: #5c8a6e; text-align: right;">+$50.000</td>
+                <td style="padding: 9px 8px;"><span style="background: #eef5f1; color: #5c8a6e; font-size: 8px; font-weight: 600; padding: 2px 7px; border-radius: 20px;">Activo</span></td>
+                <td style="padding: 9px 14px; font-size: 12px; color: #c8dfd0;">›</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <div style="background: white; border-top: 1px solid #e0ebe5; padding: 10px 20px; display: flex; align-items: center; justify-content: between; font-size: 10px; color: #7a8c82;">
+          <span>Mostrando 1–20 de 28</span>
+          <div style="margin-left: auto; display: flex; gap: 4px;">
+            <div style="padding: 4px 8px; border: 1px solid #e0ebe5; border-radius: 5px; color: #7a8c82; cursor: pointer;">‹</div>
+            <div style="padding: 4px 8px; border: 1px solid #5c8a6e; border-radius: 5px; color: white; background: #5c8a6e; font-weight: 600;">1</div>
+            <div style="padding: 4px 8px; border: 1px solid #e0ebe5; border-radius: 5px; color: #7a8c82; cursor: pointer;">2</div>
+            <div style="padding: 4px 8px; border: 1px solid #e0ebe5; border-radius: 5px; color: #7a8c82; cursor: pointer;">›</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 20px;">
+  <h3>Design decisions</h3>
+  <ul style="color: #555; line-height: 1.8; font-size: 14px;">
+    <li><strong>Mobile: card list</strong> — each movement is a tap target with icon, label, meta, amount and status. Cancelled rows are dimmed + strikethrough.</li>
+    <li><strong>Mobile: filter chips</strong> — active filters shown as dismissible pills below the search bar. Easy to see what's active and remove it.</li>
+    <li><strong>Desktop: full table</strong> with sortable columns, category, pagination at bottom.</li>
+    <li><strong>Search bar always visible</strong> on both — no need to open a separate modal to start filtering.</li>
+    <li><strong>Clicking any row → detail page</strong> (not a modal). Keeps navigation predictable and shareable by URL.</li>
+  </ul>
+</div>

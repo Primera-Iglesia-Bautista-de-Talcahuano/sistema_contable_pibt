@@ -1,102 +1,131 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { createSupabaseBrowserClient } from "@/lib/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Loader2 } from "lucide-react";
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { createSupabaseBrowserClient } from "@/lib/supabase/client"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Eye, EyeOff, Loader2 } from "lucide-react"
 
 const loginSchema = z.object({
-  email: z.email("Ingresa un email valido"),
-  password: z.string().min(6, "La contrasena debe tener al menos 6 caracteres"),
-});
+  email: z.email("Ingresa un email válido"),
+  password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres")
+})
 
-type LoginFormValues = z.infer<typeof loginSchema>;
+type LoginFormValues = z.infer<typeof loginSchema>
 
 export function LoginForm() {
-  const router = useRouter();
-  const [error, setError] = useState<string | null>(null);
+  const router = useRouter()
+  const [error, setError] = useState<string | null>(null)
+  const [showPassword, setShowPassword] = useState(false)
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting }
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: "", password: "" },
-  });
+    defaultValues: { email: "", password: "" }
+  })
 
   const onSubmit = async (values: LoginFormValues) => {
-    setError(null);
-    const supabase = createSupabaseBrowserClient();
+    setError(null)
+    const supabase = createSupabaseBrowserClient()
     const { error: authError } = await supabase.auth.signInWithPassword({
       email: values.email.toLowerCase().trim(),
-      password: values.password,
-    });
+      password: values.password
+    })
 
     if (authError) {
-      setError("Credenciales invalidas o usuario inactivo.");
-      return;
+      setError("Credenciales inválidas o usuario inactivo.")
+      return
     }
 
-    router.push("/dashboard");
-    router.refresh();
-  };
+    router.push("/dashboard")
+    router.refresh()
+  }
 
   return (
-    <form className="mt-8 space-y-8" onSubmit={handleSubmit(onSubmit)}>
-      <div className="space-y-6">
-        <div className="space-y-2">
-          <label className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/80 ml-1" htmlFor="email">
-            Correo Electrónico
-          </label>
-          <Input
-            id="email"
-            type="email"
-            placeholder="admin@iglesia.local"
-            className="h-14 bg-surface-container-low border-none rounded-2xl px-5 text-base font-medium"
-            {...register("email")}
-          />
-          {errors.email && <p className="mt-1.5 text-[10px] font-bold text-error ml-1 uppercase">{errors.email.message}</p>}
-        </div>
-        <div className="space-y-2">
-          <label className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/80 ml-1" htmlFor="password">
-            Contraseña Segura
-          </label>
-          <Input
-            id="password"
-            type="password"
-            placeholder="••••••••"
-            className="h-14 bg-surface-container-low border-none rounded-2xl px-5 text-base font-medium"
-            {...register("password")}
-          />
-          {errors.password && (
-            <p className="mt-1.5 text-[10px] font-bold text-error ml-1 uppercase">{errors.password.message}</p>
-          )}
-        </div>
+    <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
+      {/* Email */}
+      <div className="flex flex-col gap-1.5">
+        <Label
+          htmlFor="email"
+          className="text-[11px] uppercase tracking-[0.05em] text-muted-foreground"
+        >
+          Correo electrónico
+        </Label>
+        <Input
+          id="email"
+          type="email"
+          placeholder="correo@iglesia.cl"
+          aria-invalid={!!errors.email}
+          {...register("email")}
+        />
+        {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
       </div>
 
-      {error && <p className="rounded-2xl bg-error-container/50 border border-error/10 px-4 py-3 text-sm font-bold text-on-error-container text-center">{error}</p>}
+      {/* Password */}
+      <div className="flex flex-col gap-1.5">
+        <div className="flex items-center justify-between">
+          <Label
+            htmlFor="password"
+            className="text-[11px] uppercase tracking-[0.05em] text-muted-foreground"
+          >
+            Contraseña
+          </Label>
+          <button
+            type="button"
+            aria-disabled
+            className="text-xs text-primary opacity-60 cursor-not-allowed"
+            tabIndex={-1}
+          >
+            ¿Olvidaste tu contraseña?
+          </button>
+        </div>
+        <div className="relative">
+          <Input
+            id="password"
+            type={showPassword ? "text" : "password"}
+            placeholder="••••••••"
+            className="pr-10"
+            aria-invalid={!!errors.password}
+            {...register("password")}
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((v) => !v)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
+            aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+          >
+            {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+          </button>
+        </div>
+        {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
+      </div>
 
-      <Button
-        type="submit"
-        variant="primary"
-        disabled={isSubmitting}
-        className="h-12 w-full text-base sm:text-lg shadow-xl shadow-primary/20 rounded-xl"
-      >
+      {/* Auth error */}
+      {error && (
+        <p className="rounded-lg bg-destructive/10 border border-destructive/20 px-4 py-2.5 text-sm text-destructive text-center">
+          {error}
+        </p>
+      )}
+
+      {/* Submit */}
+      <Button type="submit" disabled={isSubmitting} className="w-full transition-colors">
         {isSubmitting ? (
           <>
-            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-            Verificando Acceso...
+            <Loader2 className="size-4 animate-spin" data-icon="inline-start" />
+            Verificando...
           </>
         ) : (
-          "Acceder al Sistema"
+          "Ingresar"
         )}
       </Button>
     </form>
-  );
+  )
 }
