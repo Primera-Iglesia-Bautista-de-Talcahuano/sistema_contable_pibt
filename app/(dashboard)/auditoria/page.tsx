@@ -18,7 +18,7 @@ import { ClipboardList } from "lucide-react"
 function entityClass(entity: string) {
   const e = entity.toUpperCase()
   if (e === "MOVIMIENTO" || e === "MOVEMENT") return "bg-primary/10 text-primary"
-  if (e === "USUARIO" || e === "USER") return "bg-[#f5f3fa] text-[#7c6fa0]"
+  if (e === "USUARIO" || e === "USER") return "bg-role-purple-surface text-role-purple"
   if (e === "CANCELADO" || e === "CANCELLED" || e === "ANULADO")
     return "bg-destructive/10 text-destructive"
   return "bg-muted text-muted-foreground"

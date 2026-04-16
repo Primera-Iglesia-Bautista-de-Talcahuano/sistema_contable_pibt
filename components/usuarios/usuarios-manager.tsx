@@ -64,7 +64,7 @@ function getInitials(name: string) {
 
 function roleBadgeClass(role: UserRole) {
   if (role === "ADMIN") return "bg-primary/10 text-primary"
-  if (role === "OPERATOR") return "bg-[#f5f3fa] text-[#7c6fa0]"
+  if (role === "OPERATOR") return "bg-role-purple-surface text-role-purple"
   return "bg-muted text-muted-foreground"
 }
 
