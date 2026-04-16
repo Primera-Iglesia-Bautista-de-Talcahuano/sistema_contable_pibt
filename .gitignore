@@ -47,3 +47,6 @@ next-env.d.ts
 prisma/*.db
 prisma/*.db-journal
 /scripts/seed-movimientos.ts
+
+# superpowers brainstorm artifacts
+.superpowers/
