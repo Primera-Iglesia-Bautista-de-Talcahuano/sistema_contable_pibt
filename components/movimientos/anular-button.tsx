@@ -69,7 +69,7 @@ export function AnularButton({
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <div className="space-y-2">
+          <div className="flex flex-col gap-2">
             <Label htmlFor="motivo">Motivo</Label>
             <Input
               id="motivo"

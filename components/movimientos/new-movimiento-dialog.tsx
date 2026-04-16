@@ -1,7 +1,7 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { Plus } from "lucide-react";
+import { useState } from "react"
+import { Plus } from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -9,29 +9,31 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { MovimientoForm } from "./movimiento-form";
+} from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { MovimientoForm } from "./movimiento-form"
 
 export function NewMovimientoDialog() {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false)
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
         render={
-          <Button variant="primary" className="h-10 px-6 shadow-lg shadow-primary/10">
-            <Plus className="mr-2 h-5 w-5" />
+          <Button className="h-10 px-6">
+            <Plus data-icon="inline-start" />
             Nuevo Movimiento
           </Button>
         }
       />
-      <DialogContent className="w-[95vw] sm:max-w-4xl bg-surface-container-lowest p-0 border-none shadow-[0px_40px_80px_-20px_rgba(25,28,30,0.15)] rounded-[2rem] overflow-y-auto max-h-[90vh] scrollbar-thin scrollbar-thumb-on-surface-variant/10">
-        <div className="p-6 sm:p-12 space-y-8 sm:space-y-10">
+      <DialogContent className="w-[95vw] sm:max-w-4xl bg-card p-0 border border-border rounded-xl overflow-y-auto max-h-[90vh]">
+        <div className="p-6 sm:p-10 flex flex-col gap-8">
           <DialogHeader>
-            <DialogTitle className="text-3xl font-bold tracking-tight text-on-surface">Registro de Movimiento</DialogTitle>
-            <DialogDescription className="text-on-surface-variant font-medium text-base mt-2">
-              Complete el formulario ministerial para el control de ingresos y egresos.
+            <DialogTitle className="font-heading text-2xl font-bold tracking-tight text-foreground">
+              Registro de Movimiento
+            </DialogTitle>
+            <DialogDescription className="text-muted-foreground text-sm mt-1">
+              Complete el formulario para registrar un ingreso o egreso.
             </DialogDescription>
           </DialogHeader>
 
@@ -39,5 +41,5 @@ export function NewMovimientoDialog() {
         </div>
       </DialogContent>
     </Dialog>
-  );
+  )
 }
