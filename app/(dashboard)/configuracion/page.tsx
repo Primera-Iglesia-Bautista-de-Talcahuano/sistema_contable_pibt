@@ -4,6 +4,14 @@ import { getCurrentUser } from "@/lib/supabase/server"
 import { canManageUsers } from "@/lib/permissions/rbac"
 import { auditoriaService } from "@/services/auditoria/auditoria.service"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Empty,
+  EmptyHeader,
+  EmptyTitle,
+  EmptyDescription,
+  EmptyMedia
+} from "@/components/ui/empty"
+import { ClipboardList } from "lucide-react"
 
 export default async function ConfiguracionPage() {
   const user = await getCurrentUser()
@@ -83,11 +91,16 @@ export default async function ConfiguracionPage() {
                 ))}
                 {!events.length && (
                   <tr>
-                    <td
-                      className="px-4 py-10 text-center text-sm text-muted-foreground"
-                      colSpan={5}
-                    >
-                      Sin eventos de auditoría registrados.
+                    <td colSpan={5}>
+                      <Empty className="border-0 py-16">
+                        <EmptyHeader>
+                          <EmptyMedia variant="icon">
+                            <ClipboardList />
+                          </EmptyMedia>
+                          <EmptyTitle>Sin eventos</EmptyTitle>
+                          <EmptyDescription>No hay eventos de auditoría registrados.</EmptyDescription>
+                        </EmptyHeader>
+                      </Empty>
                     </td>
                   </tr>
                 )}
