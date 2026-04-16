@@ -2,7 +2,7 @@ import Link from "next/link"
 import { redirect } from "next/navigation"
 import { getCurrentUser } from "@/lib/supabase/server"
 import { LogoutButton } from "@/components/auth/logout-button"
-import { LayoutDashboard, Briefcase, Users, Settings, Plus } from "lucide-react"
+import { LayoutDashboard, Briefcase, Users, ClipboardList, Plus, CalendarDays, Receipt } from "lucide-react"
 import { DashboardNav } from "@/components/dashboard/dashboard-nav"
 import { MobileNav } from "@/components/dashboard/mobile-nav"
 import { Button } from "@/components/ui/button"
@@ -25,10 +25,16 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const links = [
     { href: "/dashboard", label: "Dashboard", icon: <LayoutDashboard className="size-4" /> },
     { href: "/movimientos", label: "Movimientos", icon: <Briefcase className="size-4" /> },
+    { href: "/eventos", label: "Eventos", icon: <CalendarDays className="size-4" /> },
+    {
+      href: "/rendicion-boletas",
+      label: "Rendición",
+      icon: <Receipt className="size-4" />
+    },
     ...(user.role === "ADMIN"
       ? [
           { href: "/usuarios", label: "Usuarios", icon: <Users className="size-4" /> },
-          { href: "/configuracion", label: "Configuración", icon: <Settings className="size-4" /> }
+          { href: "/auditoria", label: "Auditoría", icon: <ClipboardList className="size-4" /> }
         ]
       : [])
   ]

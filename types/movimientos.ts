@@ -1,20 +1,20 @@
-export type MovementType = "INCOME" | "EXPENSE";
+export type MovementType = "INCOME" | "EXPENSE"
 
 export const INCOME_CATEGORIES = [
-  "diezmos",
-  "ofrendas",
-  "donaciones",
-  "actividades",
-  "otros",
-] as const;
+  "Diezmos",
+  "Ofrendas",
+  "Donaciones",
+  "Actividades",
+  "Otros"
+] as const
 
 export const EXPENSE_CATEGORIES = [
-  "servicios basicos",
-  "mantencion",
-  "ayuda social",
-  "materiales",
-  "actividades",
-  "administracion",
-  "transporte",
-  "otros",
-] as const;
+  "Servicios basicos",
+  "Mantenciones",
+  "Ayuda social",
+  "Materiales",
+  "Actividades",
+  "Administracion",
+  "Transporte",
+  "Otros"
+] as const
