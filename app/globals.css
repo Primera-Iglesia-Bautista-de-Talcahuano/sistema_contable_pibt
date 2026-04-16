@@ -2,6 +2,9 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+/* Use data-theme="dark" so React hydration never strips it */
+@variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 
 @theme inline {
   /* Cobalt & Coral palette — accent/brand colors stay fixed */
@@ -194,37 +197,37 @@
   --sidebar-ring: #1558b0;
 }
 
-.dark {
-  /* shadcn vars */
-  --background: #0d1829;
-  --foreground: #c8dff8;
-  --card: #132040;
-  --card-foreground: #c8dff8;
-  --popover: #132040;
-  --popover-foreground: #c8dff8;
-  --primary: #5a9de0;
-  --primary-foreground: #0a2a58;
-  --secondary: #1e3a68;
-  --secondary-foreground: #c8dff8;
-  --muted: #1e3a68;
-  --muted-foreground: #5a8abf;
-  --accent: #1e3a68;
-  --accent-foreground: #c8dff8;
+[data-theme="dark"] {
+  /* Dark mode — desaturated slate-blue (≈28% saturation vs old 52%) */
+  --background: #0c0f18;
+  --foreground: #dde8f5;
+  --card: #141926;
+  --card-foreground: #dde8f5;
+  --popover: #141926;
+  --popover-foreground: #dde8f5;
+  --primary: #4d8fd6;
+  --primary-foreground: #ffffff;
+  --secondary: #1c2235;
+  --secondary-foreground: #dde8f5;
+  --muted: #1c2235;
+  --muted-foreground: #7090b0;
+  --accent: #1c2235;
+  --accent-foreground: #dde8f5;
   --destructive: #e85040;
-  --border: #1e3a68;
-  --input: #1e3a68;
-  --ring: #5a9de0;
-  --chart-1: #5a9de0;
-  --chart-2: #a8ccf0;
+  --border: #232a3d;
+  --input: #232a3d;
+  --ring: #4d8fd6;
+  --chart-1: #4d8fd6;
+  --chart-2: #8cb8e8;
   --chart-3: #e85040;
   --chart-4: #f0b0a8;
   --chart-5: #22a060;
-  --sidebar: #0d1829;
-  --sidebar-foreground: #c8dff8;
-  --sidebar-primary: #5a9de0;
-  --sidebar-primary-foreground: #0d1829;
-  --sidebar-accent: #1e3a68;
-  --sidebar-accent-foreground: #c8dff8;
-  --sidebar-border: #1e3a68;
-  --sidebar-ring: #5a9de0;
+  --sidebar: #090d14;
+  --sidebar-foreground: #dde8f5;
+  --sidebar-primary: #4d8fd6;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #1c2235;
+  --sidebar-accent-foreground: #dde8f5;
+  --sidebar-border: #232a3d;
+  --sidebar-ring: #4d8fd6;
 }
