@@ -6,6 +6,7 @@ import { MovimientosTable } from "@/components/movimientos/movimientos-table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { NativeSelect } from "@/components/ui/native-select"
 import { Plus } from "lucide-react"
 
 type Props = {
@@ -65,16 +66,16 @@ export default async function MovimientosPage({ searchParams }: Props) {
           >
             Tipo
           </Label>
-          <select
+          <NativeSelect
             id="movement_type"
             name="movement_type"
             defaultValue={movement_type}
-            className="h-10 w-full rounded-lg border border-border bg-background px-3 text-sm font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-ring appearance-none"
+            className="w-full"
           >
             <option value="ALL">Todos los tipos</option>
             <option value="INCOME">Ingreso</option>
             <option value="EXPENSE">Egreso</option>
-          </select>
+          </NativeSelect>
         </div>
         <div className="flex flex-col gap-1.5">
           <Label
@@ -83,16 +84,11 @@ export default async function MovimientosPage({ searchParams }: Props) {
           >
             Estado
           </Label>
-          <select
-            id="status"
-            name="status"
-            defaultValue={status}
-            className="h-10 w-full rounded-lg border border-border bg-background px-3 text-sm font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-ring appearance-none"
-          >
+          <NativeSelect id="status" name="status" defaultValue={status} className="w-full">
             <option value="ALL">Todos los estados</option>
             <option value="ACTIVE">Activo</option>
             <option value="CANCELLED">Anulado</option>
-          </select>
+          </NativeSelect>
         </div>
         <Button type="submit" className="h-10">
           Aplicar filtros

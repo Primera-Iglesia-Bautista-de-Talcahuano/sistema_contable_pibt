@@ -12,13 +12,16 @@ import {
   DialogTitle,
   DialogDescription
 } from "@/components/ui/dialog"
+import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyMedia } from "@/components/ui/empty"
 import {
-  Empty,
-  EmptyHeader,
-  EmptyTitle,
-  EmptyDescription,
-  EmptyMedia
-} from "@/components/ui/empty"
+  Item,
+  ItemGroup,
+  ItemContent,
+  ItemTitle,
+  ItemDescription,
+  ItemHeader,
+  ItemActions
+} from "@/components/ui/item"
 import { FileSearch } from "lucide-react"
 
 export type SerializedMovimiento = {
@@ -87,7 +90,72 @@ export function MovimientosTable({
 
   return (
     <>
-      <div className="bg-card rounded-xl overflow-hidden border border-border">
+      {/* ── Mobile card list ─────────────────────────────────────── */}
+      <div className="sm:hidden">
+        {rows.length === 0 ? (
+          <Empty className="border-0 py-16">
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <FileSearch />
+              </EmptyMedia>
+              <EmptyTitle>Sin resultados</EmptyTitle>
+              <EmptyDescription>No hay registros para los filtros seleccionados.</EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        ) : (
+          <ItemGroup>
+            {rows.map((row) => (
+              <Item
+                key={row.id}
+                variant="muted"
+                size="sm"
+                onClick={() => setSelected(row)}
+                className="cursor-pointer"
+              >
+                <ItemContent>
+                  <ItemHeader>
+                    <span className="font-bold text-primary text-sm tabular-nums">
+                      #{row.folio_display}
+                    </span>
+                    <span
+                      className={cn(
+                        "inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wide uppercase",
+                        row.movement_type === "INCOME"
+                          ? "bg-primary/10 text-primary"
+                          : "bg-destructive/10 text-destructive"
+                      )}
+                    >
+                      {MOVEMENT_TYPE_LABEL[row.movement_type] ?? row.movement_type}
+                    </span>
+                  </ItemHeader>
+                  <ItemTitle className="text-sm">{row.concept || row.category}</ItemTitle>
+                  <ItemDescription>
+                    {formatDate(row.movement_date)} ·{" "}
+                    <span className="font-bold text-foreground tabular-nums">
+                      {clp.format(Number(row.amount))}
+                    </span>
+                  </ItemDescription>
+                </ItemContent>
+                <ItemActions>
+                  <span
+                    className={cn(
+                      "inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wide uppercase",
+                      row.status === "ACTIVE"
+                        ? "bg-primary/5 text-primary/80"
+                        : "bg-destructive/5 text-destructive/70"
+                    )}
+                  >
+                    {STATUS_LABEL[row.status] ?? row.status}
+                  </span>
+                </ItemActions>
+              </Item>
+            ))}
+          </ItemGroup>
+        )}
+      </div>
+
+      {/* ── Desktop table ────────────────────────────────────────── */}
+      <div className="hidden sm:block bg-card rounded-xl overflow-hidden border border-border">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse min-w-[640px]">
             <thead>

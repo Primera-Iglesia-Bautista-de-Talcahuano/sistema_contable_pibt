@@ -15,7 +15,14 @@ import {
   DialogTrigger
 } from "@/components/ui/dialog"
 import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyMedia } from "@/components/ui/empty"
-import { Item, ItemGroup, ItemContent, ItemTitle, ItemDescription, ItemHeader } from "@/components/ui/item"
+import {
+  Item,
+  ItemGroup,
+  ItemContent,
+  ItemTitle,
+  ItemDescription,
+  ItemHeader
+} from "@/components/ui/item"
 import { format } from "date-fns"
 import { formatDate } from "@/lib/utils"
 import { Plus, CalendarDays } from "lucide-react"
@@ -187,9 +194,7 @@ export default function EventosPage() {
                   <ItemTitle className="text-base font-bold text-foreground">
                     {evento.titulo}
                   </ItemTitle>
-                  {evento.descripcion && (
-                    <ItemDescription>{evento.descripcion}</ItemDescription>
-                  )}
+                  {evento.descripcion && <ItemDescription>{evento.descripcion}</ItemDescription>}
                 </ItemContent>
               </Item>
             ))}

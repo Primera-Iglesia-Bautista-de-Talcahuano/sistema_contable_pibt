@@ -15,6 +15,7 @@ import {
   DialogTitle,
   DialogTrigger
 } from "@/components/ui/dialog"
+import { NativeSelect } from "@/components/ui/native-select"
 import { Plus, Users, Search } from "lucide-react"
 import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyMedia } from "@/components/ui/empty"
 import {
@@ -294,9 +295,9 @@ export function UsuariosManager({ initialUsers }: { initialUsers: UsuarioRow[] }
                   >
                     Nivel de Acceso
                   </Label>
-                  <select
+                  <NativeSelect
                     id="new-role"
-                    className="flex h-12 w-full rounded-xl border-none bg-muted px-5 py-2 text-base font-medium text-foreground focus:ring-2 focus:ring-ring outline-none transition-all appearance-none"
+                    className="w-full"
                     value={newUser.role}
                     onChange={(e) =>
                       setNewUser((s) => ({ ...s, role: e.target.value as UserRole }))
@@ -305,7 +306,7 @@ export function UsuariosManager({ initialUsers }: { initialUsers: UsuarioRow[] }
                     <option value="ADMIN">ADMIN — Control del Sistema</option>
                     <option value="OPERATOR">OPERATOR — Ingreso de Datos</option>
                     <option value="VIEWER">VIEWER — Solo Lectura</option>
-                  </select>
+                  </NativeSelect>
                 </div>
 
                 <div className="flex flex-col gap-3 pt-4 border-t border-border">
@@ -369,9 +370,9 @@ export function UsuariosManager({ initialUsers }: { initialUsers: UsuarioRow[] }
                 >
                   Nivel de Acceso
                 </Label>
-                <select
+                <NativeSelect
                   id="edit-role"
-                  className="flex h-12 w-full rounded-xl border-none bg-muted px-5 py-2 text-base font-medium text-foreground focus:ring-2 focus:ring-ring outline-none transition-all appearance-none"
+                  className="w-full"
                   value={editDraft.role}
                   onChange={(e) =>
                     setEditDraft((s) => ({ ...s, role: e.target.value as UserRole }))
@@ -380,7 +381,7 @@ export function UsuariosManager({ initialUsers }: { initialUsers: UsuarioRow[] }
                   <option value="ADMIN">ADMIN — Control del Sistema</option>
                   <option value="OPERATOR">OPERATOR — Ingreso de Datos</option>
                   <option value="VIEWER">VIEWER — Solo Lectura</option>
-                </select>
+                </NativeSelect>
               </div>
 
               <label className="flex items-center justify-between rounded-xl bg-muted px-5 h-12 cursor-pointer">
@@ -457,11 +458,7 @@ export function UsuariosManager({ initialUsers }: { initialUsers: UsuarioRow[] }
       ) : (
         <ItemGroup>
           {filtered.map((user) => (
-            <Item
-              key={user.id}
-              variant="outline"
-              className={cn(!user.active && "opacity-55")}
-            >
+            <Item key={user.id} variant="outline" className={cn(!user.active && "opacity-55")}>
               <div
                 className={cn(
                   "size-10 rounded-full flex items-center justify-center shrink-0",

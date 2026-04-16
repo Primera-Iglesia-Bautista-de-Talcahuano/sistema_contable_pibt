@@ -5,7 +5,14 @@ import { canManageUsers } from "@/lib/permissions/rbac"
 import { auditoriaService } from "@/services/auditoria/auditoria.service"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyMedia } from "@/components/ui/empty"
-import { Item, ItemGroup, ItemContent, ItemTitle, ItemDescription, ItemHeader } from "@/components/ui/item"
+import {
+  Item,
+  ItemGroup,
+  ItemContent,
+  ItemTitle,
+  ItemDescription,
+  ItemHeader
+} from "@/components/ui/item"
 import { ClipboardList } from "lucide-react"
 
 function entityClass(entity: string) {
@@ -35,7 +42,7 @@ export default async function AuditoriaPage() {
       </div>
 
       <Card className="p-0 overflow-hidden">
-        <CardHeader>
+        <CardHeader className="px-6 py-5 border-b border-border">
           <CardTitle className="text-xl">Registro de Auditoría</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
@@ -44,19 +51,19 @@ export default async function AuditoriaPage() {
             <table className="min-w-full text-sm">
               <thead>
                 <tr className="border-b border-border">
-                  <th className="px-4 py-4 font-bold text-[11px] uppercase tracking-[0.2em] text-muted-foreground text-left">
+                  <th className="px-4 py-4 font-bold text-[11px] uppercase tracking-[0.2em] text-muted-foreground text-left align-middle">
                     Fecha
                   </th>
-                  <th className="px-4 py-4 font-bold text-[11px] uppercase tracking-[0.2em] text-muted-foreground text-left">
+                  <th className="px-4 py-4 font-bold text-[11px] uppercase tracking-[0.2em] text-muted-foreground text-left align-middle">
                     Entidad
                   </th>
-                  <th className="px-4 py-4 font-bold text-[11px] uppercase tracking-[0.2em] text-muted-foreground text-left">
+                  <th className="px-4 py-4 font-bold text-[11px] uppercase tracking-[0.2em] text-muted-foreground text-left align-middle">
                     Acción
                   </th>
-                  <th className="px-4 py-4 font-bold text-[11px] uppercase tracking-[0.2em] text-muted-foreground text-left">
+                  <th className="px-4 py-4 font-bold text-[11px] uppercase tracking-[0.2em] text-muted-foreground text-left align-middle">
                     Usuario
                   </th>
-                  <th className="px-4 py-4 font-bold text-[11px] uppercase tracking-[0.2em] text-muted-foreground text-left">
+                  <th className="px-4 py-4 font-bold text-[11px] uppercase tracking-[0.2em] text-muted-foreground text-left align-middle">
                     Observación
                   </th>
                 </tr>
@@ -70,7 +77,7 @@ export default async function AuditoriaPage() {
                       index % 2 === 0 ? "bg-transparent" : "bg-muted/10"
                     )}
                   >
-                    <td className="px-4 py-4 whitespace-nowrap text-muted-foreground font-medium tabular-nums text-xs">
+                    <td className="px-4 py-4 align-middle whitespace-nowrap text-muted-foreground font-medium tabular-nums text-xs">
                       {new Date(event.event_date).toLocaleString("es-CL", {
                         day: "2-digit",
                         month: "2-digit",
@@ -78,7 +85,7 @@ export default async function AuditoriaPage() {
                         minute: "2-digit"
                       })}
                     </td>
-                    <td className="px-4 py-4">
+                    <td className="px-4 py-4 align-middle">
                       <span
                         className={cn(
                           "inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-widest",
@@ -88,13 +95,13 @@ export default async function AuditoriaPage() {
                         {event.entity}
                       </span>
                     </td>
-                    <td className="px-4 py-4 font-bold text-foreground uppercase tracking-tight text-xs">
+                    <td className="px-4 py-4 align-middle font-bold text-foreground uppercase tracking-tight text-xs">
                       {event.action}
                     </td>
-                    <td className="px-4 py-4 text-muted-foreground font-medium text-sm">
+                    <td className="px-4 py-4 align-middle text-muted-foreground font-medium text-sm">
                       {event.users?.full_name ?? "—"}
                     </td>
-                    <td className="px-4 py-4 text-muted-foreground italic truncate max-w-xs text-xs">
+                    <td className="px-4 py-4 align-middle text-muted-foreground italic truncate max-w-xs text-xs">
                       {event.note ?? "—"}
                     </td>
                   </tr>

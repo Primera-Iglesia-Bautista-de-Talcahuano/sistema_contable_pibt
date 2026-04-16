@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { DatePicker } from "@/components/ui/date-picker"
 import { format } from "date-fns"
+import { NativeSelect } from "@/components/ui/native-select"
 
 type Props = {
   mode: "create" | "edit"
@@ -121,13 +122,10 @@ export function MovimientoForm({ mode, movimientoId, initialValues, onSuccess }:
             <Label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground ml-1">
               Tipo de Operación
             </Label>
-            <select
-              className="flex h-12 sm:h-14 w-full items-center justify-between rounded-lg border border-border bg-background px-4 text-base font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-ring appearance-none transition-all"
-              {...form.register("movement_type")}
-            >
+            <NativeSelect className="w-full" {...form.register("movement_type")}>
               <option value="INCOME">Ingreso (Entrada)</option>
               <option value="EXPENSE">Egreso (Gasto)</option>
-            </select>
+            </NativeSelect>
           </div>
           <div className="flex flex-col gap-2">
             <Label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground ml-1">
@@ -150,17 +148,14 @@ export function MovimientoForm({ mode, movimientoId, initialValues, onSuccess }:
             <Label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground ml-1">
               Categoría
             </Label>
-            <select
-              className="flex h-12 sm:h-14 w-full items-center justify-between rounded-lg border border-border bg-background px-4 text-base font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-ring appearance-none transition-all"
-              {...form.register("category")}
-            >
+            <NativeSelect className="w-full" {...form.register("category")}>
               <option value="">Seleccione Categoría</option>
               {categorias.map((category) => (
                 <option key={category} value={category}>
                   {category}
                 </option>
               ))}
-            </select>
+            </NativeSelect>
             {form.formState.errors.category && (
               <p className="text-xs text-destructive mt-1 ml-1">
                 {form.formState.errors.category.message}

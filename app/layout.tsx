@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { Manrope, Inter } from "next/font/google"
 import "./globals.css"
 import { cn } from "@/lib/utils"
+import { TooltipProvider } from "@/components/ui/tooltip"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 
@@ -24,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="es" className={cn(inter.variable, manrope.variable)}>
       <body className="antialiased min-h-screen font-sans bg-background text-on-surface">
-        {children}
+        <TooltipProvider>{children}</TooltipProvider>
       </body>
     </html>
   )
