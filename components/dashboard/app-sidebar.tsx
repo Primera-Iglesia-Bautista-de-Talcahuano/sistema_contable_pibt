@@ -22,6 +22,7 @@ import {
   SidebarMenuItem
 } from "@/components/ui/sidebar"
 import { NavUser } from "@/components/dashboard/nav-user"
+import { ThemeToggle } from "@/components/ui/theme-toggle"
 
 const ALL_LINKS = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, adminOnly: false },
@@ -60,6 +61,7 @@ export function AppSidebar({
                   PIBT
                 </span>
               </div>
+              <ThemeToggle />
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

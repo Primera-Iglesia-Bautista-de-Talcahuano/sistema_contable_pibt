@@ -30,6 +30,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className={cn(roboto.variable, robotoSlab.variable)}>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('pibt-theme');if(t==='dark')document.documentElement.classList.add('dark')}catch(e){}})();`
+          }}
+        />
+      </head>
       <body className="antialiased min-h-screen font-sans bg-background text-on-surface">
         <TooltipProvider>{children}</TooltipProvider>
       </body>
