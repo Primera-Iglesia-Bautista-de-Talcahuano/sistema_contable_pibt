@@ -77,7 +77,7 @@ export function IngresosEgresosChart({ data }: { data: SerieItem[] }) {
                 <div className="flex justify-end gap-4 sm:gap-6 mb-6">
                   {payload?.map((entry, index) => (
                     <div key={index} className="flex items-center gap-2">
-                      <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: entry.color }} />
+                      <div className="size-2.5 rounded-full" style={{ backgroundColor: entry.color }} />
                       <span className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">{entry.value}</span>
                     </div>
                   ))}
@@ -147,7 +147,7 @@ export function CategoriaChart({ data }: { data: CategoriaItem[] }) {
       <div className="grid grid-cols-2 gap-x-6 gap-y-2 w-full">
         {finalData.map((entry, index) => (
           <div key={index} className="flex items-center gap-2 min-w-0">
-            <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: entry.fill }} />
+            <div className="size-2 rounded-full shrink-0" style={{ backgroundColor: entry.fill }} />
             <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground truncate">{entry.categoria}</span>
             <span className="text-xs font-black text-foreground ml-auto shrink-0">{clp.format(entry.total)}</span>
           </div>
