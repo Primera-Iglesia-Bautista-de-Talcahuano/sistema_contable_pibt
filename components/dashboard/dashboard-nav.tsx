@@ -10,7 +10,13 @@ export type NavLink = {
   icon: React.ReactNode
 }
 
-export function DashboardNav({ links }: { links: NavLink[] }) {
+export function DashboardNav({
+  links,
+  onSelect,
+}: {
+  links: NavLink[]
+  onSelect?: () => void
+}) {
   const pathname = usePathname()
 
   return (
@@ -21,6 +27,7 @@ export function DashboardNav({ links }: { links: NavLink[] }) {
           <Link
             key={link.href}
             href={link.href}
+            onClick={onSelect}
             className={cn(
               "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
               isActive
