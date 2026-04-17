@@ -27,9 +27,7 @@ function buildEmailText(movement: MovementIntegrationPayload): string {
     ["Observaciones", movement.observaciones],
     ["Registrado por", movement.registradoPor]
   ]
-  const lines = fields
-    .filter(([, v]) => v != null && v !== "")
-    .map(([k, v]) => `${k}: ${v}`)
+  const lines = fields.filter(([, v]) => v != null && v !== "").map(([k, v]) => `${k}: ${v}`)
   return [`${ORG_NAME}`, ``, `Nuevo movimiento registrado:`, ``, ...lines, ``].join("\n")
 }
 
