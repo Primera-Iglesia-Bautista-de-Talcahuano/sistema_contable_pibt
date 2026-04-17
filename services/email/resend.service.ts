@@ -95,6 +95,28 @@ const ORG_SHORT = "Sistema Contable PIBT"
 const FROM_EMAIL =
   process.env.RESEND_FROM_EMAIL ?? "Sistema contable PIBT <noreply@pibtalcahuano.com>"
 
+function buildAuthEmailText(opts: {
+  title: string
+  intro: string
+  buttonLabel: string
+  buttonUrl: string
+  expiry: string
+}): string {
+  return [
+    `${ORG_SHORT}`,
+    ``,
+    `${opts.title}`,
+    ``,
+    opts.intro,
+    ``,
+    `${opts.buttonLabel}: ${opts.buttonUrl}`,
+    ``,
+    `Este enlace expira en ${opts.expiry}. Si no solicitaste esto, puedes ignorar este correo.`,
+    ``,
+    `Primera Iglesia Bautista de Talcahuano`
+  ].join("\n")
+}
+
 function buildAuthEmailHtml(opts: {
   title: string
   intro: string
@@ -145,18 +167,20 @@ export async function sendInviteEmail(opts: {
   action_link: string
 }): Promise<void> {
   const resend = new Resend(process.env.RESEND_API_KEY)
+  const emailOpts = {
+    title: `Hola ${opts.full_name}, tu cuenta está lista`,
+    intro:
+      "Un administrador ha creado una cuenta para ti en el sistema contable de la iglesia. Haz clic en el botón para activarla y establecer tu contraseña.",
+    buttonLabel: "Activar mi cuenta",
+    buttonUrl: opts.action_link,
+    expiry: "24 horas"
+  }
   await resend.emails.send({
     from: FROM_EMAIL,
     to: opts.to,
     subject: `Activa tu cuenta — ${ORG_SHORT}`,
-    html: buildAuthEmailHtml({
-      title: `Hola ${opts.full_name}, tu cuenta está lista`,
-      intro:
-        "Un administrador ha creado una cuenta para ti en el sistema contable de la iglesia. Haz clic en el botón para activarla y establecer tu contraseña.",
-      buttonLabel: "Activar mi cuenta",
-      buttonUrl: opts.action_link,
-      expiry: "24 horas"
-    })
+    html: buildAuthEmailHtml(emailOpts),
+    text: buildAuthEmailText(emailOpts)
   })
 }
 
@@ -166,18 +190,20 @@ export async function sendResetEmail(opts: {
   action_link: string
 }): Promise<void> {
   const resend = new Resend(process.env.RESEND_API_KEY)
+  const emailOpts = {
+    title: "Restablece tu contraseña",
+    intro:
+      "Se ha solicitado restablecer tu contraseña. Haz clic en el botón para crear una nueva. Tu sesión está bloqueada hasta que completes este proceso.",
+    buttonLabel: "Restablecer contraseña",
+    buttonUrl: opts.action_link,
+    expiry: "1 hora"
+  }
   await resend.emails.send({
     from: FROM_EMAIL,
     to: opts.to,
     subject: `Restablece tu contraseña — ${ORG_SHORT}`,
-    html: buildAuthEmailHtml({
-      title: "Restablece tu contraseña",
-      intro:
-        "Se ha solicitado restablecer tu contraseña. Haz clic en el botón para crear una nueva. Tu sesión está bloqueada hasta que completes este proceso.",
-      buttonLabel: "Restablecer contraseña",
-      buttonUrl: opts.action_link,
-      expiry: "1 hora"
-    })
+    html: buildAuthEmailHtml(emailOpts),
+    text: buildAuthEmailText(emailOpts)
   })
 }
 
@@ -186,17 +212,19 @@ export async function sendForgotPasswordEmail(opts: {
   action_link: string
 }): Promise<void> {
   const resend = new Resend(process.env.RESEND_API_KEY)
+  const emailOpts = {
+    title: "Recupera tu contraseña",
+    intro:
+      "Recibimos una solicitud para restablecer la contraseña de tu cuenta. Si no fuiste tú, ignora este correo.",
+    buttonLabel: "Restablecer contraseña",
+    buttonUrl: opts.action_link,
+    expiry: "1 hora"
+  }
   await resend.emails.send({
     from: FROM_EMAIL,
     to: opts.to,
     subject: `Recupera tu contraseña — ${ORG_SHORT}`,
-    html: buildAuthEmailHtml({
-      title: "Recupera tu contraseña",
-      intro:
-        "Recibimos una solicitud para restablecer la contraseña de tu cuenta. Si no fuiste tú, ignora este correo.",
-      buttonLabel: "Restablecer contraseña",
-      buttonUrl: opts.action_link,
-      expiry: "1 hora"
-    })
+    html: buildAuthEmailHtml(emailOpts),
+    text: buildAuthEmailText(emailOpts)
   })
 }

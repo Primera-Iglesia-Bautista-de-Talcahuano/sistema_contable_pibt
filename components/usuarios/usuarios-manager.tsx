@@ -18,7 +18,7 @@ import {
   DialogTrigger
 } from "@/components/ui/dialog"
 import { NativeSelect } from "@/components/ui/native-select"
-import { Plus, Users, Search, RotateCcw, Trash2 } from "lucide-react"
+import { Plus, Users, Search, RotateCcw, Trash2, Send } from "lucide-react"
 import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyMedia } from "@/components/ui/empty"
 import {
   Item,
@@ -189,6 +189,19 @@ export function UsuariosManager({ initialUsers }: { initialUsers: UsuarioRow[] }
     setUsers((prev) => prev.filter((u) => u.id !== deletingUser.id))
     setDeletingUser(null)
     toast.success("Usuario eliminado", { description: name })
+  }
+
+  // ── Resend invite ─────────────────────────────────────────────────────────────
+  const handleResendInvite = async (userId: string) => {
+    const res = await fetch(`/api/usuarios/${userId}/resend-invite`, { method: "POST" })
+    if (!res.ok) {
+      const data = (await res.json().catch(() => ({}))) as { message?: string }
+      toast.error(data.message ?? "No se pudo reenviar la invitación.")
+      return
+    }
+    toast.success("Invitación reenviada", {
+      description: "Se envió un nuevo enlace de activación al correo del usuario."
+    })
   }
 
   // ── Reset account ─────────────────────────────────────────────────────────────
@@ -597,6 +610,17 @@ export function UsuariosManager({ initialUsers }: { initialUsers: UsuarioRow[] }
                     >
                       {meta.label}
                     </span>
+                  )}
+                  {user.status === "PENDING_ACTIVATION" && (
+                    <Button
+                      size="xs"
+                      variant="ghost"
+                      onClick={() => void handleResendInvite(user.id)}
+                      title="Reenviar invitación"
+                      className="rounded-full px-2"
+                    >
+                      <Send className="size-3.5" />
+                    </Button>
                   )}
                   <Button
                     size="xs"

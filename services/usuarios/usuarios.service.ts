@@ -154,6 +154,48 @@ export const usuariosService = {
     })
   },
 
+  async resendInvite(userId: string, actingUserId: string) {
+    const admin = createSupabaseAdminClient()
+
+    const { data: user, error: fetchError } = await admin
+      .from("users")
+      .select("id, full_name, status")
+      .eq("id", userId)
+      .single()
+
+    if (fetchError || !user) throw new Error("Usuario no encontrado")
+    if (user.status !== "PENDING_ACTIVATION")
+      throw new Error("Solo se puede reenviar invitación a usuarios pendientes de activación")
+
+    const { data: authUser } = await admin.auth.admin.getUserById(userId)
+    if (!authUser.user) throw new Error("Usuario de autenticación no encontrado")
+
+    const email = authUser.user.email!
+    const callbackUrl = `${getSiteUrl()}/auth/callback`
+
+    const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
+      type: "invite",
+      email,
+      options: { redirectTo: callbackUrl, data: { full_name: user.full_name } }
+    })
+
+    if (linkError) throw linkError
+
+    await sendInviteEmail({
+      to: email,
+      full_name: user.full_name,
+      action_link: linkData.properties.action_link
+    })
+
+    await auditoriaService.logSystem({
+      entity: "users",
+      action: "UPDATED",
+      entity_id: userId,
+      user_id: actingUserId,
+      note: "Invite resent"
+    })
+  },
+
   async update(input: UpdateUsuarioInput, actingUserId: string) {
     const admin = createSupabaseAdminClient()
 
