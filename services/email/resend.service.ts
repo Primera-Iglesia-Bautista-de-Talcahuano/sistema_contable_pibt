@@ -79,7 +79,7 @@ export async function sendMovementEmail(
 ): Promise<AppsScriptResponse> {
   const resend = new Resend(process.env.RESEND_API_KEY)
   const { error } = await resend.emails.send({
-    from: "Sistema contable PIBT <noreply@pibt.com>",
+    from: "Sistema contable PIBT <noreply@pibtalcahuano.com>",
     to: [process.env.NOTIFICATION_EMAIL, movement.registradoEmail].filter(Boolean) as string[],
     subject: `[${movement.tipo}] Folio ${movement.folio} - ${movement.concepto}`,
     html: buildEmailHtml(movement)
@@ -92,7 +92,7 @@ export async function sendMovementEmail(
 // ─── Auth email helpers ───────────────────────────────────────────────────────
 
 const ORG_SHORT = "Sistema Contable PIBT"
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL ?? "Sistema contable PIBT <noreply@pibt.com>"
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL ?? "Sistema contable PIBT <noreply@pibtalcahuano.com>"
 
 function buildAuthEmailHtml(opts: {
   title: string
