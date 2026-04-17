@@ -64,22 +64,36 @@ function roleLabel(role: UserRole) {
   return "Visor"
 }
 
-type StatusMeta = { label: string; dotClass: string; rowOpacity: boolean }
+type StatusMeta = {
+  label: string
+  badgeClass: string | null
+  rowOpacity: boolean
+}
 
 function statusMeta(status: UserStatus): StatusMeta {
   switch (status) {
     case "ACTIVE":
-      return { label: "Activo", dotClass: "bg-primary", rowOpacity: false }
+      return { label: "Activo", badgeClass: null, rowOpacity: false }
     case "INACTIVE":
-      return { label: "Inactivo", dotClass: "bg-muted-foreground/30", rowOpacity: true }
+      return {
+        label: "Inactivo",
+        badgeClass: "bg-muted text-muted-foreground border border-border",
+        rowOpacity: true
+      }
     case "PENDING_ACTIVATION":
       return {
-        label: "Pendiente activación",
-        dotClass: "bg-yellow-400",
+        label: "Sin activar",
+        badgeClass:
+          "bg-yellow-100 text-yellow-800 border border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-300 dark:border-yellow-800",
         rowOpacity: false
       }
     case "PENDING_RESET":
-      return { label: "Pendiente reset", dotClass: "bg-orange-400", rowOpacity: false }
+      return {
+        label: "Reset pendiente",
+        badgeClass:
+          "bg-orange-100 text-orange-800 border border-orange-200 dark:bg-orange-900/30 dark:text-orange-300 dark:border-orange-800",
+        rowOpacity: false
+      }
   }
 }
 
@@ -493,10 +507,16 @@ export function UsuariosManager({ initialUsers }: { initialUsers: UsuarioRow[] }
                   >
                     {roleLabel(user.role)}
                   </span>
-                  <div
-                    className={cn("size-2 rounded-full shrink-0", meta.dotClass)}
-                    title={meta.label}
-                  />
+                  {meta.badgeClass && (
+                    <span
+                      className={cn(
+                        "hidden sm:inline-flex rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
+                        meta.badgeClass
+                      )}
+                    >
+                      {meta.label}
+                    </span>
+                  )}
                   <Button
                     size="xs"
                     variant="ghost"
