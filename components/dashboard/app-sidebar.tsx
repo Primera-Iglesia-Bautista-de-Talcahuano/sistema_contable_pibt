@@ -19,7 +19,8 @@ import {
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuItem
+  SidebarMenuItem,
+  useSidebar
 } from "@/components/ui/sidebar"
 import { NavUser } from "@/components/dashboard/nav-user"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
@@ -43,6 +44,7 @@ export function AppSidebar({
   }
 }) {
   const pathname = usePathname()
+  const { setOpenMobile } = useSidebar()
   const isAdmin = user.role === "ADMIN"
   const links = ALL_LINKS.filter((l) => !l.adminOnly || isAdmin)
 
@@ -78,6 +80,7 @@ export function AppSidebar({
                       render={<Link href={link.href} />}
                       isActive={isActive}
                       tooltip={link.label}
+                      onClick={() => setOpenMobile(false)}
                     >
                       <link.icon />
                       <span>{link.label}</span>

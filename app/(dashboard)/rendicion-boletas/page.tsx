@@ -24,8 +24,15 @@ import {
   ItemDescription,
   ItemActions
 } from "@/components/ui/item"
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription
+} from "@/components/ui/sheet"
 import { format } from "date-fns"
-import { Plus, Receipt } from "lucide-react"
+import { Plus, Receipt, Calendar, Hash, Banknote, FileText, Paperclip } from "lucide-react"
 
 type Boleta = {
   id: string
@@ -86,6 +93,7 @@ export default function RendicionBoletasPage() {
   const [descripcion, setDescripcion] = useState("")
   const [archivo, setArchivo] = useState<File | null>(null)
   const [open, setOpen] = useState(false)
+  const [selectedBoleta, setSelectedBoleta] = useState<Boleta | null>(null)
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -335,7 +343,12 @@ export default function RendicionBoletasPage() {
       ) : (
         <ItemGroup>
           {boletas.map((boleta) => (
-            <Item key={boleta.id} variant="outline">
+            <Item
+              key={boleta.id}
+              variant="outline"
+              onClick={() => setSelectedBoleta(boleta)}
+              className="cursor-pointer hover:bg-muted/50 transition-colors"
+            >
               <ItemContent>
                 <ItemTitle className="font-bold text-foreground">{boleta.numero}</ItemTitle>
                 <ItemDescription>
@@ -367,7 +380,7 @@ export default function RendicionBoletasPage() {
                 <Button
                   variant={boleta.rendida ? "outline" : "default"}
                   size="xs"
-                  onClick={() => toggleRendida(boleta.id)}
+                  onClick={(e) => { e.stopPropagation(); toggleRendida(boleta.id) }}
                   className="rounded-full px-5"
                 >
                   {boleta.rendida ? "Reabrir" : "Rendir"}
@@ -377,6 +390,137 @@ export default function RendicionBoletasPage() {
           ))}
         </ItemGroup>
       )}
+      <Sheet open={!!selectedBoleta} onOpenChange={(o) => !o && setSelectedBoleta(null)}>
+        <SheetContent side="right" className="w-full sm:max-w-md overflow-y-auto p-0">
+          {selectedBoleta && (
+            <div className="flex flex-col gap-8 p-6 sm:p-8">
+              <SheetHeader className="p-0">
+                <div className="flex items-center gap-3">
+                  <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10">
+                    <Receipt className="size-5 text-primary" />
+                  </div>
+                  <div>
+                    <SheetTitle className="text-xl font-bold">{selectedBoleta.numero}</SheetTitle>
+                    <SheetDescription className="text-xs">
+                      Detalle de boleta
+                    </SheetDescription>
+                  </div>
+                </div>
+              </SheetHeader>
+
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center gap-3 rounded-xl bg-muted/50 px-4 py-3">
+                  <Calendar className="size-4 shrink-0 text-muted-foreground" />
+                  <div className="flex flex-col gap-0.5">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                      Fecha de Emisión
+                    </p>
+                    <p className="text-sm font-semibold text-foreground">
+                      {formatDate(selectedBoleta.fecha)}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 rounded-xl bg-muted/50 px-4 py-3">
+                  <Banknote className="size-4 shrink-0 text-muted-foreground" />
+                  <div className="flex flex-col gap-0.5">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                      Monto
+                    </p>
+                    <p className="text-lg font-bold tabular-nums text-foreground">
+                      {clp.format(selectedBoleta.monto)}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 rounded-xl bg-muted/50 px-4 py-3">
+                  <Hash className="size-4 shrink-0 text-muted-foreground" />
+                  <div className="flex flex-col gap-0.5">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                      Número de Boleta
+                    </p>
+                    <p className="text-sm font-semibold text-foreground">{selectedBoleta.numero}</p>
+                  </div>
+                </div>
+
+                {selectedBoleta.descripcion && (
+                  <div className="flex items-start gap-3 rounded-xl bg-muted/50 px-4 py-3">
+                    <FileText className="size-4 shrink-0 translate-y-0.5 text-muted-foreground" />
+                    <div className="flex flex-col gap-0.5">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                        Descripción
+                      </p>
+                      <p className="text-sm font-medium text-foreground">{selectedBoleta.descripcion}</p>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex items-center gap-3 rounded-xl bg-muted/50 px-4 py-3">
+                  <div className="flex flex-col gap-0.5">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                      Estado
+                    </p>
+                    <span
+                      className={cn(
+                        "inline-flex w-fit rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide",
+                        selectedBoleta.rendida ? "badge-income" : "bg-muted text-muted-foreground"
+                      )}
+                    >
+                      {selectedBoleta.rendida ? "Rendida" : "Pendiente"}
+                    </span>
+                  </div>
+                </div>
+
+                {selectedBoleta.archivo ? (
+                  <div className="flex items-center gap-3 rounded-xl bg-muted/50 px-4 py-3">
+                    <Paperclip className="size-4 shrink-0 text-muted-foreground" />
+                    <div className="flex flex-col gap-2 min-w-0 flex-1">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                        Comprobante
+                      </p>
+                      {selectedBoleta.archivo.type.startsWith("image/") ? (
+                        /* eslint-disable-next-line @next/next/no-img-element */
+                        <img
+                          src={URL.createObjectURL(selectedBoleta.archivo)}
+                          alt="Comprobante"
+                          className="w-full rounded-xl border border-border object-cover"
+                        />
+                      ) : (
+                        <p className="text-sm font-medium text-foreground truncate">
+                          {selectedBoleta.archivo.name}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-3 rounded-xl bg-muted/50 px-4 py-3">
+                    <Paperclip className="size-4 shrink-0 text-muted-foreground/40" />
+                    <div className="flex flex-col gap-0.5">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                        Comprobante
+                      </p>
+                      <p className="text-sm italic text-muted-foreground/60">Sin adjunto</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex flex-col gap-3 pt-2 border-t border-border">
+                <Button
+                  variant={selectedBoleta.rendida ? "outline" : "default"}
+                  className="h-11"
+                  onClick={() => {
+                    toggleRendida(selectedBoleta.id)
+                    setSelectedBoleta((prev) => prev ? { ...prev, rendida: !prev.rendida } : null)
+                  }}
+                >
+                  {selectedBoleta.rendida ? "Reabrir boleta" : "Marcar como rendida"}
+                </Button>
+              </div>
+            </div>
+          )}
+        </SheetContent>
+      </Sheet>
     </section>
   )
 }
