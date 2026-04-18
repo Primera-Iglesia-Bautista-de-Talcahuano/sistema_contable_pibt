@@ -591,6 +591,16 @@ export function UsuariosManager({ initialUsers }: { initialUsers: UsuarioRow[] }
                 <ItemContent>
                   <ItemTitle>{user.full_name}</ItemTitle>
                   <ItemDescription>{user.email}</ItemDescription>
+                  {meta.badgeClass && (
+                    <span
+                      className={cn(
+                        "sm:hidden mt-0.5 w-fit rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
+                        meta.badgeClass
+                      )}
+                    >
+                      {meta.label}
+                    </span>
+                  )}
                 </ItemContent>
                 <ItemActions>
                   <span
