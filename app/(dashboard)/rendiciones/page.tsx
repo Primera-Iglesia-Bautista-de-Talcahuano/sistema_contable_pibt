@@ -32,7 +32,7 @@ import {
   SheetDescription
 } from "@/components/ui/sheet"
 import { format } from "date-fns"
-import { Plus, Receipt, Calendar, Hash, Banknote, FileText } from "lucide-react"
+import { Plus, Receipt, Calendar, Hash, Banknote, FileText, Paperclip } from "lucide-react"
 import type { Database } from "@/types/database.types"
 
 type Invoice = Database["public"]["Tables"]["invoices"]["Row"]
@@ -43,13 +43,14 @@ const clp = new Intl.NumberFormat("es-CL", {
   maximumFractionDigits: 0
 })
 
-export default function InvoicesPage() {
+export default function RendicionesPage() {
   const [invoices, setInvoices] = useState<Invoice[]>([])
   const [loading, setLoading] = useState(true)
   const [number, setNumber] = useState("")
   const [date, setDate] = useState<Date | undefined>(undefined)
   const [amount, setAmount] = useState("")
   const [description, setDescription] = useState("")
+  const [attachedFile, setAttachedFile] = useState<File | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [open, setOpen] = useState(false)
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null)
@@ -92,6 +93,7 @@ export default function InvoicesPage() {
       setDate(undefined)
       setAmount("")
       setDescription("")
+      setAttachedFile(null)
       setOpen(false)
     } catch {
       // keep dialog open on error
@@ -122,7 +124,7 @@ export default function InvoicesPage() {
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex flex-col gap-0.5">
           <h1 className="font-heading text-3xl font-bold tracking-tight text-foreground">
-            Rendición de Boletas
+            Rendiciones
           </h1>
           <p className="text-sm text-muted-foreground">
             Gestiona la rendición de boletas.{" "}
@@ -217,6 +219,51 @@ export default function InvoicesPage() {
                       onChange={(e) => setDescription(e.target.value)}
                       className="h-12 bg-muted border-none rounded-xl px-5 text-base font-medium"
                     />
+                  </div>
+
+                  <div className="sm:col-span-2 flex flex-col gap-2">
+                    <Label
+                      htmlFor="invoice-file"
+                      className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground ml-1"
+                    >
+                      Comprobante (foto o archivo)
+                    </Label>
+                    <label
+                      htmlFor="invoice-file"
+                      className="flex h-20 w-full cursor-pointer items-center justify-center gap-3 rounded-xl border-2 border-dashed border-border bg-muted/50 transition-colors hover:border-primary/40 hover:bg-muted"
+                    >
+                      <input
+                        id="invoice-file"
+                        type="file"
+                        accept="image/*,application/pdf"
+                        onChange={(e) => setAttachedFile(e.target.files?.[0] ?? null)}
+                        className="sr-only"
+                      />
+                      <Paperclip className="size-4 text-muted-foreground/60" />
+                      <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground/60">
+                        {attachedFile
+                          ? attachedFile.name
+                          : "Seleccionar archivo o tomar foto"}
+                      </span>
+                    </label>
+                    {attachedFile && attachedFile.type.startsWith("image/") && (
+                      <div className="flex items-center gap-3 rounded-xl bg-muted px-4 py-3">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={URL.createObjectURL(attachedFile)}
+                          alt="Vista previa"
+                          className="size-12 object-cover rounded-lg border border-border"
+                        />
+                        <div className="flex flex-col gap-0.5 min-w-0">
+                          <p className="text-xs font-bold text-foreground truncate">
+                            {attachedFile.name}
+                          </p>
+                          <p className="text-[11px] text-muted-foreground">
+                            {(attachedFile.size / 1024).toFixed(1)} KB
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -321,7 +368,9 @@ export default function InvoicesPage() {
                 <span
                   className={cn(
                     "inline-flex rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide",
-                    invoice.status === "SETTLED" ? "badge-income" : "bg-muted text-muted-foreground"
+                    invoice.status === "SETTLED"
+                      ? "badge-income"
+                      : "bg-muted text-muted-foreground"
                   )}
                 >
                   {invoice.status === "SETTLED" ? "Rendida" : "Pendiente"}

@@ -34,7 +34,7 @@ Always use `pnpm`, never `npm`.
 **Stack:** Next.js 16 App Router · TypeScript strict · Tailwind CSS v4 · Supabase (Postgres + Auth) · `@supabase/ssr` · React Hook Form + Zod · Recharts · Base UI
 
 **Layer separation:**
-- `app/` — Route handlers and page components. Split into `(auth)` and `(dashboard)` route groups. Dashboard pages: `dashboard`, `movimientos`, `eventos`, `invoices` (Rendición de Boletas), `usuarios`, `auditoria`.
+- `app/` — Route handlers and page components. Split into `(auth)` and `(dashboard)` route groups. Dashboard pages: `dashboard`, `movimientos`, `eventos`, `rendiciones` (Rendiciones / invoice settlement), `usuarios`, `auditoria`.
 - `components/` — UI (`components/ui/`) and domain components (`components/movimientos/`, `components/dashboard/`, etc.)
 - `services/` — All business logic. Never call the Supabase client directly from API routes; use the service layer.
 - `lib/supabase/` — Supabase client helpers:
@@ -59,7 +59,7 @@ Sequential numeric ID stored in the `folio_counter` table (singleton row `id: 'm
 Admins call the `create_user_with_role(email, password, full_name, role)` Postgres RPC via the service role client. Password hashing is handled inside the RPC via `pgcrypto` — no bcrypt in app code. First-deploy bootstrap: call `create_initial_admin(email, password, full_name)` once from Supabase Studio SQL editor.
 
 **Invoice settlement (Rendición de Boletas):**
-`invoices` table stores receipts submitted by operators for monthly settlement. Status enum: `PENDING` | `SETTLED`. No physical deletion. API: `GET /api/invoices`, `POST /api/invoices`, `PATCH /api/invoices/[id]`. Service: `services/invoices/invoices.service.ts`. Validator: `lib/validators/invoice.ts`. Page: `app/(dashboard)/invoices/page.tsx`. ADMIN and OPERATOR can create/update; all roles can view.
+`invoices` table stores receipts submitted by operators for monthly settlement. Status enum: `PENDING` | `SETTLED`. No physical deletion. API: `GET /api/invoices`, `POST /api/invoices`, `PATCH /api/invoices/[id]`. Service: `services/invoices/invoices.service.ts`. Validator: `lib/validators/invoice.ts`. Page: `app/(dashboard)/rendiciones/page.tsx` (route `/rendiciones`). ADMIN and OPERATOR can create/update; all roles can view.
 
 **Google integrations:**
 Three outbound webhooks via Google Apps Script (configured via env vars): PDF generation + Drive storage, email notification, Google Sheets sync. All triggered in `services/google/movement-postprocess.ts` after a movement is created/edited. Integration state tracked on `movements` (`pdf_status`, `synced_to_sheet`, `notification_status`, etc.).

@@ -29,7 +29,7 @@ const ALL_LINKS = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, adminOnly: false },
   { href: "/movimientos", label: "Movimientos", icon: Briefcase, adminOnly: false },
   { href: "/eventos", label: "Eventos", icon: CalendarDays, adminOnly: false },
-  { href: "/invoices", label: "Rendición", icon: Receipt, adminOnly: false },
+  { href: "/rendiciones", label: "Rendiciones", icon: Receipt, adminOnly: false },
   { href: "/usuarios", label: "Usuarios", icon: Users, adminOnly: true },
   { href: "/auditoria", label: "Auditoría", icon: ClipboardList, adminOnly: true }
 ]
