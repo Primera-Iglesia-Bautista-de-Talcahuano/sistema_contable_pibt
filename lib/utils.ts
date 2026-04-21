@@ -6,5 +6,13 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatDate(value: string | Date): string {
-  return new Date(value).toLocaleDateString("es-CL", { day: "2-digit", month: "2-digit", year: "numeric" });
+  return new Date(value).toLocaleDateString("es-CL", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric"
+  })
+}
+
+export function getSiteUrl(): string {
+  return process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"
 }

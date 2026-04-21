@@ -1,11 +1,9 @@
 import { createSupabaseAdminClient } from "@/lib/supabase/admin"
 import { auditoriaService } from "@/services/auditoria/auditoria.service"
 import { sendInviteEmail, sendResetEmail } from "@/services/email/resend.service"
+import { wrapAuthLink } from "@/services/auth/link-wrapper"
+import { getSiteUrl } from "@/lib/utils"
 import type { CreateUsuarioInput, UpdateUsuarioInput } from "@/lib/validators/usuario"
-
-function getSiteUrl() {
-  return process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"
-}
 
 export const usuariosService = {
   async list() {
@@ -57,7 +55,7 @@ export const usuariosService = {
     await sendInviteEmail({
       to: email,
       full_name: input.full_name.trim(),
-      action_link: linkData.properties.action_link
+      action_link: wrapAuthLink(linkData.properties.action_link)
     })
 
     await auditoriaService.logSystem({
@@ -113,7 +111,7 @@ export const usuariosService = {
     await sendResetEmail({
       to: email,
       full_name: user.full_name,
-      action_link: linkData.properties.action_link
+      action_link: wrapAuthLink(linkData.properties.action_link)
     })
 
     await auditoriaService.logSystem({
@@ -184,7 +182,7 @@ export const usuariosService = {
     await sendInviteEmail({
       to: email,
       full_name: user.full_name,
-      action_link: linkData.properties.action_link
+      action_link: wrapAuthLink(linkData.properties.action_link)
     })
 
     await auditoriaService.logSystem({

@@ -1,11 +1,9 @@
 import { NextResponse } from "next/server"
 import { createSupabaseAdminClient } from "@/lib/supabase/admin"
 import { sendForgotPasswordEmail } from "@/services/email/resend.service"
+import { wrapAuthLink } from "@/services/auth/link-wrapper"
+import { getSiteUrl } from "@/lib/utils"
 import { forgotPasswordSchema } from "@/lib/validators/auth"
-
-function getSiteUrl() {
-  return process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"
-}
 
 export async function POST(request: Request) {
   try {
@@ -53,7 +51,7 @@ export async function POST(request: Request) {
 
     await sendForgotPasswordEmail({
       to: email,
-      action_link: linkData.properties.action_link
+      action_link: wrapAuthLink(linkData.properties.action_link)
     })
 
     return NextResponse.json({ ok: true })
