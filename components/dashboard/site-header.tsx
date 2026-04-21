@@ -80,6 +80,11 @@ export function SiteHeader() {
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
+        <div className="ml-auto">
+          <span className="font-mono text-[10px] text-muted-foreground/50 select-none">
+            {process.env.NEXT_PUBLIC_COMMIT_SHA}
+          </span>
+        </div>
       </div>
     </header>
   )
