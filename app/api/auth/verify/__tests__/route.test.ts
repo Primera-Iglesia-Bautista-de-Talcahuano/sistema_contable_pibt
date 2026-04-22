@@ -23,8 +23,9 @@ let mockVerifyOtp: jest.Mock
 beforeEach(() => {
   mockSignOut = jest.fn().mockResolvedValue({})
   mockVerifyOtp = jest.fn().mockResolvedValue({ error: null })
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  mockedCreateClient.mockResolvedValue({ auth: { signOut: mockSignOut, verifyOtp: mockVerifyOtp } } as any)
+  mockedCreateClient.mockResolvedValue({
+    auth: { signOut: mockSignOut, verifyOtp: mockVerifyOtp }
+  } as unknown as Awaited<ReturnType<typeof createSupabaseServerClient>>)
 })
 
 describe("GET /api/auth/verify", () => {

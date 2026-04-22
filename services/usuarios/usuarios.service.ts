@@ -50,7 +50,12 @@ export const usuariosService = {
       }
     })
 
-    if (linkError) throw linkError
+    if (linkError) {
+      if (linkError.message.toLowerCase().includes("already been registered")) {
+        throw new Error("Ya existe un usuario registrado con este correo electrónico.")
+      }
+      throw linkError
+    }
 
     const userId = linkData.user.id
 
@@ -185,10 +190,13 @@ export const usuariosService = {
     const email = authUser.user.email!
     const callbackUrl = `${getSiteUrl()}/auth/callback`
 
+    // Use magiclink instead of invite — Supabase rejects re-inviting an already-pending
+    // (unconfirmed) user with a "already registered" error. Magiclink bypasses that
+    // restriction, sets email_confirmed_at on use, and works with our verifyOtp flow.
     const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
-      type: "invite",
+      type: "magiclink",
       email,
-      options: { redirectTo: callbackUrl, data: { full_name: user.full_name } }
+      options: { redirectTo: callbackUrl }
     })
 
     if (linkError) throw linkError
