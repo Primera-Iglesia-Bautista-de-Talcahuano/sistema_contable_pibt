@@ -104,7 +104,6 @@ export function UsuariosManager({ initialUsers }: { initialUsers: UsuarioRow[] }
   const [createOpen, setCreateOpen] = useState(false)
   const [editingUser, setEditingUser] = useState<UsuarioRow | null>(null)
   const [deletingUser, setDeletingUser] = useState<UsuarioRow | null>(null)
-  const [deleteLoading, setDeleteLoading] = useState(false)
   const [search, setSearch] = useState("")
 
   const filtered = useMemo(() => {
@@ -123,22 +122,31 @@ export function UsuariosManager({ initialUsers }: { initialUsers: UsuarioRow[] }
 
   const selectedRole = useWatch({ control: createForm.control, name: "role" })
 
-  const handleCreate = async (values: CreateUsuarioInput) => {
-    const res = await fetch("/api/users", {
+  const handleCreate = (values: CreateUsuarioInput) => {
+    const promise = fetch("/api/users", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(values)
+    }).then(async (res) => {
+      if (!res.ok) {
+        const data = (await res.json().catch(() => ({}))) as { message?: string }
+        throw new Error(data.message ?? "No se pudo crear el usuario.")
+      }
+      return res.json() as Promise<UsuarioRow>
     })
-    if (!res.ok) {
-      const data = (await res.json().catch(() => ({}))) as { message?: string }
-      toast.error(data.message ?? "No se pudo crear el usuario.")
-      return
-    }
-    const created = (await res.json()) as UsuarioRow
-    setUsers((prev) => [...prev, created])
-    createForm.reset()
-    setCreateOpen(false)
-    toast.success("Invitación enviada", { description: `Se envió el correo a ${created.email}` })
+
+    toast.promise(promise, {
+      loading: "Enviando invitación...",
+      success: (created: UsuarioRow) => {
+        setUsers((prev) => [...prev, created])
+        createForm.reset()
+        setCreateOpen(false)
+        return `Invitación enviada a ${created.email}`
+      },
+      error: (e: Error) => e.message
+    })
+
+    return promise.catch(() => {})
   }
 
   // ── Edit form ─────────────────────────────────────────────────────────────────
@@ -156,66 +164,93 @@ export function UsuariosManager({ initialUsers }: { initialUsers: UsuarioRow[] }
     })
   }
 
-  const handleUpdate = async (values: UpdateUsuarioInput) => {
-    const res = await fetch(`/api/users/${values.id}`, {
+  const handleUpdate = (values: UpdateUsuarioInput) => {
+    const promise = fetch(`/api/users/${values.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(values)
+    }).then(async (res) => {
+      if (!res.ok) {
+        const data = (await res.json().catch(() => ({}))) as { message?: string }
+        throw new Error(data.message ?? "No se pudo actualizar el usuario.")
+      }
+      return res.json() as Promise<UsuarioRow>
     })
-    if (!res.ok) {
-      const data = (await res.json().catch(() => ({}))) as { message?: string }
-      toast.error(data.message ?? "No se pudo actualizar el usuario.")
-      return
-    }
-    const updated = (await res.json()) as UsuarioRow
-    setUsers((prev) => prev.map((u) => (u.id === updated.id ? { ...u, ...updated } : u)))
-    setEditingUser(null)
-    toast.success("Usuario actualizado")
+
+    toast.promise(promise, {
+      loading: "Guardando cambios...",
+      success: (updated: UsuarioRow) => {
+        setUsers((prev) => prev.map((u) => (u.id === updated.id ? { ...u, ...updated } : u)))
+        setEditingUser(null)
+        return "Usuario actualizado"
+      },
+      error: (e: Error) => e.message
+    })
+
+    return promise.catch(() => {})
   }
 
   // ── Delete account ────────────────────────────────────────────────────────────
-  const handleDelete = async () => {
+  const handleDelete = () => {
     if (!deletingUser) return
-    setDeleteLoading(true)
-    const res = await fetch(`/api/users/${deletingUser.id}`, { method: "DELETE" })
-    setDeleteLoading(false)
-    if (!res.ok) {
-      const data = (await res.json().catch(() => ({}))) as { message?: string }
-      toast.error(data.message ?? "No se pudo eliminar el usuario.")
-      setDeletingUser(null)
-      return
-    }
-    const name = deletingUser.full_name
-    setUsers((prev) => prev.filter((u) => u.id !== deletingUser.id))
+    const { id: userId, full_name: name } = deletingUser
     setDeletingUser(null)
-    toast.success("Usuario eliminado", { description: name })
+
+    toast.promise(
+      fetch(`/api/users/${userId}`, { method: "DELETE" }).then(async (res) => {
+        if (!res.ok) {
+          const data = (await res.json().catch(() => ({}))) as { message?: string }
+          throw new Error(data.message ?? "No se pudo eliminar el usuario.")
+        }
+      }),
+      {
+        loading: "Eliminando usuario...",
+        success: () => {
+          setUsers((prev) => prev.filter((u) => u.id !== userId))
+          return `${name} fue eliminado`
+        },
+        error: (e: Error) => e.message
+      }
+    )
   }
 
   // ── Resend invite ─────────────────────────────────────────────────────────────
-  const handleResendInvite = async (userId: string) => {
-    const res = await fetch(`/api/users/${userId}/resend-invite`, { method: "POST" })
-    if (!res.ok) {
-      const data = (await res.json().catch(() => ({}))) as { message?: string }
-      toast.error(data.message ?? "No se pudo reenviar la invitación.")
-      return
-    }
-    toast.success("Invitación reenviada", {
-      description: "Se envió un nuevo enlace de activación al correo del usuario."
-    })
+  const handleResendInvite = (userId: string) => {
+    toast.promise(
+      fetch(`/api/users/${userId}/resend-invite`, { method: "POST" }).then(async (res) => {
+        if (!res.ok) {
+          const data = (await res.json().catch(() => ({}))) as { message?: string }
+          throw new Error(data.message ?? "No se pudo reenviar la invitación.")
+        }
+      }),
+      {
+        loading: "Reenviando invitación...",
+        success: "Invitación reenviada correctamente",
+        error: (e: Error) => e.message
+      }
+    )
   }
 
   // ── Reset account ─────────────────────────────────────────────────────────────
-  const handleReset = async (userId: string) => {
-    const res = await fetch(`/api/users/${userId}/reset`, { method: "POST" })
-    if (!res.ok) {
-      const data = (await res.json().catch(() => ({}))) as { message?: string }
-      toast.error(data.message ?? "No se pudo resetear la cuenta.")
-      return
-    }
-    setUsers((prev) =>
-      prev.map((u) => (u.id === userId ? { ...u, status: "PENDING_RESET" as UserStatus } : u))
+  const handleReset = (userId: string) => {
+    toast.promise(
+      fetch(`/api/users/${userId}/reset`, { method: "POST" }).then(async (res) => {
+        if (!res.ok) {
+          const data = (await res.json().catch(() => ({}))) as { message?: string }
+          throw new Error(data.message ?? "No se pudo resetear la cuenta.")
+        }
+      }),
+      {
+        loading: "Enviando correo de restablecimiento...",
+        success: () => {
+          setUsers((prev) =>
+            prev.map((u) => (u.id === userId ? { ...u, status: "PENDING_RESET" as UserStatus } : u))
+          )
+          return "Correo de restablecimiento enviado"
+        },
+        error: (e: Error) => e.message
+      }
     )
-    toast.success("Correo de restablecimiento enviado")
   }
 
   const totalUsers = users.length
@@ -521,13 +556,8 @@ export function UsuariosManager({ initialUsers }: { initialUsers: UsuarioRow[] }
               </DialogDescription>
             </DialogHeader>
             <div className="flex flex-col gap-2 pt-2 border-t border-border">
-              <Button
-                variant="destructive"
-                className="h-10"
-                disabled={deleteLoading}
-                onClick={() => void handleDelete()}
-              >
-                {deleteLoading ? "Eliminando..." : "Sí, eliminar"}
+              <Button variant="destructive" className="h-10" onClick={() => void handleDelete()}>
+                Sí, eliminar
               </Button>
               <Button variant="outline" className="h-10" onClick={() => setDeletingUser(null)}>
                 Cancelar

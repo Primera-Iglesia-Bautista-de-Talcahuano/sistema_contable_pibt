@@ -39,22 +39,30 @@ export function AnularButton({
     if (!motivo.trim()) return
 
     setLoading(true)
-    const res = await fetch(`/api/movements/${movimientoId}/cancel`, {
+    const promise = fetch(`/api/movements/${movimientoId}/cancel`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ cancellation_reason: motivo })
+    }).then(async (res) => {
+      if (!res.ok) {
+        const payload = (await res.json().catch(() => ({}))) as { message?: string }
+        throw new Error(payload.message ?? "No se pudo anular.")
+      }
     })
+
+    toast.promise(promise, {
+      loading: "Anulando movimiento...",
+      success: () => {
+        setIsOpen(false)
+        onSuccess?.()
+        router.refresh()
+        return "Movimiento anulado"
+      },
+      error: (e: Error) => e.message
+    })
+
+    await promise.catch(() => {})
     setLoading(false)
-
-    if (!res.ok) {
-      const payload = (await res.json().catch(() => ({}))) as { message?: string }
-      toast.error(payload.message ?? "No se pudo anular.")
-      return
-    }
-
-    setIsOpen(false)
-    onSuccess?.()
-    router.refresh()
   }
 
   return (

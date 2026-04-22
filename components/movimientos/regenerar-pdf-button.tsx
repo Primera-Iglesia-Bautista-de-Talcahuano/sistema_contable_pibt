@@ -11,18 +11,26 @@ export function RegenerarPdfButton({ movimientoId }: { movimientoId: string }) {
 
   async function onClick() {
     setLoading(true)
-    const res = await fetch(`/api/movements/${movimientoId}/regenerate-pdf`, {
+    const promise = fetch(`/api/movements/${movimientoId}/regenerate-pdf`, {
       method: "POST"
+    }).then(async (res) => {
+      if (!res.ok) {
+        const payload = (await res.json().catch(() => ({}))) as { message?: string }
+        throw new Error(payload.message ?? "No se pudo regenerar el PDF.")
+      }
     })
+
+    toast.promise(promise, {
+      loading: "Regenerando PDF...",
+      success: () => {
+        router.refresh()
+        return "PDF regenerado"
+      },
+      error: (e: Error) => e.message
+    })
+
+    await promise.catch(() => {})
     setLoading(false)
-
-    if (!res.ok) {
-      const payload = (await res.json().catch(() => ({}))) as { message?: string }
-      toast.error(payload.message ?? "No se pudo regenerar el PDF.")
-      return
-    }
-
-    router.refresh()
   }
 
   return (
