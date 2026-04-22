@@ -1,5 +1,6 @@
 "use client"
 
+import { useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { createSupabaseBrowserClient } from "@/lib/supabase/client"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -33,12 +34,12 @@ export function NavUser({
   const { isMobile } = useSidebar()
   const router = useRouter()
 
-  async function handleSignOut() {
+  const handleSignOut = useCallback(async () => {
     const supabase = createSupabaseBrowserClient()
     await supabase.auth.signOut()
     router.push("/")
     router.refresh()
-  }
+  }, [router])
 
   return (
     <SidebarMenu>

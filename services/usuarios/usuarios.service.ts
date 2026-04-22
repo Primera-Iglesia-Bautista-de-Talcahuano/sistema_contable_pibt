@@ -10,15 +10,11 @@ export const usuariosService = {
     const admin = createSupabaseAdminClient()
     const { data, error } = await admin
       .from("users")
-      .select("id, full_name, role, status, created_at, updated_at")
+      .select("id, full_name, email, role, status, created_at, updated_at")
       .order("created_at", { ascending: true })
 
     if (error) throw error
-
-    const { data: authUsers } = await admin.auth.admin.listUsers()
-    const emailMap = new Map(authUsers.users.map((u) => [u.id, u.email ?? ""]))
-
-    return data.map((u) => ({ ...u, email: emailMap.get(u.id) ?? "" }))
+    return data
   },
 
   async invite(input: CreateUsuarioInput, actingUserId: string) {

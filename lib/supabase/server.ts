@@ -1,3 +1,4 @@
+import { cache } from "react"
 import { createServerClient } from "@supabase/ssr"
 import { cookies } from "next/headers"
 import type { Database } from "@/types/database.types"
@@ -28,7 +29,9 @@ export async function createSupabaseServerClient() {
   )
 }
 
-export async function getCurrentUser() {
+// cache() deduplicates calls within a single React render tree (one request).
+// Layout + page both call getCurrentUser — this ensures it only runs once.
+export const getCurrentUser = cache(async function getCurrentUser() {
   const supabase = await createSupabaseServerClient()
   const {
     data: { user }
@@ -51,4 +54,4 @@ export async function getCurrentUser() {
     role: profile.role,
     status: profile.status
   }
-}
+})

@@ -7,13 +7,14 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { NativeSelect } from "@/components/ui/native-select"
-import { Plus } from "lucide-react"
+import { Plus, ChevronLeft, ChevronRight } from "lucide-react"
 
 type Props = {
   searchParams: Promise<{
     search?: string
     movement_type?: "INCOME" | "EXPENSE" | "ALL"
     status?: "ACTIVE" | "CANCELLED" | "ALL"
+    page?: string
   }>
 }
 
@@ -24,8 +25,26 @@ export default async function MovimientosPage({ searchParams }: Props) {
   const search = params.search?.trim() ?? ""
   const movement_type = params.movement_type ?? "ALL"
   const status = params.status ?? "ALL"
+  const page = Math.max(1, Number(params.page ?? "1") || 1)
 
-  const rows = await movimientosService.list({ search, movement_type, status })
+  const { data: rows, count, pageSize } = await movimientosService.list({
+    search,
+    movement_type,
+    status,
+    page
+  })
+
+  const totalPages = Math.max(1, Math.ceil(count / pageSize))
+
+  const buildUrl = (p: number) => {
+    const qs = new URLSearchParams()
+    if (search) qs.set("search", search)
+    if (movement_type !== "ALL") qs.set("movement_type", movement_type)
+    if (status !== "ALL") qs.set("status", status)
+    if (p > 1) qs.set("page", String(p))
+    const q = qs.toString()
+    return `/movimientos${q ? `?${q}` : ""}`
+  }
 
   return (
     <div className="flex flex-col gap-6 max-w-6xl mx-auto">
@@ -104,7 +123,7 @@ export default async function MovimientosPage({ searchParams }: Props) {
         canWrite={canWrite}
         rows={rows.map((row) => ({
           id: row.id,
-          folio_display: row.folio_display ?? String(row.folio),
+          folio_display: row.folio_display,
           movement_date: row.movement_date,
           movement_type: row.movement_type,
           amount: String(row.amount),
@@ -124,6 +143,37 @@ export default async function MovimientosPage({ searchParams }: Props) {
           }
         }))}
       />
+
+      {/* ── Pagination ──────────────────────────────────────────── */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between gap-4">
+          <p className="text-sm text-muted-foreground">
+            Página {page} de {totalPages} · {count} resultados
+          </p>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              render={page > 1 ? <Link href={buildUrl(page - 1)} /> : undefined}
+              disabled={page <= 1}
+              className="gap-1"
+            >
+              <ChevronLeft className="size-4" />
+              Anterior
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              render={page < totalPages ? <Link href={buildUrl(page + 1)} /> : undefined}
+              disabled={page >= totalPages}
+              className="gap-1"
+            >
+              Siguiente
+              <ChevronRight className="size-4" />
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -1,5 +1,6 @@
 "use client"
 
+import { memo } from "react"
 import {
   Bar,
   BarChart,
@@ -56,7 +57,7 @@ const ingresosEgresosConfig = {
   }
 } satisfies ChartConfig
 
-export function IngresosEgresosChart({ data }: { data: SerieItem[] }) {
+export const IngresosEgresosChart = memo(function IngresosEgresosChart({ data }: { data: SerieItem[] }) {
   if (!data.length) {
     return (
       <Empty className="border-dashed h-[300px] sm:h-72">
@@ -134,7 +135,7 @@ export function IngresosEgresosChart({ data }: { data: SerieItem[] }) {
       </ChartContainer>
     </div>
   )
-}
+})
 
 const getCategoriaConfig = (data: CategoriaItem[]) => {
   const config: ChartConfig = {
@@ -151,7 +152,7 @@ const getCategoriaConfig = (data: CategoriaItem[]) => {
   return config
 }
 
-export function CategoriaChart({ data }: { data: CategoriaItem[] }) {
+export const CategoriaChart = memo(function CategoriaChart({ data }: { data: CategoriaItem[] }) {
   if (!data.length) {
     return (
       <Empty className="border-dashed h-[200px]">
@@ -220,4 +221,4 @@ export function CategoriaChart({ data }: { data: CategoriaItem[] }) {
       </div>
     </div>
   )
-}
+})

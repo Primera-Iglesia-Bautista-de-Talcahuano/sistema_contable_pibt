@@ -16,13 +16,13 @@ export async function GET(request: Request) {
   const movement_type = searchParams.get("movement_type") as "INCOME" | "EXPENSE" | "ALL" | null;
   const status = searchParams.get("status") as "ACTIVE" | "CANCELLED" | "ALL" | null;
 
-  const rows = await movimientosService.list({
+  const { data } = await movimientosService.list({
     search,
     movement_type: movement_type ?? "ALL",
     status: status ?? "ALL",
   });
 
-  return NextResponse.json(rows);
+  return NextResponse.json(data);
 }
 
 export async function POST(request: Request) {

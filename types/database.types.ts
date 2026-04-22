@@ -162,7 +162,7 @@ export type Database = {
           delivered_by: string | null
           drive_file_id: string | null
           folio: number
-          folio_display: string | null
+          folio_display: string
           id: string
           movement_date: string
           movement_type: Database["public"]["Enums"]["movement_type"]
@@ -197,7 +197,7 @@ export type Database = {
           delivered_by?: string | null
           drive_file_id?: string | null
           folio: number
-          folio_display?: string | null
+          folio_display?: string
           id?: string
           movement_date: string
           movement_type: Database["public"]["Enums"]["movement_type"]
@@ -232,7 +232,7 @@ export type Database = {
           delivered_by?: string | null
           drive_file_id?: string | null
           folio?: number
-          folio_display?: string | null
+          folio_display?: string
           id?: string
           movement_date?: string
           movement_type?: Database["public"]["Enums"]["movement_type"]
@@ -368,6 +368,10 @@ export type Database = {
           p_role?: Database["public"]["Enums"]["user_role"]
         }
         Returns: string
+      }
+      get_dashboard_summary: {
+        Args: { p_from?: string; p_to?: string }
+        Returns: Json
       }
       get_my_role: {
         Args: never
