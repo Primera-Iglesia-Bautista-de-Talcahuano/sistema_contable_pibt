@@ -26,6 +26,20 @@ export const usuariosService = {
     const email = input.email.toLowerCase().trim()
     const callbackUrl = `${getSiteUrl()}/auth/callback`
 
+    const { data: existing } = await admin
+      .from("users")
+      .select("status")
+      .eq("email", email)
+      .maybeSingle()
+    if (existing) {
+      if (existing.status === "PENDING_ACTIVATION") {
+        throw new Error(
+          "Este correo ya tiene una invitación pendiente. Usa la opción 'Reenviar invitación'."
+        )
+      }
+      throw new Error("Ya existe un usuario registrado con este correo electrónico.")
+    }
+
     // generateLink creates the auth.users record and returns the invite link
     const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
       type: "invite",
