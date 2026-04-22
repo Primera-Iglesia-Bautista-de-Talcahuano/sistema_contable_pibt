@@ -42,6 +42,17 @@ type UsuarioRow = {
   role: UserRole
   status: UserStatus
   created_at: string | Date
+  updated_at: string | Date | null
+}
+
+function isLinkExpired(user: UsuarioRow): boolean {
+  if (user.status !== "PENDING_ACTIVATION" && user.status !== "PENDING_RESET") return false
+  const expiryMs = user.status === "PENDING_ACTIVATION" ? 24 * 60 * 60 * 1000 : 60 * 60 * 1000
+  const lastAction = Math.max(
+    new Date(user.created_at).getTime(),
+    user.updated_at ? new Date(user.updated_at).getTime() : 0
+  )
+  return Date.now() - lastAction > expiryMs
 }
 
 function getInitials(name: string) {
@@ -241,6 +252,11 @@ export function UsuariosManager({ initialUsers }: { initialUsers: UsuarioRow[] }
       {
         loading: "Reenviando invitación...",
         success: (data) => {
+          setUsers((prev) =>
+            prev.map((u) =>
+              u.id === userId ? { ...u, updated_at: new Date().toISOString() } : u
+            )
+          )
           if (data?.invite_link) {
             setLinkCopied(false)
             setInviteLink(data.invite_link)
@@ -265,7 +281,11 @@ export function UsuariosManager({ initialUsers }: { initialUsers: UsuarioRow[] }
         loading: "Enviando correo de restablecimiento...",
         success: () => {
           setUsers((prev) =>
-            prev.map((u) => (u.id === userId ? { ...u, status: "PENDING_RESET" as UserStatus } : u))
+            prev.map((u) =>
+              u.id === userId
+                ? { ...u, status: "PENDING_RESET" as UserStatus, updated_at: new Date().toISOString() }
+                : u
+            )
           )
           return "Correo de restablecimiento enviado"
         },
@@ -672,6 +692,7 @@ export function UsuariosManager({ initialUsers }: { initialUsers: UsuarioRow[] }
           {filtered.map((user) => {
             const meta = statusMeta(user.status)
             const isActive = user.status === "ACTIVE"
+            const linkExpired = isLinkExpired(user)
             return (
               <Item key={user.id} variant="outline" className={cn(meta.rowOpacity && "opacity-55")}>
                 <div
@@ -692,16 +713,23 @@ export function UsuariosManager({ initialUsers }: { initialUsers: UsuarioRow[] }
                 <ItemContent>
                   <ItemTitle>{user.full_name}</ItemTitle>
                   <ItemDescription>{user.email}</ItemDescription>
-                  {meta.badgeClass && (
-                    <span
-                      className={cn(
-                        "sm:hidden mt-0.5 w-fit rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
-                        meta.badgeClass
-                      )}
-                    >
-                      {meta.label}
-                    </span>
-                  )}
+                  <div className="sm:hidden mt-0.5 flex flex-wrap gap-1">
+                    {meta.badgeClass && (
+                      <span
+                        className={cn(
+                          "w-fit rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
+                          meta.badgeClass
+                        )}
+                      >
+                        {meta.label}
+                      </span>
+                    )}
+                    {linkExpired && (
+                      <span className="w-fit rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide bg-destructive/10 text-destructive border border-destructive/20">
+                        Enlace expirado
+                      </span>
+                    )}
+                  </div>
                 </ItemContent>
                 <ItemActions>
                   <span
@@ -720,6 +748,11 @@ export function UsuariosManager({ initialUsers }: { initialUsers: UsuarioRow[] }
                       )}
                     >
                       {meta.label}
+                    </span>
+                  )}
+                  {linkExpired && (
+                    <span className="hidden sm:inline-flex rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide bg-destructive/10 text-destructive border border-destructive/20">
+                      Enlace expirado
                     </span>
                   )}
                   {user.status === "PENDING_ACTIVATION" && (
