@@ -88,6 +88,8 @@ export const movimientosService = {
       .from("movements")
       .insert({
         folio,
+        // z.string().date() guarantees "YYYY-MM-DD" input; new Date() parses it as UTC midnight,
+        // which is the intended behavior — display code must read in UTC (not local time).
         movement_date: new Date(input.movement_date).toISOString(),
         movement_type: input.movement_type,
         amount: input.amount,

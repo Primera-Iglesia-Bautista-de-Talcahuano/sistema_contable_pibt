@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 export const movimientoBaseSchema = z.object({
-  movement_date: z.string().min(1, "La fecha es requerida"),
+  movement_date: z.string().date("La fecha no tiene un formato válido"),
   movement_type: z.enum(["INCOME", "EXPENSE"]),
   amount: z.coerce.number().positive("El monto debe ser mayor a 0"),
   category: z.string().min(1, "La categoria es requerida"),
