@@ -28,8 +28,16 @@ export async function proxy(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   const { pathname } = request.nextUrl
-  const isPublicPath =
-    pathname === "/" || pathname.startsWith("/auth/callback") || pathname.startsWith("/activar")
+  const PUBLIC_PATHS = [
+    "/",
+    "/auth/callback",
+    "/activar",
+    "/api/auth/verify",
+    "/api/auth/forgot-password"
+  ]
+  const isPublicPath = PUBLIC_PATHS.some((p) =>
+    p === "/" ? pathname === "/" : pathname.startsWith(p)
+  )
 
   // Unauthenticated user trying to access a protected page → send to login
   // Authenticated users at "/" are handled by the page component (server-side redirect)
