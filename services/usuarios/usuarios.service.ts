@@ -66,11 +66,13 @@ export const usuariosService = {
 
     if (insertError) throw insertError
 
+    const inviteLink = wrapAuthLink(linkData.properties.action_link)
+
     // Send invite email via Resend
     await sendInviteEmail({
       to: email,
       full_name: input.full_name.trim(),
-      action_link: wrapAuthLink(linkData.properties.action_link)
+      action_link: inviteLink
     })
 
     await auditoriaService.logSystem({
@@ -88,7 +90,7 @@ export const usuariosService = {
       .eq("id", userId)
       .single()
 
-    return { ...profile, email }
+    return { ...profile, email, invite_link: inviteLink }
   },
 
   async resetAccount(userId: string, actingUserId: string) {
@@ -197,10 +199,12 @@ export const usuariosService = {
 
     if (linkError) throw linkError
 
+    const inviteLink = wrapAuthLink(linkData.properties.action_link)
+
     await sendInviteEmail({
       to: email,
       full_name: user.full_name,
-      action_link: wrapAuthLink(linkData.properties.action_link)
+      action_link: inviteLink
     })
 
     await auditoriaService.logSystem({
@@ -210,6 +214,8 @@ export const usuariosService = {
       user_id: actingUserId,
       note: "Correo de invitación reenviado"
     })
+
+    return { invite_link: inviteLink }
   },
 
   async update(input: UpdateUsuarioInput, actingUserId: string) {

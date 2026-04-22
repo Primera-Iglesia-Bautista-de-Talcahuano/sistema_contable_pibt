@@ -11,8 +11,8 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
 
   try {
     const { id } = await params
-    await usuariosService.resendInvite(id, user.id)
-    return NextResponse.json({ ok: true })
+    const result = await usuariosService.resendInvite(id, user.id)
+    return NextResponse.json(result)
   } catch (error) {
     const message = error instanceof Error ? error.message : "Error inesperado"
     return NextResponse.json({ message }, { status: 400 })
