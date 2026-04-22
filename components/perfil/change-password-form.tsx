@@ -4,11 +4,10 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Eye, EyeOff, Loader2 } from "lucide-react"
+import { Loader2 } from "lucide-react"
 import { createSupabaseBrowserClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { InputGroup, InputGroupInlineEnd } from "@/components/ui/input-group"
+import { PasswordInput } from "@/components/ui/password-input"
 import { Field, FieldGroup, FieldLabel, FieldError } from "@/components/ui/field"
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
 import { changePasswordSchema, type ChangePasswordValues } from "@/lib/validators/auth"
@@ -17,9 +16,6 @@ import { toast } from "sonner"
 export function ChangePasswordForm() {
   const router = useRouter()
   const [error, setError] = useState<string | null>(null)
-  const [showCurrent, setShowCurrent] = useState(false)
-  const [showNew, setShowNew] = useState(false)
-  const [showConfirm, setShowConfirm] = useState(false)
 
   const {
     register,
@@ -88,26 +84,12 @@ export function ChangePasswordForm() {
           >
             Contraseña actual
           </FieldLabel>
-          <InputGroup>
-            <Input
-              id="currentPassword"
-              type={showCurrent ? "text" : "password"}
-              placeholder="••••••••"
-              className="pr-10"
-              aria-invalid={!!errors.currentPassword}
-              {...register("currentPassword")}
-            />
-            <InputGroupInlineEnd>
-              <button
-                type="button"
-                onClick={() => setShowCurrent((v) => !v)}
-                className="text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none rounded"
-                aria-label={showCurrent ? "Ocultar contraseña" : "Mostrar contraseña"}
-              >
-                {showCurrent ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-              </button>
-            </InputGroupInlineEnd>
-          </InputGroup>
+          <PasswordInput
+            id="currentPassword"
+            placeholder="••••••••"
+            aria-invalid={!!errors.currentPassword}
+            {...register("currentPassword")}
+          />
           <FieldError errors={[errors.currentPassword]} />
         </Field>
 
@@ -118,26 +100,12 @@ export function ChangePasswordForm() {
           >
             Nueva contraseña
           </FieldLabel>
-          <InputGroup>
-            <Input
-              id="newPassword"
-              type={showNew ? "text" : "password"}
-              placeholder="••••••••"
-              className="pr-10"
-              aria-invalid={!!errors.newPassword}
-              {...register("newPassword")}
-            />
-            <InputGroupInlineEnd>
-              <button
-                type="button"
-                onClick={() => setShowNew((v) => !v)}
-                className="text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none rounded"
-                aria-label={showNew ? "Ocultar contraseña" : "Mostrar contraseña"}
-              >
-                {showNew ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-              </button>
-            </InputGroupInlineEnd>
-          </InputGroup>
+          <PasswordInput
+            id="newPassword"
+            placeholder="••••••••"
+            aria-invalid={!!errors.newPassword}
+            {...register("newPassword")}
+          />
           <FieldError errors={[errors.newPassword]} />
         </Field>
 
@@ -148,26 +116,12 @@ export function ChangePasswordForm() {
           >
             Confirmar nueva contraseña
           </FieldLabel>
-          <InputGroup>
-            <Input
-              id="confirmPassword"
-              type={showConfirm ? "text" : "password"}
-              placeholder="••••••••"
-              className="pr-10"
-              aria-invalid={!!errors.confirmPassword}
-              {...register("confirmPassword")}
-            />
-            <InputGroupInlineEnd>
-              <button
-                type="button"
-                onClick={() => setShowConfirm((v) => !v)}
-                className="text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none rounded"
-                aria-label={showConfirm ? "Ocultar contraseña" : "Mostrar contraseña"}
-              >
-                {showConfirm ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-              </button>
-            </InputGroupInlineEnd>
-          </InputGroup>
+          <PasswordInput
+            id="confirmPassword"
+            placeholder="••••••••"
+            aria-invalid={!!errors.confirmPassword}
+            {...register("confirmPassword")}
+          />
           <FieldError errors={[errors.confirmPassword]} />
         </Field>
       </FieldGroup>

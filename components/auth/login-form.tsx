@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { createSupabaseBrowserClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { InputGroup, InputGroupInlineEnd } from "@/components/ui/input-group"
+import { PasswordInput } from "@/components/ui/password-input"
 import { Field, FieldGroup, FieldLabel, FieldError } from "@/components/ui/field"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import {
@@ -18,7 +18,7 @@ import {
   DialogHeader,
   DialogTitle
 } from "@/components/ui/dialog"
-import { Eye, EyeOff, Loader2 } from "lucide-react"
+import { Loader2 } from "lucide-react"
 import { forgotPasswordSchema, type ForgotPasswordValues } from "@/lib/validators/auth"
 
 const loginSchema = z.object({
@@ -32,7 +32,6 @@ export function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [error, setError] = useState<string | null>(null)
-  const [showPassword, setShowPassword] = useState(false)
   const [forgotOpen, setForgotOpen] = useState(false)
   const [forgotSent, setForgotSent] = useState(false)
 
@@ -118,26 +117,12 @@ export function LoginForm() {
                 ¿Olvidaste tu contraseña?
               </button>
             </div>
-            <InputGroup>
-              <Input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                placeholder="••••••••"
-                className="pr-10"
-                aria-invalid={!!errors.password}
-                {...register("password")}
-              />
-              <InputGroupInlineEnd>
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((v) => !v)}
-                  className="text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none rounded"
-                  aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
-                >
-                  {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-                </button>
-              </InputGroupInlineEnd>
-            </InputGroup>
+            <PasswordInput
+              id="password"
+              placeholder="••••••••"
+              aria-invalid={!!errors.password}
+              {...register("password")}
+            />
             <FieldError errors={[errors.password]} />
           </Field>
         </FieldGroup>
