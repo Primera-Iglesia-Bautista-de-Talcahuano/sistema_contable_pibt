@@ -15,7 +15,7 @@ import { format } from "date-fns"
 import { NativeSelect } from "@/components/ui/native-select"
 import { Field, FieldGroup, FieldLabel, FieldError } from "@/components/ui/field"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Paperclip } from "lucide-react"
+import { FileInput } from "@/components/ui/file-input"
 import { createSupabaseBrowserClient } from "@/lib/supabase/client"
 
 type Props = {
@@ -309,38 +309,7 @@ export function MovimientoForm({ mode, movimientoId, initialValues, onSuccess }:
             <FieldLabel className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground ml-1">
               Comprobante (foto o archivo)
             </FieldLabel>
-            <label
-              htmlFor="support-file"
-              className="flex h-20 w-full cursor-pointer items-center justify-center gap-3 rounded-xl border-2 border-dashed border-border bg-muted/50 transition-colors hover:border-primary/40 hover:bg-muted"
-            >
-              <input
-                id="support-file"
-                type="file"
-                accept="image/*,application/pdf"
-                onChange={(e) => setSupportFile(e.target.files?.[0] ?? null)}
-                className="sr-only"
-              />
-              <Paperclip className="size-4 text-muted-foreground/60" />
-              <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground/60">
-                {supportFile ? supportFile.name : "Seleccionar archivo o tomar foto"}
-              </span>
-            </label>
-            {supportFile && supportFile.type.startsWith("image/") && (
-              <div className="flex items-center gap-3 rounded-xl bg-muted px-4 py-3">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={URL.createObjectURL(supportFile)}
-                  alt="Vista previa"
-                  className="size-12 object-cover rounded-lg border border-border"
-                />
-                <div className="flex flex-col gap-0.5 min-w-0">
-                  <p className="text-xs font-bold text-foreground truncate">{supportFile.name}</p>
-                  <p className="text-[11px] text-muted-foreground">
-                    {(supportFile.size / 1024).toFixed(1)} KB
-                  </p>
-                </div>
-              </div>
-            )}
+            <FileInput id="support-file" value={supportFile} onChange={setSupportFile} />
           </Field>
         </FieldGroup>
       </div>

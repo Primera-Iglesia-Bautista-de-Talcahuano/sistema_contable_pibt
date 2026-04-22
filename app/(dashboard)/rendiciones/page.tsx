@@ -44,6 +44,7 @@ import {
 } from "lucide-react"
 import type { Database } from "@/types/database.types"
 import { createSupabaseBrowserClient } from "@/lib/supabase/client"
+import { FileInput } from "@/components/ui/file-input"
 
 type Invoice = Database["public"]["Tables"]["invoices"]["Row"]
 
@@ -255,40 +256,7 @@ export default function RendicionesPage() {
                     >
                       Comprobante (foto o archivo)
                     </Label>
-                    <label
-                      htmlFor="invoice-file"
-                      className="flex h-20 w-full cursor-pointer items-center justify-center gap-3 rounded-xl border-2 border-dashed border-border bg-muted/50 transition-colors hover:border-primary/40 hover:bg-muted"
-                    >
-                      <input
-                        id="invoice-file"
-                        type="file"
-                        accept="image/*,application/pdf"
-                        onChange={(e) => setAttachedFile(e.target.files?.[0] ?? null)}
-                        className="sr-only"
-                      />
-                      <Paperclip className="size-4 text-muted-foreground/60" />
-                      <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground/60">
-                        {attachedFile ? attachedFile.name : "Seleccionar archivo o tomar foto"}
-                      </span>
-                    </label>
-                    {attachedFile && attachedFile.type.startsWith("image/") && (
-                      <div className="flex items-center gap-3 rounded-xl bg-muted px-4 py-3">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={URL.createObjectURL(attachedFile)}
-                          alt="Vista previa"
-                          className="size-12 object-cover rounded-lg border border-border"
-                        />
-                        <div className="flex flex-col gap-0.5 min-w-0">
-                          <p className="text-xs font-bold text-foreground truncate">
-                            {attachedFile.name}
-                          </p>
-                          <p className="text-[11px] text-muted-foreground">
-                            {(attachedFile.size / 1024).toFixed(1)} KB
-                          </p>
-                        </div>
-                      </div>
-                    )}
+                    <FileInput id="invoice-file" value={attachedFile} onChange={setAttachedFile} />
                   </div>
                 </div>
 
