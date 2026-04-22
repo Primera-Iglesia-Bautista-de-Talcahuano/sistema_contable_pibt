@@ -87,7 +87,7 @@ export function SiteHeader() {
             rel="noopener noreferrer"
             className="font-mono text-[10px] text-muted-foreground/50 hover:text-muted-foreground/80 transition-colors"
           >
-            v{process.env.NEXT_PUBLIC_COMMIT_SHA}
+            Version: {process.env.NEXT_PUBLIC_COMMIT_SHA}
           </a>
         </div>
       </div>

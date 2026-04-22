@@ -77,7 +77,7 @@ export default async function LoginPage() {
               rel="noopener noreferrer"
               className="font-mono text-[10px] text-muted-foreground/40 hover:text-muted-foreground/70 transition-colors"
             >
-              v{process.env.NEXT_PUBLIC_COMMIT_SHA}
+              Version: {process.env.NEXT_PUBLIC_COMMIT_SHA}
             </a>
           </div>
         </div>
