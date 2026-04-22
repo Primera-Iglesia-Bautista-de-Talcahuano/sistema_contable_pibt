@@ -1,82 +1,86 @@
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin"
 
-type SerieItem = { name: string; ingresos: number; egresos: number };
-type CategoriaItem = { categoria: string; total: number };
+type SerieItem = { name: string; ingresos: number; egresos: number }
+type CategoriaItem = { categoria: string; total: number }
 
 type DashboardPeriodo = {
-  from?: string;
-  to?: string;
-};
+  from?: string
+  to?: string
+}
+
+type RpcResult = {
+  totalIngresos: number
+  totalEgresos: number
+  cantidadMovimientos: number
+  series: Array<{ month: string; ingresos: number; egresos: number }>
+  resumenPorCategoria: CategoriaItem[]
+}
+
+// Converts 'YYYY-MM' ISO month string to Spanish short locale label ("ene. 26").
+function formatMonthES(isoMonth: string): string {
+  const [year, month] = isoMonth.split("-")
+  const date = new Date(Number(year), Number(month) - 1, 1)
+  return date.toLocaleDateString("es-CL", { month: "short", year: "2-digit" })
+}
 
 export const dashboardService = {
   async getResumen(periodo: DashboardPeriodo = {}) {
-    const admin = createSupabaseAdminClient();
+    const admin = createSupabaseAdminClient()
 
-    let query = admin
-      .from("movements")
-      .select("id, movement_date, movement_type, amount, category, folio, folio_display, concept, status, created_by:users!created_by_id(full_name)")
-      .eq("status", "ACTIVE");
+    let pFrom: string | null = null
+    let pTo: string | null = null
 
     if (periodo.from) {
-      const fromDate = new Date(periodo.from);
-      if (!Number.isNaN(fromDate.getTime())) {
-        query = query.gte("movement_date", fromDate.toISOString());
-      }
+      const d = new Date(periodo.from)
+      if (!Number.isNaN(d.getTime())) pFrom = d.toISOString()
     }
     if (periodo.to) {
-      const toDate = new Date(periodo.to);
-      if (!Number.isNaN(toDate.getTime())) {
-        toDate.setHours(23, 59, 59, 999);
-        query = query.lte("movement_date", toDate.toISOString());
+      const d = new Date(periodo.to)
+      if (!Number.isNaN(d.getTime())) {
+        d.setHours(23, 59, 59, 999)
+        pTo = d.toISOString()
       }
     }
 
-    const { data: activos, error } = await query.order("movement_date", { ascending: true });
-    if (error) throw error;
+    // Run aggregation RPC and recent-movements query in parallel
+    const [rpcResponse, recentResponse] = await Promise.all([
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      admin.rpc("get_dashboard_summary" as any, { p_from: pFrom, p_to: pTo }),
+      admin
+        .from("movements")
+        .select(
+          "id, folio, folio_display, movement_date, movement_type, amount, category, concept, status, created_by:users!created_by_id(full_name)"
+        )
+        .eq("status", "ACTIVE")
+        .order("movement_date", { ascending: false })
+        .order("folio", { ascending: false })
+        .limit(8)
+    ])
 
-    const ultimosMovimientos = [...activos]
-      .sort((a, b) => new Date(b.movement_date).getTime() - new Date(a.movement_date).getTime() || b.folio - a.folio)
-      .slice(0, 8);
+    if (rpcResponse.error) throw rpcResponse.error
+    if (recentResponse.error) throw recentResponse.error
 
-    const totalIngresos = activos
-      .filter((m) => m.movement_type === "INCOME")
-      .reduce((acc, m) => acc + Number(m.amount), 0);
-    const totalEgresos = activos
-      .filter((m) => m.movement_type === "EXPENSE")
-      .reduce((acc, m) => acc + Number(m.amount), 0);
+    const summary = rpcResponse.data as unknown as RpcResult
 
-    const serieMap = new Map<string, SerieItem>();
-    for (const m of activos) {
-      const month = new Date(m.movement_date).toLocaleDateString("es-CL", {
-        month: "short",
-        year: "2-digit",
-      });
-      const current = serieMap.get(month) ?? { name: month, ingresos: 0, egresos: 0 };
-      if (m.movement_type === "INCOME") current.ingresos += Number(m.amount);
-      if (m.movement_type === "EXPENSE") current.egresos += Number(m.amount);
-      serieMap.set(month, current);
-    }
-
-    const categoriaMap = new Map<string, number>();
-    for (const m of activos) {
-      categoriaMap.set(m.category, (categoriaMap.get(m.category) ?? 0) + Number(m.amount));
-    }
-
-    const resumenPorCategoria: CategoriaItem[] = Array.from(categoriaMap.entries())
-      .map(([categoria, total]) => ({ categoria, total }))
-      .sort((a, b) => b.total - a.total)
-      .slice(0, 8);
+    const serieIngresosEgresos: SerieItem[] = summary.series.map((s) => ({
+      name: formatMonthES(s.month),
+      ingresos: Number(s.ingresos),
+      egresos: Number(s.egresos)
+    }))
 
     return {
       kpis: {
-        totalIngresos,
-        totalEgresos,
-        saldoActual: totalIngresos - totalEgresos,
-        cantidadMovimientos: activos.length,
+        totalIngresos: Number(summary.totalIngresos),
+        totalEgresos: Number(summary.totalEgresos),
+        saldoActual: Number(summary.totalIngresos) - Number(summary.totalEgresos),
+        cantidadMovimientos: Number(summary.cantidadMovimientos)
       },
-      serieIngresosEgresos: Array.from(serieMap.values()),
-      resumenPorCategoria,
-      ultimosMovimientos,
-    };
-  },
-};
+      serieIngresosEgresos,
+      resumenPorCategoria: summary.resumenPorCategoria.map((c) => ({
+        categoria: c.categoria,
+        total: Number(c.total)
+      })),
+      ultimosMovimientos: recentResponse.data
+    }
+  }
+}

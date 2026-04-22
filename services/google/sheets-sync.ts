@@ -6,7 +6,7 @@ export async function syncMovementToSheet(
   /* eslint-disable @typescript-eslint/no-unused-vars */
   _movement: MovementIntegrationPayload
 ): Promise<AppsScriptResponse> {
-  const allMovements = await movimientosService.list({ status: "ACTIVE" })
+  const { data: allMovements } = await movimientosService.list({ status: "ACTIVE", pageSize: 10000 })
 
   const movementsPayload = allMovements.map((m) => {
     const createdBy = m.users as { full_name: string; email: string } | null

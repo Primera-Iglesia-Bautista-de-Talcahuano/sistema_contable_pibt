@@ -12,20 +12,33 @@ function normalizeOptional(value?: string | null) {
   return trimmed.length ? trimmed : null
 }
 
+const PAGE_SIZE = 50
+
 type ListFilters = {
   search?: string
   movement_type?: "INCOME" | "EXPENSE" | "ALL"
   status?: "ACTIVE" | "CANCELLED" | "ALL"
+  page?: number
+  pageSize?: number
 }
 
 export const movimientosService = {
   async list(filters: ListFilters = {}) {
     const admin = createSupabaseAdminClient()
+    const pageSize = filters.pageSize ?? PAGE_SIZE
+    const page = Math.max(1, filters.page ?? 1)
+    const from = (page - 1) * pageSize
+    const to = from + pageSize - 1
+
     let query = admin
       .from("movements")
-      .select("*, users!created_by_id(id, full_name, email)")
+      .select(
+        "id, folio, folio_display, movement_date, movement_type, amount, category, concept, reference_person, received_by, delivered_by, beneficiary, payment_method, support_number, notes, cancellation_reason, status, created_by_id, created_at, users!created_by_id(id, full_name, email)",
+        { count: "exact" }
+      )
       .order("movement_date", { ascending: false })
       .order("folio", { ascending: false })
+      .range(from, to)
 
     if (filters.movement_type && filters.movement_type !== "ALL") {
       query = query.eq("movement_type", filters.movement_type)
@@ -40,9 +53,9 @@ export const movimientosService = {
       )
     }
 
-    const { data, error } = await query
+    const { data, error, count } = await query
     if (error) throw error
-    return data
+    return { data: data ?? [], count: count ?? 0, page, pageSize }
   },
 
   async findById(id: string) {

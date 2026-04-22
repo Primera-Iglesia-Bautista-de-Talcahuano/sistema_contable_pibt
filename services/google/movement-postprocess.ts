@@ -63,54 +63,51 @@ export async function processMovimientoIntegrations(movimientoId: string, userId
   const created_by = movement.created_by as { full_name: string; email: string }
   const payload = toPayload({ ...movement, created_by })
 
-  // PDF generation
-  const pdfResult = await generateMovementPdf(payload)
+  // Run PDF, Sheet, and Email integrations in parallel — each is independent.
+  // allSettled ensures one failure never prevents the others from completing.
+  const [pdfResult, sheetResult, mailResult] = await Promise.allSettled([
+    generateMovementPdf(payload),
+    syncMovementToSheet(payload),
+    sendMovementEmail(payload)
+  ])
+
+  const pdf = pdfResult.status === "fulfilled" ? pdfResult.value : { ok: false, error: String(pdfResult.reason) }
+  const sheet = sheetResult.status === "fulfilled" ? sheetResult.value : { ok: false, error: String(sheetResult.reason) }
+  const mail = mailResult.status === "fulfilled" ? mailResult.value : { ok: false, error: String(mailResult.reason) }
+
+  // Persist all three integration states in a single update
   await admin
     .from("movements")
     .update({
-      pdf_status: pdfResult.ok ? "GENERATED" : "ERROR",
-      pdf_url: pdfResult.pdfUrl ?? movement.pdf_url,
-      drive_file_id: pdfResult.driveFileId ?? movement.drive_file_id,
-      pdf_error: pdfResult.ok ? null : (pdfResult.error ?? "Fallo generación PDF")
+      pdf_status: pdf.ok ? "GENERATED" : "ERROR",
+      pdf_url: pdf.ok ? (pdf as { ok: true; pdfUrl?: string; driveFileId?: string }).pdfUrl ?? movement.pdf_url : movement.pdf_url,
+      drive_file_id: pdf.ok ? (pdf as { ok: true; pdfUrl?: string; driveFileId?: string }).driveFileId ?? movement.drive_file_id : movement.drive_file_id,
+      pdf_error: pdf.ok ? null : (pdf.error ?? "Fallo generación PDF"),
+      synced_to_sheet: Boolean(sheet.ok),
+      sync_error: sheet.ok ? null : (sheet.error ?? "Fallo sync Sheet"),
+      notification_status: mail.ok ? "SENT" : "ERROR",
+      notification_sent_at: mail.ok ? new Date().toISOString() : null,
+      notification_error: mail.ok ? null : (mail.error ?? "Fallo envío correo")
     })
     .eq("id", movimientoId)
 
-  await auditoriaService.logMovement({
-    movement_id: movimientoId,
-    user_id: userId,
-    action: "PDF regenerado",
-    note: pdfResult.ok
-      ? "PDF generado exitosamente"
-      : `Error al generar PDF: ${pdfResult.error ?? ""}`
-  })
-
-  // Sheets sync
-  const sheetResult = await syncMovementToSheet(payload)
-  await admin
-    .from("movements")
-    .update({
-      synced_to_sheet: Boolean(sheetResult.ok),
-      sync_error: sheetResult.ok ? null : (sheetResult.error ?? "Fallo sync Sheet")
+  // Audit logs for PDF and email outcomes
+  await Promise.allSettled([
+    auditoriaService.logMovement({
+      movement_id: movimientoId,
+      user_id: userId,
+      action: "PDF regenerado",
+      note: pdf.ok
+        ? "PDF generado exitosamente"
+        : `Error al generar PDF: ${pdf.error ?? ""}`
+    }),
+    auditoriaService.logMovement({
+      movement_id: movimientoId,
+      user_id: userId,
+      action: mail.ok ? "Notificación enviada" : "Error de notificación",
+      note: mail.ok
+        ? "Correo de notificación enviado exitosamente"
+        : `Error al enviar correo: ${mail.error ?? ""}`
     })
-    .eq("id", movimientoId)
-
-  // Email notification
-  const mailResult = await sendMovementEmail(payload)
-  await admin
-    .from("movements")
-    .update({
-      notification_status: mailResult.ok ? "SENT" : "ERROR",
-      notification_sent_at: mailResult.ok ? new Date().toISOString() : null,
-      notification_error: mailResult.ok ? null : (mailResult.error ?? "Fallo envío correo")
-    })
-    .eq("id", movimientoId)
-
-  await auditoriaService.logMovement({
-    movement_id: movimientoId,
-    user_id: userId,
-    action: mailResult.ok ? "Notificación enviada" : "Error de notificación",
-    note: mailResult.ok
-      ? "Correo de notificación enviado exitosamente"
-      : `Error al enviar correo: ${mailResult.error ?? ""}`
-  })
+  ])
 }

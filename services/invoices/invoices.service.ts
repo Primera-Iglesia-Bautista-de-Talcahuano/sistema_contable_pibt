@@ -6,8 +6,11 @@ export const invoicesService = {
     const admin = createSupabaseAdminClient()
     const { data, error } = await admin
       .from("invoices")
-      .select("*")
+      .select(
+        "id, number, date, amount, description, status, attachment_url, created_by_id, created_at, updated_at"
+      )
       .order("created_at", { ascending: false })
+      .limit(200)
     if (error) throw error
     return data
   },

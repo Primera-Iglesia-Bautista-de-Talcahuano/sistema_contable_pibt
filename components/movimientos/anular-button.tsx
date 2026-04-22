@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import {
   Dialog,
@@ -35,7 +35,7 @@ export function AnularButton({
   const [isOpen, setIsOpen] = useState(false)
   const [motivo, setMotivo] = useState("")
 
-  async function handleAnular() {
+  const handleAnular = useCallback(async () => {
     if (!motivo.trim()) return
 
     setLoading(true)
@@ -63,7 +63,7 @@ export function AnularButton({
 
     await promise.catch(() => {})
     setLoading(false)
-  }
+  }, [motivo, movimientoId, onSuccess, router])
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
