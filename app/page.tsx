@@ -68,10 +68,17 @@ export default async function LoginPage() {
           </Suspense>
 
           <div className="flex items-center justify-between">
-            <p className="text-xs text-muted-foreground">Acceso restringido a personal autorizado</p>
-            <span className="font-mono text-[10px] text-muted-foreground/40 select-none">
-              {process.env.NEXT_PUBLIC_COMMIT_SHA}
-            </span>
+            <p className="text-xs text-muted-foreground">
+              Acceso restringido a personal autorizado
+            </p>
+            <a
+              href={`https://github.com/Primera-Iglesia-Bautista-de-Talcahuano/sistema_contable_pibt/commit/${process.env.NEXT_PUBLIC_COMMIT_SHA_FULL}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-mono text-[10px] text-muted-foreground/40 hover:text-muted-foreground/70 transition-colors"
+            >
+              v{process.env.NEXT_PUBLIC_COMMIT_SHA}
+            </a>
           </div>
         </div>
       </div>
