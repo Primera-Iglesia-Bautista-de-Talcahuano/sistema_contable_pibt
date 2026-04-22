@@ -67,9 +67,12 @@ export default async function LoginPage() {
             <LoginForm />
           </Suspense>
 
-          <p className="text-center text-xs text-muted-foreground">
-            Acceso restringido a personal autorizado
-          </p>
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-muted-foreground">Acceso restringido a personal autorizado</p>
+            <span className="font-mono text-[10px] text-muted-foreground/40 select-none">
+              {process.env.NEXT_PUBLIC_COMMIT_SHA}
+            </span>
+          </div>
         </div>
       </div>
     </main>
