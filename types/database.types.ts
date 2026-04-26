@@ -351,6 +351,339 @@ export type Database = {
         }
         Relationships: []
       }
+      ministries: {
+        Row: {
+          id: string
+          name: string
+          description: string | null
+          is_active: boolean
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          description?: string | null
+          is_active?: boolean
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          description?: string | null
+          is_active?: boolean
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ministry_assignments: {
+        Row: {
+          id: string
+          ministry_id: string
+          user_id: string
+          assigned_at: string
+          unassigned_at: string | null
+          assigned_by: string | null
+          notes: string | null
+        }
+        Insert: {
+          id?: string
+          ministry_id: string
+          user_id: string
+          assigned_at?: string
+          unassigned_at?: string | null
+          assigned_by?: string | null
+          notes?: string | null
+        }
+        Update: {
+          id?: string
+          ministry_id?: string
+          user_id?: string
+          assigned_at?: string
+          unassigned_at?: string | null
+          assigned_by?: string | null
+          notes?: string | null
+        }
+        Relationships: []
+      }
+      budget_periods: {
+        Row: {
+          id: string
+          name: string
+          start_date: string
+          end_date: string
+          status: Database["public"]["Enums"]["budget_period_status"]
+          released_at: string | null
+          released_by: string | null
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          start_date: string
+          end_date: string
+          status?: Database["public"]["Enums"]["budget_period_status"]
+          released_at?: string | null
+          released_by?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          start_date?: string
+          end_date?: string
+          status?: Database["public"]["Enums"]["budget_period_status"]
+          released_at?: string | null
+          released_by?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ministry_budgets: {
+        Row: {
+          id: string
+          ministry_id: string
+          period_id: string
+          amount: number
+          status: Database["public"]["Enums"]["ministry_budget_status"]
+          released_by: string | null
+          released_at: string | null
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          ministry_id: string
+          period_id: string
+          amount: number
+          status?: Database["public"]["Enums"]["ministry_budget_status"]
+          released_by?: string | null
+          released_at?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          ministry_id?: string
+          period_id?: string
+          amount?: number
+          status?: Database["public"]["Enums"]["ministry_budget_status"]
+          released_by?: string | null
+          released_at?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      budget_intentions: {
+        Row: {
+          id: string
+          ministry_id: string
+          period_id: string
+          requested_by: string
+          amount: number
+          description: string
+          purpose: string | null
+          date_needed: string | null
+          status: Database["public"]["Enums"]["intention_status"]
+          is_over_budget: boolean
+          token: string
+          reviewed_by: string | null
+          reviewed_at: string | null
+          review_message: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          ministry_id: string
+          period_id: string
+          requested_by: string
+          amount: number
+          description: string
+          purpose?: string | null
+          date_needed?: string | null
+          status?: Database["public"]["Enums"]["intention_status"]
+          is_over_budget?: boolean
+          token?: string
+          reviewed_by?: string | null
+          reviewed_at?: string | null
+          review_message?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          ministry_id?: string
+          period_id?: string
+          requested_by?: string
+          amount?: number
+          description?: string
+          purpose?: string | null
+          date_needed?: string | null
+          status?: Database["public"]["Enums"]["intention_status"]
+          is_over_budget?: boolean
+          token?: string
+          reviewed_by?: string | null
+          reviewed_at?: string | null
+          review_message?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      intention_transfers: {
+        Row: {
+          id: string
+          intention_id: string
+          amount: number
+          transfer_date: string
+          reference: string | null
+          notes: string | null
+          registered_by: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          intention_id: string
+          amount: number
+          transfer_date: string
+          reference?: string | null
+          notes?: string | null
+          registered_by: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          intention_id?: string
+          amount?: number
+          transfer_date?: string
+          reference?: string | null
+          notes?: string | null
+          registered_by?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
+      expense_settlements: {
+        Row: {
+          id: string
+          intention_id: string
+          submitted_by: string
+          amount: number
+          description: string
+          expense_date: string
+          is_late: boolean
+          attachment_url: string | null
+          status: Database["public"]["Enums"]["settlement_status"]
+          token: string
+          reviewed_by: string | null
+          reviewed_at: string | null
+          review_message: string | null
+          movement_id: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          intention_id: string
+          submitted_by: string
+          amount: number
+          description: string
+          expense_date: string
+          is_late?: boolean
+          attachment_url?: string | null
+          status?: Database["public"]["Enums"]["settlement_status"]
+          token?: string
+          reviewed_by?: string | null
+          reviewed_at?: string | null
+          review_message?: string | null
+          movement_id?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          intention_id?: string
+          submitted_by?: string
+          amount?: number
+          description?: string
+          expense_date?: string
+          is_late?: boolean
+          attachment_url?: string | null
+          status?: Database["public"]["Enums"]["settlement_status"]
+          token?: string
+          reviewed_by?: string | null
+          reviewed_at?: string | null
+          review_message?: string | null
+          movement_id?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      request_comments: {
+        Row: {
+          id: string
+          entity_type: Database["public"]["Enums"]["comment_entity"]
+          entity_id: string
+          user_id: string
+          message: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          entity_type: Database["public"]["Enums"]["comment_entity"]
+          entity_id: string
+          user_id: string
+          message: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          entity_type?: Database["public"]["Enums"]["comment_entity"]
+          entity_id?: string
+          user_id?: string
+          message?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
+      app_settings: {
+        Row: {
+          key: string
+          value: string | null
+          updated_by: string | null
+          updated_at: string
+        }
+        Insert: {
+          key: string
+          value?: string | null
+          updated_by?: string | null
+          updated_at?: string
+        }
+        Update: {
+          key?: string
+          value?: string | null
+          updated_by?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -378,14 +711,27 @@ export type Database = {
         Returns: Database["public"]["Enums"]["user_role"]
       }
       increment_and_get_folio: { Args: never; Returns: number }
+      get_ministry_budget_summary: {
+        Args: { p_ministry_id: string; p_period_id: string }
+        Returns: Json
+      }
+      get_pending_reminders: {
+        Args: never
+        Returns: Json
+      }
     }
     Enums: {
+      budget_period_status: "DRAFT" | "ACTIVE" | "CLOSED"
+      comment_entity: "INTENTION" | "SETTLEMENT"
+      intention_status: "PENDING" | "APPROVED" | "REJECTED"
       invoice_status: "PENDING" | "SETTLED"
+      ministry_budget_status: "DRAFT" | "RELEASED"
       movement_status: "ACTIVE" | "CANCELLED"
       movement_type: "INCOME" | "EXPENSE"
       notification_status: "PENDING" | "SENT" | "ERROR"
       pdf_status: "PENDING" | "GENERATED" | "ERROR"
-      user_role: "ADMIN" | "OPERATOR" | "VIEWER"
+      settlement_status: "PENDING" | "APPROVED" | "REJECTED"
+      user_role: "ADMIN" | "OPERATOR" | "VIEWER" | "MINISTER"
       user_status:
         | "ACTIVE"
         | "INACTIVE"
@@ -521,12 +867,17 @@ export const Constants = {
   },
   public: {
     Enums: {
+      budget_period_status: ["DRAFT", "ACTIVE", "CLOSED"],
+      comment_entity: ["INTENTION", "SETTLEMENT"],
+      intention_status: ["PENDING", "APPROVED", "REJECTED"],
       invoice_status: ["PENDING", "SETTLED"],
+      ministry_budget_status: ["DRAFT", "RELEASED"],
       movement_status: ["ACTIVE", "CANCELLED"],
       movement_type: ["INCOME", "EXPENSE"],
       notification_status: ["PENDING", "SENT", "ERROR"],
       pdf_status: ["PENDING", "GENERATED", "ERROR"],
-      user_role: ["ADMIN", "OPERATOR", "VIEWER"],
+      settlement_status: ["PENDING", "APPROVED", "REJECTED"],
+      user_role: ["ADMIN", "OPERATOR", "VIEWER", "MINISTER"],
       user_status: [
         "ACTIVE",
         "INACTIVE",

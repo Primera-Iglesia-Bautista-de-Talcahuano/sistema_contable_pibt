@@ -1,5 +1,6 @@
 "use client"
 
+import type React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
@@ -8,7 +9,11 @@ import {
   Users,
   ClipboardList,
   CalendarDays,
-  Receipt
+  Receipt,
+  Church,
+  PiggyBank,
+  FileCheck,
+  Settings
 } from "lucide-react"
 import {
   Sidebar,
@@ -25,13 +30,24 @@ import {
 import { NavUser } from "@/components/dashboard/nav-user"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 
-const ALL_LINKS = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, adminOnly: false },
-  { href: "/movimientos", label: "Movimientos", icon: Briefcase, adminOnly: false },
-  { href: "/eventos", label: "Eventos", icon: CalendarDays, adminOnly: false },
-  { href: "/rendiciones", label: "Rendiciones", icon: Receipt, adminOnly: false },
-  { href: "/usuarios", label: "Usuarios", icon: Users, adminOnly: true },
-  { href: "/auditoria", label: "Auditoría", icon: ClipboardList, adminOnly: true }
+type NavLink = {
+  href: string
+  label: string
+  icon: React.ElementType
+  roles?: string[]
+}
+
+const ALL_LINKS: NavLink[] = [
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/movimientos", label: "Movimientos", icon: Briefcase, roles: ["ADMIN", "OPERATOR", "VIEWER"] },
+  { href: "/eventos", label: "Eventos", icon: CalendarDays, roles: ["ADMIN", "OPERATOR", "VIEWER"] },
+  { href: "/rendiciones", label: "Rendiciones", icon: Receipt, roles: ["ADMIN", "OPERATOR", "VIEWER"] },
+  { href: "/solicitudes", label: "Solicitudes", icon: FileCheck, roles: ["ADMIN", "OPERATOR", "MINISTER"] },
+  { href: "/ministerios", label: "Ministerios", icon: Church, roles: ["ADMIN", "OPERATOR"] },
+  { href: "/presupuesto", label: "Presupuesto", icon: PiggyBank, roles: ["ADMIN", "OPERATOR"] },
+  { href: "/usuarios", label: "Usuarios", icon: Users, roles: ["ADMIN"] },
+  { href: "/auditoria", label: "Auditoría", icon: ClipboardList, roles: ["ADMIN"] },
+  { href: "/configuracion", label: "Configuración", icon: Settings, roles: ["ADMIN"] }
 ]
 
 export function AppSidebar({
@@ -45,8 +61,7 @@ export function AppSidebar({
 }) {
   const pathname = usePathname()
   const { setOpenMobile } = useSidebar()
-  const isAdmin = user.role === "ADMIN"
-  const links = ALL_LINKS.filter((l) => !l.adminOnly || isAdmin)
+  const links = ALL_LINKS.filter((l) => !l.roles || l.roles.includes(user.role))
 
   return (
     <Sidebar variant="inset">

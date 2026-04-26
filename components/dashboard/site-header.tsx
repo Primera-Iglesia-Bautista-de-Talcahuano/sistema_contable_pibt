@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { useSidebar } from "@/components/ui/sidebar"
+import { NotificationBell } from "@/components/dashboard/notification-bell"
 
 const PAGE_LABELS: Record<string, string> = {
   "/dashboard": "Dashboard",
@@ -22,20 +23,25 @@ const PAGE_LABELS: Record<string, string> = {
   "/eventos": "Eventos",
   "/rendiciones": "Rendiciones",
   "/usuarios": "Usuarios",
-  "/auditoria": "Auditoría"
+  "/auditoria": "Auditoría",
+  "/solicitudes": "Solicitudes",
+  "/ministerios": "Ministerios",
+  "/presupuesto": "Presupuesto",
+  "/configuracion": "Configuración"
 }
 
 function usePageLabel() {
   const pathname = usePathname()
-  // Check for detail pages like /movimientos/[id]
   if (pathname.startsWith("/movimientos/") && pathname !== "/movimientos/nuevo") {
     return { parent: { label: "Movimientos", href: "/movimientos" }, current: "Detalle" }
   }
-  const label = PAGE_LABELS[pathname]
-  // For /movimientos/nuevo show parent
   if (pathname === "/movimientos/nuevo") {
     return { parent: { label: "Movimientos", href: "/movimientos" }, current: "Nuevo" }
   }
+  if (pathname.startsWith("/solicitudes/")) {
+    return { parent: { label: "Solicitudes", href: "/solicitudes" }, current: "Detalle" }
+  }
+  const label = PAGE_LABELS[pathname]
   return { parent: null, current: label ?? "..." }
 }
 
@@ -80,7 +86,8 @@ export function SiteHeader() {
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-        <div className="ml-auto">
+        <div className="ml-auto flex items-center gap-2">
+          <NotificationBell />
           <a
             href={`https://github.com/Primera-Iglesia-Bautista-de-Talcahuano/sistema_contable_pibt/commit/${process.env.NEXT_PUBLIC_COMMIT_SHA_FULL}`}
             target="_blank"
