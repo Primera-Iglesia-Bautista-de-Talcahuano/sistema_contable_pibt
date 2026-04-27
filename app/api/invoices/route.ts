@@ -21,7 +21,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const body = await request.json()
+    const body: unknown = await request.json()
     const parsed = createInvoiceSchema.safeParse(body)
     if (!parsed.success) {
       return NextResponse.json(

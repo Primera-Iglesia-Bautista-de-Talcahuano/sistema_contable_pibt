@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server"
 import { getCurrentUser } from "@/lib/supabase/server"
 import { canManageUsers } from "@/lib/permissions/rbac"
-import { usuariosService } from "@/services/usuarios/usuarios.service"
-import { createUsuarioSchema } from "@/lib/validators/usuario"
+import { usersService } from "@/services/users/users.service"
+import { createUserSchema } from "@/lib/validators/user"
 
 export async function GET() {
   const user = await getCurrentUser()
@@ -10,7 +10,7 @@ export async function GET() {
     return NextResponse.json({ message: "No autorizado" }, { status: 401 })
   }
 
-  const rows = await usuariosService.list()
+  const rows = await usersService.list()
   return NextResponse.json(rows)
 }
 
@@ -21,8 +21,8 @@ export async function POST(request: Request) {
   }
 
   try {
-    const body = await request.json()
-    const parsed = createUsuarioSchema.safeParse(body)
+    const body: unknown = await request.json()
+    const parsed = createUserSchema.safeParse(body)
     if (!parsed.success) {
       return NextResponse.json(
         { message: "Datos inválidos", errors: parsed.error.flatten() },
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
       )
     }
 
-    const created = await usuariosService.invite(parsed.data, user.id)
+    const created = await usersService.invite(parsed.data, user.id)
     return NextResponse.json(created, { status: 201 })
   } catch (error) {
     const message = error instanceof Error ? error.message : "Error inesperado"

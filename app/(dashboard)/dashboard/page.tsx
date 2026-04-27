@@ -3,7 +3,7 @@ import { dashboardService } from "@/services/dashboard/dashboard.service"
 import { getCurrentUser } from "@/lib/supabase/server"
 import { canCreateOrEditMovements } from "@/lib/permissions/rbac"
 import { IngresosEgresosChart, CategoriaChart } from "@/components/dashboard/dashboard-charts"
-import { MovimientosTable } from "@/components/movimientos/movimientos-table"
+import { MovementsTable } from "@/components/movements/movements-table"
 import { Label } from "@/components/ui/label"
 import { DatePicker } from "@/components/ui/date-picker"
 import { Button } from "@/components/ui/button"
@@ -164,7 +164,7 @@ export default async function DashboardPage({
           </Link>
         </div>
         <div className="rounded-xl bg-card border border-border overflow-hidden">
-          <MovimientosTable
+          <MovementsTable
             canWrite={canWrite}
             rows={data.ultimosMovimientos.map((row) => ({
               id: row.id,

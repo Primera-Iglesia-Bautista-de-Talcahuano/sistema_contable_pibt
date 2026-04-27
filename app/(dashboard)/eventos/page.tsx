@@ -1,6 +1,6 @@
 "use client"
 
-import { FormEvent, useState } from "react"
+import { SyntheticEvent, useState } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -41,7 +41,7 @@ export default function EventosPage() {
   const [description, setDescription] = useState("")
   const [open, setOpen] = useState(false)
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!eventDate || !title) return
 
@@ -138,7 +138,7 @@ export default function EventosPage() {
                     </Label>
                     <textarea
                       id="evt-description"
-                      className="flex min-h-[120px] w-full rounded-xl border-none bg-muted px-5 py-4 text-base font-medium text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-ring transition-all"
+                      className="flex min-h-30 w-full rounded-xl border-none bg-muted px-5 py-4 text-base font-medium text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-ring transition-colors"
                       placeholder="Agregue detalles importantes sobre el evento..."
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}

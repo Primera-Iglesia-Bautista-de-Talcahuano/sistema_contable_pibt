@@ -34,6 +34,7 @@ Always use `pnpm`, never `npm`.
 **Stack:** Next.js 16 App Router · TypeScript strict · Tailwind CSS v4 · Supabase (Postgres + Auth) · `@supabase/ssr` · React Hook Form + Zod · Recharts · Base UI
 
 **Layer separation:**
+
 - `app/` — Route handlers and page components. Split into `(auth)` and `(dashboard)` route groups. Dashboard pages: `dashboard`, `movimientos`, `eventos`, `rendiciones` (Rendiciones / invoice settlement), `usuarios`, `auditoria`.
 - `components/` — UI (`components/ui/`) and domain components (`components/movimientos/`, `components/dashboard/`, etc.)
 - `services/` — All business logic. Never call the Supabase client directly from API routes; use the service layer.
@@ -69,7 +70,7 @@ Migrations live in `supabase/migrations/`. Key tables: `users`, `movements`, `mo
 
 Always use `pnpm supabase migration new ...` for new migrations
 
-Always make sure that types with `pnpm types:generate` are up to date 
+Always make sure that types with `pnpm types:generate` are up to date
 
 ## Key conventions
 
@@ -87,6 +88,7 @@ Always make sure that types with `pnpm types:generate` are up to date
 ## Environment variables
 
 See `.env.example`. Critical ones:
+
 - `NEXT_PUBLIC_SUPABASE_URL` — from `pnpm supabase:status` → Project URL
 - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` — from `pnpm supabase:status` → Publishable key
 - `SUPABASE_SECRET_KEY` — from `pnpm supabase:status` → Secret key (server-side only, never exposed to client)
@@ -97,6 +99,7 @@ See `.env.example`. Critical ones:
 ## CI pipeline
 
 `.github/workflows/ci.yml` runs on every push and PR:
+
 1. **Lint & Typecheck** — `pnpm lint` + `pnpm typecheck` (must pass)
 2. **Tests** — `pnpm test` with `continue-on-error: true` (allowed to fail while test suite is being built)
 3. **Supabase Migrations** — `supabase db push` (runs on `main` pushes only; requires `SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD`, `SUPABASE_PROJECT_ID` secrets)

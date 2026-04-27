@@ -1,8 +1,8 @@
 import Link from "next/link"
 import { getCurrentUser } from "@/lib/supabase/server"
 import { canCreateOrEditMovements } from "@/lib/permissions/rbac"
-import { movimientosService } from "@/services/movimientos/movimientos.service"
-import { MovimientosTable } from "@/components/movimientos/movimientos-table"
+import { movementsService } from "@/services/movements/movements.service"
+import { MovementsTable } from "@/components/movements/movements-table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -31,7 +31,7 @@ export default async function MovimientosPage({ searchParams }: Props) {
     data: rows,
     count,
     pageSize
-  } = await movimientosService.list({
+  } = await movementsService.list({
     search,
     movement_type,
     status,
@@ -133,7 +133,7 @@ export default async function MovimientosPage({ searchParams }: Props) {
       </form>
 
       {/* ── Table ───────────────────────────────────────────────── */}
-      <MovimientosTable
+      <MovementsTable
         canWrite={canWrite}
         rows={rows.map((row) => ({
           id: row.id,

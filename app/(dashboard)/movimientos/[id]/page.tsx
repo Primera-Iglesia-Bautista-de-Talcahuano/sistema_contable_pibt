@@ -1,10 +1,10 @@
 import { notFound } from "next/navigation"
 import Link from "next/link"
-import { movimientosService } from "@/services/movimientos/movimientos.service"
+import { movementsService } from "@/services/movements/movements.service"
 import { getCurrentUser } from "@/lib/supabase/server"
 import { canCreateOrEditMovements } from "@/lib/permissions/rbac"
-import { AnularButton } from "@/components/movimientos/anular-button"
-import { RegenerarPdfButton } from "@/components/movimientos/regenerar-pdf-button"
+import { CancelButton } from "@/components/movements/cancel-button"
+import { RegeneratePdfButton } from "@/components/movements/regenerate-pdf-button"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { cn, formatDate, formatDateTime, formatCLP } from "@/lib/utils"
@@ -26,7 +26,7 @@ export default async function MovimientoDetallePage({ params }: Props) {
   const user = await getCurrentUser()
   const canWrite = canCreateOrEditMovements(user?.role)
 
-  const row = await movimientosService.findById(id).catch(() => null)
+  const row = await movementsService.findById(id).catch(() => null)
   if (!row) notFound()
 
   const createdBy = row.created_by as { full_name: string; email: string } | null
@@ -96,9 +96,9 @@ export default async function MovimientoDetallePage({ params }: Props) {
                 <Edit className="size-4 text-primary" data-icon="inline-start" />
                 Editar
               </Button>
-              <RegenerarPdfButton movimientoId={row.id} />
-              <AnularButton
-                movimientoId={row.id}
+              <RegeneratePdfButton movementId={row.id} />
+              <CancelButton
+                movementId={row.id}
                 className="h-10 px-5 bg-destructive/10 hover:bg-destructive/20 text-destructive border-none shadow-none"
               />
             </>

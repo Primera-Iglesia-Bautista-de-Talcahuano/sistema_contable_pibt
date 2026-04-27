@@ -1,5 +1,5 @@
 import { createSupabaseAdminClient } from "@/lib/supabase/admin"
-import { auditoriaService } from "@/services/auditoria/auditoria.service"
+import { auditService } from "@/services/audit/audit.service"
 import { generateMovementPdf } from "@/services/google/apps-script-documents"
 import { sendMovementEmail } from "@/services/email/resend.service"
 import { syncMovementToSheet } from "@/services/google/sheets-sync"
@@ -24,7 +24,7 @@ function toPayload(m: {
   created_by: { full_name: string; email: string }
 }): MovementIntegrationPayload {
   return {
-    movimientoId: m.id,
+    movementId: m.id,
     folio: m.folio_display ?? "",
     tipo: m.movement_type === "INCOME" ? "INGRESO" : "EGRESO",
     fechaMovimiento: m.movement_date,
@@ -49,13 +49,13 @@ function toPayload(m: {
   }
 }
 
-export async function processMovimientoIntegrations(movimientoId: string, userId: string) {
+export async function processMovimientoIntegrations(movementId: string, userId: string) {
   const admin = createSupabaseAdminClient()
 
   const { data: movement, error } = await admin
     .from("movements")
     .select("*, created_by:users!created_by_id(full_name, email)")
-    .eq("id", movimientoId)
+    .eq("id", movementId)
     .single()
 
   if (error || !movement) throw new Error("Movimiento no encontrado para integración")
@@ -71,17 +71,31 @@ export async function processMovimientoIntegrations(movimientoId: string, userId
     sendMovementEmail(payload)
   ])
 
-  const pdf = pdfResult.status === "fulfilled" ? pdfResult.value : { ok: false, error: String(pdfResult.reason) }
-  const sheet = sheetResult.status === "fulfilled" ? sheetResult.value : { ok: false, error: String(sheetResult.reason) }
-  const mail = mailResult.status === "fulfilled" ? mailResult.value : { ok: false, error: String(mailResult.reason) }
+  const pdf =
+    pdfResult.status === "fulfilled"
+      ? pdfResult.value
+      : { ok: false, error: String(pdfResult.reason) }
+  const sheet =
+    sheetResult.status === "fulfilled"
+      ? sheetResult.value
+      : { ok: false, error: String(sheetResult.reason) }
+  const mail =
+    mailResult.status === "fulfilled"
+      ? mailResult.value
+      : { ok: false, error: String(mailResult.reason) }
 
   // Persist all three integration states in a single update
   await admin
     .from("movements")
     .update({
       pdf_status: pdf.ok ? "GENERATED" : "ERROR",
-      pdf_url: pdf.ok ? (pdf as { ok: true; pdfUrl?: string; driveFileId?: string }).pdfUrl ?? movement.pdf_url : movement.pdf_url,
-      drive_file_id: pdf.ok ? (pdf as { ok: true; pdfUrl?: string; driveFileId?: string }).driveFileId ?? movement.drive_file_id : movement.drive_file_id,
+      pdf_url: pdf.ok
+        ? ((pdf as { ok: true; pdfUrl?: string; driveFileId?: string }).pdfUrl ?? movement.pdf_url)
+        : movement.pdf_url,
+      drive_file_id: pdf.ok
+        ? ((pdf as { ok: true; pdfUrl?: string; driveFileId?: string }).driveFileId ??
+          movement.drive_file_id)
+        : movement.drive_file_id,
       pdf_error: pdf.ok ? null : (pdf.error ?? "Fallo generación PDF"),
       synced_to_sheet: Boolean(sheet.ok),
       sync_error: sheet.ok ? null : (sheet.error ?? "Fallo sync Sheet"),
@@ -89,20 +103,18 @@ export async function processMovimientoIntegrations(movimientoId: string, userId
       notification_sent_at: mail.ok ? new Date().toISOString() : null,
       notification_error: mail.ok ? null : (mail.error ?? "Fallo envío correo")
     })
-    .eq("id", movimientoId)
+    .eq("id", movementId)
 
   // Audit logs for PDF and email outcomes
   await Promise.allSettled([
-    auditoriaService.logMovement({
-      movement_id: movimientoId,
+    auditService.logMovement({
+      movement_id: movementId,
       user_id: userId,
       action: "PDF regenerado",
-      note: pdf.ok
-        ? "PDF generado exitosamente"
-        : `Error al generar PDF: ${pdf.error ?? ""}`
+      note: pdf.ok ? "PDF generado exitosamente" : `Error al generar PDF: ${pdf.error ?? ""}`
     }),
-    auditoriaService.logMovement({
-      movement_id: movimientoId,
+    auditService.logMovement({
+      movement_id: movementId,
       user_id: userId,
       action: mail.ok ? "Notificación enviada" : "Error de notificación",
       note: mail.ok

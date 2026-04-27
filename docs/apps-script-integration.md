@@ -1,38 +1,41 @@
-# Integracion Google Apps Script (ETAPA 7)
+# Google Apps Script Integration
 
-## Objetivo
+Handles optional integrations triggered after a movement is created or edited:
 
-Integrar desde backend (server-side) la automatizacion de:
+1. PDF generation per movement
+2. Google Drive storage
+3. Google Sheets sync (full DB replica)
 
-1. Generacion de PDF por movimiento
-2. Guardado en Google Drive
-3. Envio de correo por Gmail
-4. Sincronizacion opcional con Google Sheets
+> **Note:** Email notifications are handled by **Resend**, not by Google Apps Script.
+> See [email.md](email.md) for email configuration.
 
-## Variables requeridas
+## Required environment variables
 
-- `GOOGLE_APPS_SCRIPT_WEBHOOK_URL`
-- `GOOGLE_APPS_SCRIPT_SECRET`
-- `GOOGLE_DRIVE_FOLDER_ID` (referencia para Apps Script)
-- `GOOGLE_SHEET_ID` (referencia para Apps Script)
-- `NOTIFICATION_EMAIL` (referencia de destino)
+```env
+GOOGLE_APPS_SCRIPT_WEBHOOK_URL="https://script.google.com/macros/s/<script_hash>/exec"
+GOOGLE_APPS_SCRIPT_SECRET="your_shared_secret"
+GOOGLE_DRIVE_FOLDER_ID="drive_folder_id"    # Used by Apps Script
+GOOGLE_SHEET_ID="google_sheet_id"           # Used by Apps Script
+```
 
-## Flujo implementado
+These variables are optional for local development. If `GOOGLE_APPS_SCRIPT_WEBHOOK_URL`
+is not set, integrations are skipped silently.
 
-1. Al crear un movimiento (`POST /api/movimientos`) se guarda primero en DB.
-2. Luego se ejecuta postproceso de integraciones (`processMovimientoIntegrations`).
-3. Si falla PDF/correo/sheet, el movimiento no se pierde:
-   - se actualizan campos de error (`pdfError`, `notificationError`, `syncError`)
-   - se registra auditoria
+## How it works
 
-## Regeneracion manual de PDF
+1. Movement is created/edited (`POST /api/movements`, `PATCH /api/movements/[id]`).
+2. Movement is saved to DB first.
+3. `processMovimientoIntegrations` runs as a fire-and-forget postprocess.
+4. On failure, the movement is **not** lost — error fields are updated instead:
+   - `pdf_error`, `notification_error`, `sync_error`
+   - Audit log entry is created.
 
-- Endpoint: `POST /api/movimientos/[id]/regenerar-pdf`
-- UI: boton "Regenerar PDF" en detalle de movimiento.
+## Manual PDF regeneration
 
-## Contrato esperado desde Apps Script
+- Endpoint: `POST /api/movements/[id]/regenerate-pdf`
+- UI: "Regenerar PDF" button on the movement detail page.
 
-Respuesta JSON recomendada:
+## Expected Apps Script response
 
 ```json
 {
@@ -40,22 +43,27 @@ Respuesta JSON recomendada:
   "message": "...",
   "pdfUrl": "https://...",
   "driveFileId": "...",
-  "sheetSynced": true,
-  "mailSent": true
+  "sheetSynced": true
 }
 ```
 
-Si `ok=false`, enviar `error` para registrar trazabilidad.
+On failure, return `{ "ok": false, "error": "description" }`.
 
-## Archivos clave
+## Key files
 
-- `services/google/client.ts`
-- `services/google/apps-script-documents.ts`
-- `services/google/apps-script-mail.ts`
-- `services/google/sheets-sync.ts`
-- `services/google/movement-postprocess.ts`
+| File                                       | Description                                 |
+| ------------------------------------------ | ------------------------------------------- |
+| `services/google/client.ts`                | Webhook client with shared-secret auth      |
+| `services/google/apps-script-documents.ts` | PDF generation request                      |
+| `services/google/sheets-sync.ts`           | Sheets sync request                         |
+| `services/google/movement-postprocess.ts`  | Orchestrates all integrations post-movement |
+| `services/google/types.ts`                 | Shared types for GAS payloads               |
 
-## Nota
+## Apps Script setup
 
-El webhook real y credenciales finales dependen del despliegue de Apps Script en Google.
-La arquitectura quedo preparada para conectar sin tocar la UI principal.
+1. Create a Google Apps Script project.
+2. Deploy as **Web App** (Execute as: your Google account).
+3. On first deployment, authorize scopes: Drive, SpreadsheetApp.
+4. Store the shared secret in Apps Script **Properties Service**.
+5. Validate the `x-app-script-secret` header on every incoming request.
+6. Set `GOOGLE_APPS_SCRIPT_WEBHOOK_URL` to the deployment URL.

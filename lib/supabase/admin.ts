@@ -1,5 +1,5 @@
-import { createClient } from "@supabase/supabase-js";
-import type { Database } from "@/types/database.types";
+import { createClient } from "@supabase/supabase-js"
+import type { Database } from "@/types/database.types"
 
 // Service role client — bypasses RLS. Server-side only, never expose to the browser.
 export function createSupabaseAdminClient() {
@@ -9,8 +9,8 @@ export function createSupabaseAdminClient() {
     {
       auth: {
         autoRefreshToken: false,
-        persistSession: false,
-      },
-    },
-  );
+        persistSession: false
+      }
+    }
+  )
 }

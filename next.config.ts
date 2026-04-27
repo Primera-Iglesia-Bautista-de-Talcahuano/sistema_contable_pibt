@@ -4,7 +4,9 @@ import { execSync } from "child_process"
 
 function getCommitHash(short = true) {
   try {
-    return execSync(`git rev-parse ${short ? "--short " : ""}HEAD`).toString().trim()
+    return execSync(`git rev-parse ${short ? "--short " : ""}HEAD`)
+      .toString()
+      .trim()
   } catch {
     return short ? "dev" : ""
   }

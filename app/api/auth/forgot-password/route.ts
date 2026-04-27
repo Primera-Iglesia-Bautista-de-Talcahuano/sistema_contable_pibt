@@ -7,7 +7,7 @@ import { forgotPasswordSchema } from "@/lib/validators/auth"
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json()
+    const body: unknown = await request.json()
     const parsed = forgotPasswordSchema.safeParse(body)
     if (!parsed.success) {
       return NextResponse.json({ message: "Email inválido" }, { status: 400 })

@@ -76,7 +76,7 @@ Use `icon={CheckIcon}`, not a string key to a lookup map.
 ```tsx
 const iconMap = {
   check: CheckIcon,
-  alert: AlertIcon,
+  alert: AlertIcon
 }
 
 function StatusBadge({ icon }: { icon: string }) {
@@ -84,7 +84,7 @@ function StatusBadge({ icon }: { icon: string }) {
   return <Icon />
 }
 
-<StatusBadge icon="check" />
+;<StatusBadge icon="check" />
 ```
 
 **Correct:**
@@ -97,5 +97,5 @@ function StatusBadge({ icon: Icon }: { icon: React.ComponentType }) {
   return <Icon />
 }
 
-<StatusBadge icon={CheckIcon} />
+;<StatusBadge icon={CheckIcon} />
 ```

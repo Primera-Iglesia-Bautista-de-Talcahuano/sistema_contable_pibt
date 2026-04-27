@@ -5,7 +5,6 @@
 /* Use data-theme="dark" so React hydration never strips it */
 @variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
-
 @theme inline {
   /* Cobalt & Coral palette — accent/brand colors stay fixed */
   --color-primary: #1558b0;

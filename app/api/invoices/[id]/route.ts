@@ -12,7 +12,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
   try {
     const { id } = await params
-    const body = await request.json()
+    const body: unknown = await request.json()
     const parsed = updateInvoiceSchema.safeParse(body)
     if (!parsed.success) {
       return NextResponse.json(

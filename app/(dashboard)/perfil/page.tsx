@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card"
-import { ChangePasswordForm } from "@/components/perfil/change-password-form"
+import { ChangePasswordForm } from "@/components/profile/change-password-form"
 import { KeyRound } from "lucide-react"
 
 export default function PerfilPage() {
