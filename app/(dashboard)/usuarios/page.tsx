@@ -1,15 +1,15 @@
 import { redirect } from "next/navigation"
 import { getCurrentUser } from "@/lib/supabase/server"
 import { canManageUsers } from "@/lib/permissions/rbac"
-import { UsuariosManager } from "@/components/usuarios/usuarios-manager"
-import { usuariosService } from "@/services/usuarios/usuarios.service"
+import { UsersManager } from "@/components/users/users-manager"
+import { usersService } from "@/services/users/users.service"
 
 export default async function UsuariosPage() {
   const user = await getCurrentUser()
   if (!user || !canManageUsers(user.role)) {
     redirect("/dashboard")
   }
-  const users = await usuariosService.list()
+  const users = await usersService.list()
 
   return (
     <section className="mx-auto max-w-6xl flex flex-col gap-8">
@@ -20,7 +20,7 @@ export default async function UsuariosPage() {
         </p>
       </div>
 
-      <UsuariosManager initialUsers={users} />
+      <UsersManager initialUsers={users} />
     </section>
   )
 }

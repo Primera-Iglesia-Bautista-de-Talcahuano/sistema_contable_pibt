@@ -4,9 +4,9 @@ import { useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useForm, useWatch, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { createMovimientoSchema } from "@/lib/validators/movimiento"
-import type { CreateMovimientoInput } from "@/lib/validators/movimiento"
-import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "@/types/movimientos"
+import { createMovementSchema } from "@/lib/validators/movement"
+import type { CreateMovementInput } from "@/lib/validators/movement"
+import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "@/types/movements"
 import { z } from "zod"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -20,8 +20,8 @@ import { createSupabaseBrowserClient } from "@/lib/supabase/client"
 
 type Props = {
   mode: "create" | "edit"
-  movimientoId?: string
-  initialValues?: Partial<CreateMovimientoInput>
+  movementId?: string
+  initialValues?: Partial<CreateMovementInput>
   onSuccess?: () => void
 }
 
@@ -30,13 +30,13 @@ function toDateValue(value?: string) {
   return value.slice(0, 10)
 }
 
-export function MovimientoForm({ mode, movimientoId, initialValues, onSuccess }: Props) {
+export function MovementForm({ mode, movementId, initialValues, onSuccess }: Props) {
   const router = useRouter()
   const [error, setError] = useState<string | null>(null)
   const [supportFile, setSupportFile] = useState<File | null>(null)
 
-  const form = useForm<MovimientoFormInput, unknown, CreateMovimientoInput>({
-    resolver: zodResolver(createMovimientoSchema),
+  const form = useForm<MovimientoFormInput, unknown, CreateMovementInput>({
+    resolver: zodResolver(createMovementSchema),
     defaultValues: {
       movement_date: toDateValue(initialValues?.movement_date),
       movement_type: initialValues?.movement_type ?? "INCOME",
@@ -59,7 +59,7 @@ export function MovimientoForm({ mode, movimientoId, initialValues, onSuccess }:
     [tipo]
   )
 
-  async function onSubmit(values: CreateMovimientoInput) {
+  async function onSubmit(values: CreateMovementInput) {
     setError(null)
 
     let attachment_url: string | null = null
@@ -82,7 +82,7 @@ export function MovimientoForm({ mode, movimientoId, initialValues, onSuccess }:
       }
     }
 
-    const endpoint = mode === "create" ? "/api/movements" : `/api/movements/${movimientoId}`
+    const endpoint = mode === "create" ? "/api/movements" : `/api/movements/${movementId}`
     const method = mode === "create" ? "POST" : "PUT"
     const res = await fetch(endpoint, {
       method,
@@ -103,7 +103,7 @@ export function MovimientoForm({ mode, movimientoId, initialValues, onSuccess }:
       if (mode === "create") {
         router.push(`/movimientos/${payload.id}`)
       } else {
-        router.push(`/movimientos/${movimientoId}`)
+        router.push(`/movimientos/${movementId}`)
       }
     }
     router.refresh()
@@ -347,4 +347,4 @@ export function MovimientoForm({ mode, movimientoId, initialValues, onSuccess }:
   )
 }
 
-type MovimientoFormInput = z.input<typeof createMovimientoSchema>
+type MovimientoFormInput = z.input<typeof createMovementSchema>

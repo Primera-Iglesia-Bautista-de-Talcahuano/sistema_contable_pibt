@@ -19,7 +19,7 @@ type LogMovementInput = {
   note?: string | null
 }
 
-export const auditoriaService = {
+export const auditService = {
   async logSystem(input: LogSystemInput) {
     const admin = createSupabaseAdminClient()
     return admin.from("system_audit_log").insert({

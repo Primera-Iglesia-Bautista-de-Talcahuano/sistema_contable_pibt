@@ -1,5 +1,5 @@
 import { createSupabaseAdminClient } from "@/lib/supabase/admin"
-import { auditoriaService } from "@/services/auditoria/auditoria.service"
+import { auditService } from "@/services/audit/audit.service"
 import type { UpdateSettingsInput } from "@/lib/validators/settings"
 
 export type AppSettings = {
@@ -40,7 +40,7 @@ export const settingsService = {
         .eq("key", key)
     }
 
-    await auditoriaService.logSystem({
+    await auditService.logSystem({
       entity: "APP_SETTINGS",
       action: "SETTINGS_UPDATED",
       user_id: userId,

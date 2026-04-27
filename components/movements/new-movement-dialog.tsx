@@ -11,9 +11,9 @@ import {
   DialogTrigger
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { MovimientoForm } from "./movimiento-form"
+import { MovementForm } from "./movement-form"
 
-export function NewMovimientoDialog() {
+export function NewMovementDialog() {
   const [open, setOpen] = useState(false)
 
   return (
@@ -37,7 +37,7 @@ export function NewMovimientoDialog() {
             </DialogDescription>
           </DialogHeader>
 
-          <MovimientoForm mode="create" onSuccess={() => setOpen(false)} />
+          <MovementForm mode="create" onSuccess={() => setOpen(false)} />
         </div>
       </DialogContent>
     </Dialog>

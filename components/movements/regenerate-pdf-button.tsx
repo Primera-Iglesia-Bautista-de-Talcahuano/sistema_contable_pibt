@@ -5,13 +5,13 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 
-export function RegenerarPdfButton({ movimientoId }: { movimientoId: string }) {
+export function RegeneratePdfButton({ movementId }: { movementId: string }) {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
   async function onClick() {
     setLoading(true)
-    const promise = fetch(`/api/movements/${movimientoId}/regenerate-pdf`, {
+    const promise = fetch(`/api/movements/${movementId}/regenerate-pdf`, {
       method: "POST"
     }).then(async (res) => {
       if (!res.ok) {

@@ -1,5 +1,5 @@
 import { createSupabaseAdminClient } from "@/lib/supabase/admin"
-import { auditoriaService } from "@/services/auditoria/auditoria.service"
+import { auditService } from "@/services/audit/audit.service"
 import type {
   CreateBudgetPeriodInput,
   UpdateBudgetPeriodInput,
@@ -46,7 +46,7 @@ export const budgetService = {
       .single()
     if (error) throw error
 
-    await auditoriaService.logSystem({
+    await auditService.logSystem({
       entity: "BUDGET_PERIOD",
       action: "PERIOD_CREATED",
       user_id: userId,
@@ -67,7 +67,7 @@ export const budgetService = {
       .single()
     if (error) throw error
 
-    await auditoriaService.logSystem({
+    await auditService.logSystem({
       entity: "BUDGET_PERIOD",
       action: "PERIOD_UPDATED",
       user_id: userId,
@@ -96,7 +96,7 @@ export const budgetService = {
       .eq("period_id", id)
       .eq("status", "DRAFT")
 
-    await auditoriaService.logSystem({
+    await auditService.logSystem({
       entity: "BUDGET_PERIOD",
       action: "PERIOD_RELEASED",
       user_id: userId,
@@ -117,7 +117,7 @@ export const budgetService = {
       .single()
     if (error) throw error
 
-    await auditoriaService.logSystem({
+    await auditService.logSystem({
       entity: "BUDGET_PERIOD",
       action: "PERIOD_CLOSED",
       user_id: userId,
@@ -160,7 +160,7 @@ export const budgetService = {
       .single()
     if (error) throw error
 
-    await auditoriaService.logSystem({
+    await auditService.logSystem({
       entity: "MINISTRY_BUDGET",
       action: "BUDGET_UPSERTED",
       user_id: userId,

@@ -1,5 +1,5 @@
 import { createSupabaseAdminClient } from "@/lib/supabase/admin"
-import { auditoriaService } from "@/services/auditoria/auditoria.service"
+import { auditService } from "@/services/audit/audit.service"
 import { sendSettlementReviewNotification } from "@/services/email/workflow-emails.service"
 import type { CreateSettlementInput, ReviewSettlementInput } from "@/lib/validators/settlement"
 
@@ -59,7 +59,7 @@ export const settlementsService = {
       .single()
     if (error) throw error
 
-    await auditoriaService.logSystem({
+    await auditService.logSystem({
       entity: "EXPENSE_SETTLEMENT",
       action: "SETTLEMENT_CREATED",
       user_id: userId,
@@ -118,7 +118,7 @@ export const settlementsService = {
       if (movErr) throw movErr
       movementId = movement.id
 
-      await auditoriaService.logMovement({
+      await auditService.logMovement({
         movement_id: movementId,
         action: "MOVEMENT_CREATED_FROM_SETTLEMENT",
         user_id: reviewerId,
@@ -141,7 +141,7 @@ export const settlementsService = {
       .single()
     if (error) throw error
 
-    await auditoriaService.logSystem({
+    await auditService.logSystem({
       entity: "EXPENSE_SETTLEMENT",
       action: `SETTLEMENT_${input.action}`,
       user_id: reviewerId,

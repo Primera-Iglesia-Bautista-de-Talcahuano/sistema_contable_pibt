@@ -1,12 +1,12 @@
 import { postToAppsScript } from "@/services/google/client"
 import type { AppsScriptResponse, MovementIntegrationPayload } from "@/services/google/types"
-import { movimientosService } from "@/services/movimientos/movimientos.service"
+import { movementsService } from "@/services/movements/movements.service"
 
 export async function syncMovementToSheet(
   /* eslint-disable @typescript-eslint/no-unused-vars */
   _movement: MovementIntegrationPayload
 ): Promise<AppsScriptResponse> {
-  const { data: allMovements } = await movimientosService.list({
+  const { data: allMovements } = await movementsService.list({
     status: "ACTIVE",
     pageSize: 10000
   })
@@ -14,7 +14,7 @@ export async function syncMovementToSheet(
   const movementsPayload = allMovements.map((m) => {
     const createdBy = m.users as { full_name: string; email: string } | null
     return {
-      movimientoId: m.id,
+      movementId: m.id,
       folio: m.folio_display,
       tipo: m.movement_type === "INCOME" ? "INGRESO" : "EGRESO",
       fechaMovimiento: m.movement_date,

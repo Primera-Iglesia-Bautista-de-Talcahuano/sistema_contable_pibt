@@ -1,11 +1,11 @@
 import { createSupabaseAdminClient } from "@/lib/supabase/admin"
-import { auditoriaService } from "@/services/auditoria/auditoria.service"
+import { auditService } from "@/services/audit/audit.service"
 import { sendInviteEmail, sendResetEmail } from "@/services/email/resend.service"
 import { wrapAuthLink } from "@/services/auth/link-wrapper"
 import { getSiteUrl } from "@/lib/utils"
-import type { CreateUsuarioInput, UpdateUsuarioInput } from "@/lib/validators/usuario"
+import type { CreateUserInput, UpdateUserInput } from "@/lib/validators/user"
 
-export const usuariosService = {
+export const usersService = {
   async list() {
     const admin = createSupabaseAdminClient()
     const { data, error } = await admin
@@ -17,7 +17,7 @@ export const usuariosService = {
     return data
   },
 
-  async invite(input: CreateUsuarioInput, actingUserId: string) {
+  async invite(input: CreateUserInput, actingUserId: string) {
     const admin = createSupabaseAdminClient()
     const email = input.email.toLowerCase().trim()
     const callbackUrl = `${getSiteUrl()}/auth/callback`
@@ -75,7 +75,7 @@ export const usuariosService = {
       action_link: inviteLink
     })
 
-    await auditoriaService.logSystem({
+    await auditService.logSystem({
       entity: "users",
       action: "Usuario invitado",
       entity_id: userId,
@@ -131,7 +131,7 @@ export const usuariosService = {
       action_link: wrapAuthLink(linkData.properties.action_link)
     })
 
-    await auditoriaService.logSystem({
+    await auditService.logSystem({
       entity: "users",
       action: "Cuenta reseteada",
       entity_id: userId,
@@ -159,7 +159,7 @@ export const usuariosService = {
     const { error } = await admin.auth.admin.deleteUser(userId)
     if (error) throw error
 
-    await auditoriaService.logSystem({
+    await auditService.logSystem({
       entity: "users",
       action: "Usuario eliminado",
       entity_id: userId,
@@ -209,7 +209,7 @@ export const usuariosService = {
       action_link: inviteLink
     })
 
-    await auditoriaService.logSystem({
+    await auditService.logSystem({
       entity: "users",
       action: "Invitación reenviada",
       entity_id: userId,
@@ -220,7 +220,7 @@ export const usuariosService = {
     return { invite_link: inviteLink }
   },
 
-  async update(input: UpdateUsuarioInput, actingUserId: string) {
+  async update(input: UpdateUserInput, actingUserId: string) {
     const admin = createSupabaseAdminClient()
 
     const { data: current, error: fetchError } = await admin
@@ -245,7 +245,7 @@ export const usuariosService = {
 
     if (error) throw error
 
-    await auditoriaService.logSystem({
+    await auditService.logSystem({
       entity: "users",
       action: "Usuario actualizado",
       entity_id: input.id,

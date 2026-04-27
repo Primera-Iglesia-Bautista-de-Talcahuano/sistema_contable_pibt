@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { getCurrentUser } from "@/lib/supabase/server"
 import { canManageUsers } from "@/lib/permissions/rbac"
-import { usuariosService } from "@/services/usuarios/usuarios.service"
+import { usersService } from "@/services/users/users.service"
 
 export async function POST(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const user = await getCurrentUser()
@@ -11,7 +11,7 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
 
   try {
     const { id } = await params
-    const result = await usuariosService.resendInvite(id, user.id)
+    const result = await usersService.resendInvite(id, user.id)
     return NextResponse.json(result)
   } catch (error) {
     const message = error instanceof Error ? error.message : "Error inesperado"

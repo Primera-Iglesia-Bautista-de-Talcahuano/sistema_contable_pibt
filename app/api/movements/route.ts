@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
-import { createMovimientoSchema } from "@/lib/validators/movimiento"
-import { movimientosService } from "@/services/movimientos/movimientos.service"
+import { createMovementSchema } from "@/lib/validators/movement"
+import { movementsService } from "@/services/movements/movements.service"
 import { getCurrentUser } from "@/lib/supabase/server"
 import { canCreateOrEditMovements, canViewMovements } from "@/lib/permissions/rbac"
 import { processMovimientoIntegrations } from "@/services/google/movement-postprocess"
@@ -16,7 +16,7 @@ export async function GET(request: Request) {
   const movement_type = searchParams.get("movement_type") as "INCOME" | "EXPENSE" | "ALL" | null
   const status = searchParams.get("status") as "ACTIVE" | "CANCELLED" | "ALL" | null
 
-  const { data } = await movimientosService.list({
+  const { data } = await movementsService.list({
     search,
     movement_type: movement_type ?? "ALL",
     status: status ?? "ALL"
@@ -33,7 +33,7 @@ export async function POST(request: Request) {
 
   try {
     const body: unknown = await request.json()
-    const parsed = createMovimientoSchema.safeParse(body)
+    const parsed = createMovementSchema.safeParse(body)
     if (!parsed.success) {
       return NextResponse.json(
         { message: "Datos invalidos", errors: parsed.error.flatten() },
@@ -41,7 +41,7 @@ export async function POST(request: Request) {
       )
     }
 
-    const created = await movimientosService.create(parsed.data, user.id)
+    const created = await movementsService.create(parsed.data, user.id)
     void processMovimientoIntegrations(created.id, user.id).catch(() => {
       // Mantener regla de negocio: si falla integración externa, movimiento queda guardado.
     })

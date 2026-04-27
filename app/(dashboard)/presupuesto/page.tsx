@@ -3,7 +3,7 @@ import { getCurrentUser } from "@/lib/supabase/server"
 import { canManageBudgets } from "@/lib/permissions/rbac"
 import { budgetService } from "@/services/budget/budget.service"
 import { ministriesService } from "@/services/ministries/ministries.service"
-import { BudgetClient } from "@/components/presupuesto/budget-client"
+import { BudgetClient } from "@/components/budget/budget-client"
 
 export default async function PresupuestoPage() {
   const user = await getCurrentUser()

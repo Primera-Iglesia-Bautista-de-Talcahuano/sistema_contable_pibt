@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server"
 import { getCurrentUser } from "@/lib/supabase/server"
 import { canManageUsers } from "@/lib/permissions/rbac"
-import { usuariosService } from "@/services/usuarios/usuarios.service"
-import { updateUsuarioSchema } from "@/lib/validators/usuario"
+import { usersService } from "@/services/users/users.service"
+import { updateUserSchema } from "@/lib/validators/user"
 
 type Params = { params: Promise<{ id: string }> }
 
@@ -14,7 +14,7 @@ export async function DELETE(_req: Request, { params }: Params) {
 
   try {
     const { id } = await params
-    await usuariosService.delete(id, user.id)
+    await usersService.delete(id, user.id)
     return NextResponse.json({ ok: true })
   } catch (error) {
     const message = error instanceof Error ? error.message : "Error inesperado"
@@ -31,7 +31,7 @@ export async function PUT(request: Request, { params }: Params) {
   try {
     const { id } = await params
     const body: unknown = await request.json()
-    const parsed = updateUsuarioSchema.safeParse({ ...(body as Record<string, unknown>), id })
+    const parsed = updateUserSchema.safeParse({ ...(body as Record<string, unknown>), id })
     if (!parsed.success) {
       return NextResponse.json(
         { message: "Datos inválidos", errors: parsed.error.flatten() },
@@ -39,7 +39,7 @@ export async function PUT(request: Request, { params }: Params) {
       )
     }
 
-    const updated = await usuariosService.update(parsed.data, user.id)
+    const updated = await usersService.update(parsed.data, user.id)
     return NextResponse.json(updated)
   } catch (error) {
     const message = error instanceof Error ? error.message : "Error inesperado"

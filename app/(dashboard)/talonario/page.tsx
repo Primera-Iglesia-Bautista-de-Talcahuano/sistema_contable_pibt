@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation"
-import { MovimientoForm } from "@/components/movimientos/movimiento-form"
+import { MovementForm } from "@/components/movements/movement-form"
 import { getCurrentUser } from "@/lib/supabase/server"
 import { canCreateOrEditMovements } from "@/lib/permissions/rbac"
 
@@ -21,7 +21,7 @@ export default async function TalonarioPage() {
       </div>
 
       <div className="rounded-xl bg-card border border-border p-6 sm:p-10">
-        <MovimientoForm mode="create" />
+        <MovementForm mode="create" />
       </div>
     </section>
   )

@@ -17,14 +17,14 @@ import { Input } from "@/components/ui/input"
 import { Field, FieldLabel } from "@/components/ui/field"
 import { toast } from "sonner"
 
-export function AnularButton({
-  movimientoId,
+export function CancelButton({
+  movementId,
   disabled,
   size,
   className,
   onSuccess
 }: {
-  movimientoId: string
+  movementId: string
   disabled?: boolean
   size?: React.ComponentProps<typeof Button>["size"]
   className?: string
@@ -39,7 +39,7 @@ export function AnularButton({
     if (!motivo.trim()) return
 
     setLoading(true)
-    const promise = fetch(`/api/movements/${movimientoId}/cancel`, {
+    const promise = fetch(`/api/movements/${movementId}/cancel`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ cancellation_reason: motivo })
@@ -63,7 +63,7 @@ export function AnularButton({
 
     await promise.catch(() => {})
     setLoading(false)
-  }, [motivo, movimientoId, onSuccess, router])
+  }, [motivo, movementId, onSuccess, router])
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>

@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import type { AppSettings } from "@/services/settings/settings.service"
 
-export function ConfiguracionClient({ initialSettings }: { initialSettings: AppSettings }) {
+export function SettingsClient({ initialSettings }: { initialSettings: AppSettings }) {
   const [settings, setSettings] = useState(initialSettings)
   const [saving, setSaving] = useState(false)
 

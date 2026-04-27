@@ -1,8 +1,8 @@
 import { createSupabaseAdminClient } from "@/lib/supabase/admin"
-import { auditoriaService } from "@/services/auditoria/auditoria.service"
+import { auditService } from "@/services/audit/audit.service"
 import { ministriesService } from "@/services/ministries/ministries.service"
 import { budgetService } from "@/services/budget/budget.service"
-import { movimientosService } from "@/services/movimientos/movimientos.service"
+import { movementsService } from "@/services/movements/movements.service"
 import {
   sendIntentionNotification,
   sendIntentionReviewNotification,
@@ -82,7 +82,7 @@ export const intentionsService = {
       .single()
     if (error) throw error
 
-    await auditoriaService.logSystem({
+    await auditService.logSystem({
       entity: "BUDGET_INTENTION",
       action: "INTENTION_CREATED",
       user_id: userId,
@@ -123,7 +123,7 @@ export const intentionsService = {
       .single()
     if (error) throw error
 
-    await auditoriaService.logSystem({
+    await auditService.logSystem({
       entity: "BUDGET_INTENTION",
       action: `INTENTION_${input.action}`,
       user_id: reviewerId,
@@ -159,7 +159,7 @@ export const intentionsService = {
       .single()
     if (error) throw error
 
-    await auditoriaService.logSystem({
+    await auditService.logSystem({
       entity: "INTENTION_TRANSFER",
       action: "TRANSFER_REGISTERED",
       user_id: userId,
@@ -258,6 +258,6 @@ export const intentionsService = {
   }
 }
 
-// Avoid circular dependency — import movimientosService only in settlement service
-export { movimientosService }
+// Avoid circular dependency — import movementsService only in settlement service
+export { movementsService }
 export { ministriesService }

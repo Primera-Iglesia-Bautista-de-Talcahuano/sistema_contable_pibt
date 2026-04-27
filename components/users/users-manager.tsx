@@ -27,15 +27,15 @@ import {
   ItemDescription,
   ItemActions
 } from "@/components/ui/item"
-import { createUsuarioSchema, updateUsuarioSchema } from "@/lib/validators/usuario"
-import type { CreateUsuarioInput, UpdateUsuarioInput } from "@/lib/validators/usuario"
+import { createUserSchema, updateUserSchema } from "@/lib/validators/user"
+import type { CreateUserInput, UpdateUserInput } from "@/lib/validators/user"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Field, FieldGroup, FieldLabel, FieldError } from "@/components/ui/field"
 import { toast } from "sonner"
 
 type UserStatus = "ACTIVE" | "INACTIVE" | "PENDING_ACTIVATION" | "PENDING_RESET"
 
-type UsuarioRow = {
+type UserRow = {
   id: string
   full_name: string
   email: string
@@ -45,7 +45,7 @@ type UsuarioRow = {
   updated_at: string | Date | null
 }
 
-function isLinkExpired(user: UsuarioRow): boolean {
+function isLinkExpired(user: UserRow): boolean {
   if (user.status !== "PENDING_ACTIVATION" && user.status !== "PENDING_RESET") return false
   const expiryMs = user.status === "PENDING_ACTIVATION" ? 24 * 60 * 60 * 1000 : 60 * 60 * 1000
   const lastAction = Math.max(
@@ -112,11 +112,11 @@ function statusMeta(status: UserStatus): StatusMeta {
   }
 }
 
-export function UsuariosManager({ initialUsers }: { initialUsers: UsuarioRow[] }) {
-  const [users, setUsers] = useState<UsuarioRow[]>(initialUsers)
+export function UsersManager({ initialUsers }: { initialUsers: UserRow[] }) {
+  const [users, setUsers] = useState<UserRow[]>(initialUsers)
   const [createOpen, setCreateOpen] = useState(false)
-  const [editingUser, setEditingUser] = useState<UsuarioRow | null>(null)
-  const [deletingUser, setDeletingUser] = useState<UsuarioRow | null>(null)
+  const [editingUser, setEditingUser] = useState<UserRow | null>(null)
+  const [deletingUser, setDeletingUser] = useState<UserRow | null>(null)
   const [search, setSearch] = useState("")
   const [inviteLink, setInviteLink] = useState<string | null>(null)
   const [linkCopied, setLinkCopied] = useState(false)
@@ -138,14 +138,14 @@ export function UsuariosManager({ initialUsers }: { initialUsers: UsuarioRow[] }
   }, [users, search])
 
   // ── Create form ──────────────────────────────────────────────────────────────
-  const createForm = useForm<CreateUsuarioInput>({
-    resolver: zodResolver(createUsuarioSchema),
+  const createForm = useForm<CreateUserInput>({
+    resolver: zodResolver(createUserSchema),
     defaultValues: { full_name: "", email: "", role: "OPERATOR" }
   })
 
   const selectedRole = useWatch({ control: createForm.control, name: "role" })
 
-  const handleCreate = (values: CreateUsuarioInput) => {
+  const handleCreate = (values: CreateUserInput) => {
     const promise = fetch("/api/users", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -155,7 +155,7 @@ export function UsuariosManager({ initialUsers }: { initialUsers: UsuarioRow[] }
         const data = (await res.json().catch(() => ({}))) as { message?: string }
         throw new Error(data.message ?? "No se pudo crear el usuario.")
       }
-      return res.json() as Promise<UsuarioRow & { invite_link?: string }>
+      return res.json() as Promise<UserRow & { invite_link?: string }>
     })
 
     toast.promise(promise, {
@@ -177,11 +177,11 @@ export function UsuariosManager({ initialUsers }: { initialUsers: UsuarioRow[] }
   }
 
   // ── Edit form ─────────────────────────────────────────────────────────────────
-  const editForm = useForm<UpdateUsuarioInput>({
-    resolver: zodResolver(updateUsuarioSchema)
+  const editForm = useForm<UpdateUserInput>({
+    resolver: zodResolver(updateUserSchema)
   })
 
-  function openEdit(user: UsuarioRow) {
+  function openEdit(user: UserRow) {
     setEditingUser(user)
     editForm.reset({
       id: user.id,
@@ -191,7 +191,7 @@ export function UsuariosManager({ initialUsers }: { initialUsers: UsuarioRow[] }
     })
   }
 
-  const handleUpdate = (values: UpdateUsuarioInput) => {
+  const handleUpdate = (values: UpdateUserInput) => {
     const promise = fetch(`/api/users/${values.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -201,12 +201,12 @@ export function UsuariosManager({ initialUsers }: { initialUsers: UsuarioRow[] }
         const data = (await res.json().catch(() => ({}))) as { message?: string }
         throw new Error(data.message ?? "No se pudo actualizar el usuario.")
       }
-      return res.json() as Promise<UsuarioRow>
+      return res.json() as Promise<UserRow>
     })
 
     toast.promise(promise, {
       loading: "Guardando cambios...",
-      success: (updated: UsuarioRow) => {
+      success: (updated: UserRow) => {
         setUsers((prev) => prev.map((u) => (u.id === updated.id ? { ...u, ...updated } : u)))
         setEditingUser(null)
         return "Usuario actualizado"

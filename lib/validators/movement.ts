@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-export const movimientoBaseSchema = z.object({
+export const movementBaseSchema = z.object({
   movement_date: z.string().date("La fecha no tiene un formato válido"),
   movement_type: z.enum(["INCOME", "EXPENSE"]),
   amount: z.coerce.number().positive("El monto debe ser mayor a 0"),
@@ -16,16 +16,16 @@ export const movimientoBaseSchema = z.object({
   attachment_url: z.string().url().optional().nullable()
 })
 
-export const createMovimientoSchema = movimientoBaseSchema
+export const createMovementSchema = movementBaseSchema
 
-export const updateMovimientoSchema = movimientoBaseSchema.extend({
+export const updateMovementSchema = movementBaseSchema.extend({
   id: z.string().min(1)
 })
 
-export const anularMovimientoSchema = z.object({
+export const cancelMovementSchema = z.object({
   cancellation_reason: z.string().min(3, "Debes indicar un motivo de anulacion")
 })
 
-export type CreateMovimientoInput = z.infer<typeof createMovimientoSchema>
-export type UpdateMovimientoInput = z.infer<typeof updateMovimientoSchema>
-export type AnularMovimientoInput = z.infer<typeof anularMovimientoSchema>
+export type CreateMovementInput = z.infer<typeof createMovementSchema>
+export type UpdateMovementInput = z.infer<typeof updateMovementSchema>
+export type CancelMovementInput = z.infer<typeof cancelMovementSchema>

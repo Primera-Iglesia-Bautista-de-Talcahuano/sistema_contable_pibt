@@ -1,7 +1,7 @@
 type Props = { params: Promise<{ id: string }> }
 import { notFound, redirect } from "next/navigation"
-import { MovimientoForm } from "@/components/movimientos/movimiento-form"
-import { movimientosService } from "@/services/movimientos/movimientos.service"
+import { MovementForm } from "@/components/movements/movement-form"
+import { movementsService } from "@/services/movements/movements.service"
 import { getCurrentUser } from "@/lib/supabase/server"
 import { canCreateOrEditMovements } from "@/lib/permissions/rbac"
 import { toMovimientoFormValues } from "@/lib/utils"
@@ -13,7 +13,7 @@ export default async function EditarMovimientoPage({ params }: Props) {
     redirect(`/movimientos/${id}`)
   }
 
-  const movement = await movimientosService.findById(id).catch(() => null)
+  const movement = await movementsService.findById(id).catch(() => null)
   if (!movement) notFound()
   if (movement.status === "CANCELLED") redirect(`/movimientos/${id}`)
 
@@ -29,9 +29,9 @@ export default async function EditarMovimientoPage({ params }: Props) {
       </div>
 
       <div className="rounded-xl bg-card border border-border p-6 sm:p-10">
-        <MovimientoForm
+        <MovementForm
           mode="edit"
-          movimientoId={id}
+          movementId={id}
           initialValues={toMovimientoFormValues(movement)}
         />
       </div>

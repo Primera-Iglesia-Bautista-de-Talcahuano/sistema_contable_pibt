@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { cn, formatDate, formatCLP } from "@/lib/utils"
-import { AnularButton } from "./anular-button"
+import { CancelButton } from "./cancel-button"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/item"
 import { FileSearch } from "lucide-react"
 
-export type SerializedMovimiento = {
+export type SerializedMovement = {
   id: string
   folio_display: string
   movement_date: string
@@ -65,14 +65,14 @@ const STATUS_LABEL: Record<string, string> = {
   CANCELLED: "Anulado"
 }
 
-export function MovimientosTable({
+export function MovementsTable({
   rows,
   canWrite
 }: {
-  rows: SerializedMovimiento[]
+  rows: SerializedMovement[]
   canWrite: boolean
 }) {
-  const [selected, setSelected] = useState<SerializedMovimiento | null>(null)
+  const [selected, setSelected] = useState<SerializedMovement | null>(null)
 
   return (
     <>
@@ -359,8 +359,8 @@ export function MovimientosTable({
                   Ver detalles
                 </Button>
                 {canWrite && selected.status !== "CANCELLED" && (
-                  <AnularButton
-                    movimientoId={selected.id}
+                  <CancelButton
+                    movementId={selected.id}
                     onSuccess={() => setSelected(null)}
                     className="h-10 px-5 bg-destructive/10 hover:bg-destructive/20 text-destructive border-none shadow-none"
                   />

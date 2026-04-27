@@ -56,7 +56,7 @@ const STATUS_LABELS = {
   REJECTED: "Rechazada"
 }
 
-export function SolicitudesClient({
+export function IntentionsClient({
   role,
   intentions: initialIntentions,
   ministry,

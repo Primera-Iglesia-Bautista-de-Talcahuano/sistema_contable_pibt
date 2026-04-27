@@ -1,5 +1,5 @@
 import { createSupabaseAdminClient } from "@/lib/supabase/admin"
-import { auditoriaService } from "@/services/auditoria/auditoria.service"
+import { auditService } from "@/services/audit/audit.service"
 import type { CreateInvoiceInput } from "@/lib/validators/invoice"
 
 export const invoicesService = {
@@ -32,7 +32,7 @@ export const invoicesService = {
       .single()
     if (error) throw error
 
-    await auditoriaService.logSystem({
+    await auditService.logSystem({
       entity: "INVOICE",
       action: "INVOICE_CREATED",
       user_id: userId,
@@ -61,7 +61,7 @@ export const invoicesService = {
       .single()
     if (error) throw error
 
-    await auditoriaService.logSystem({
+    await auditService.logSystem({
       entity: "INVOICE",
       action: "INVOICE_STATUS_CHANGED",
       user_id: userId,

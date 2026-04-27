@@ -1,10 +1,10 @@
 import { createSupabaseAdminClient } from "@/lib/supabase/admin"
-import { auditoriaService } from "@/services/auditoria/auditoria.service"
+import { auditService } from "@/services/audit/audit.service"
 import type {
-  AnularMovimientoInput,
-  CreateMovimientoInput,
-  UpdateMovimientoInput
-} from "@/lib/validators/movimiento"
+  CancelMovementInput,
+  CreateMovementInput,
+  UpdateMovementInput
+} from "@/lib/validators/movement"
 
 function normalizeOptional(value?: string | null) {
   if (!value) return null
@@ -22,7 +22,7 @@ type ListFilters = {
   pageSize?: number
 }
 
-export const movimientosService = {
+export const movementsService = {
   async list(filters: ListFilters = {}) {
     const admin = createSupabaseAdminClient()
     const pageSize = filters.pageSize ?? PAGE_SIZE
@@ -77,7 +77,7 @@ export const movimientosService = {
     return data
   },
 
-  async create(input: CreateMovimientoInput, userId: string) {
+  async create(input: CreateMovementInput, userId: string) {
     const admin = createSupabaseAdminClient()
 
     const { data: folioData, error: folioError } = await admin.rpc("increment_and_get_folio")
@@ -110,7 +110,7 @@ export const movimientosService = {
 
     if (error) throw error
 
-    await auditoriaService.logMovement({
+    await auditService.logMovement({
       movement_id: movement.id,
       user_id: userId,
       action: "Movimiento creado",
@@ -121,7 +121,7 @@ export const movimientosService = {
     return movement
   },
 
-  async update(id: string, input: UpdateMovimientoInput, userId: string) {
+  async update(id: string, input: UpdateMovementInput, userId: string) {
     const admin = createSupabaseAdminClient()
 
     const { data: previous, error: fetchError } = await admin
@@ -159,7 +159,7 @@ export const movimientosService = {
 
     if (error) throw error
 
-    await auditoriaService.logMovement({
+    await auditService.logMovement({
       movement_id: id,
       user_id: userId,
       action: "Movimiento editado",
@@ -171,7 +171,7 @@ export const movimientosService = {
     return updated
   },
 
-  async cancel(id: string, input: AnularMovimientoInput, userId: string) {
+  async cancel(id: string, input: CancelMovementInput, userId: string) {
     const admin = createSupabaseAdminClient()
 
     const { data: previous, error: fetchError } = await admin
@@ -201,7 +201,7 @@ export const movimientosService = {
 
     if (error) throw error
 
-    await auditoriaService.logMovement({
+    await auditService.logMovement({
       movement_id: id,
       user_id: userId,
       action: "Movimiento anulado",

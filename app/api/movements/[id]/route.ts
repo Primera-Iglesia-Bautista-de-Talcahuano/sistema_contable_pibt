@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server"
 import { getCurrentUser } from "@/lib/supabase/server"
 import { canCreateOrEditMovements, canViewMovements } from "@/lib/permissions/rbac"
-import { movimientosService } from "@/services/movimientos/movimientos.service"
-import { updateMovimientoSchema } from "@/lib/validators/movimiento"
+import { movementsService } from "@/services/movements/movements.service"
+import { updateMovementSchema } from "@/lib/validators/movement"
 import { processMovimientoIntegrations } from "@/services/google/movement-postprocess"
 
 type Params = { params: Promise<{ id: string }> }
@@ -14,7 +14,7 @@ export async function GET(_: Request, { params }: Params) {
   }
 
   const { id } = await params
-  const row = await movimientosService.findById(id)
+  const row = await movementsService.findById(id)
   if (!row) {
     return NextResponse.json({ message: "Movimiento no encontrado" }, { status: 404 })
   }
@@ -31,7 +31,7 @@ export async function PUT(request: Request, { params }: Params) {
   try {
     const { id } = await params
     const body: unknown = await request.json()
-    const parsed = updateMovimientoSchema.safeParse({ ...(body as Record<string, unknown>), id })
+    const parsed = updateMovementSchema.safeParse({ ...(body as Record<string, unknown>), id })
     if (!parsed.success) {
       return NextResponse.json(
         { message: "Datos invalidos", errors: parsed.error.flatten() },
@@ -39,7 +39,7 @@ export async function PUT(request: Request, { params }: Params) {
       )
     }
 
-    const updated = await movimientosService.update(id, parsed.data, user.id)
+    const updated = await movementsService.update(id, parsed.data, user.id)
     void processMovimientoIntegrations(updated.id, user.id).catch(() => {
       // Mantener regla de negocio: si falla integración externa, movimiento queda guardado.
     })

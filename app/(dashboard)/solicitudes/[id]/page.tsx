@@ -4,7 +4,7 @@ import { canViewWorkflow } from "@/lib/permissions/rbac"
 import { intentionsService } from "@/services/intentions/intentions.service"
 import { settlementsService } from "@/services/settlements/settlements.service"
 import { ministriesService } from "@/services/ministries/ministries.service"
-import { IntentionDetailClient } from "@/components/solicitudes/intention-detail-client"
+import { IntentionDetailClient } from "@/components/intentions/intention-detail-client"
 import type { ComponentProps } from "react"
 
 type DetailProps = ComponentProps<typeof IntentionDetailClient>

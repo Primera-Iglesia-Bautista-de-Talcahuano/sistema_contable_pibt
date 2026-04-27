@@ -48,7 +48,7 @@ import { FileInput } from "@/components/ui/file-input"
 
 type Invoice = Database["public"]["Tables"]["invoices"]["Row"]
 
-export function RendicionesClient({ initialInvoices }: { initialInvoices: Invoice[] }) {
+export function SettlementsClient({ initialInvoices }: { initialInvoices: Invoice[] }) {
   const [invoices, setInvoices] = useState<Invoice[]>(initialInvoices)
   const [number, setNumber] = useState("")
   const [date, setDate] = useState<Date | undefined>(new Date())

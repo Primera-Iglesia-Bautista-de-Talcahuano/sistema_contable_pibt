@@ -2,7 +2,7 @@ import { redirect } from "next/navigation"
 import { cn, formatDateTime } from "@/lib/utils"
 import { getCurrentUser } from "@/lib/supabase/server"
 import { canManageUsers } from "@/lib/permissions/rbac"
-import { auditoriaService } from "@/services/auditoria/auditoria.service"
+import { auditService } from "@/services/audit/audit.service"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyMedia } from "@/components/ui/empty"
 import {
@@ -30,7 +30,7 @@ export default async function AuditoriaPage() {
     redirect("/dashboard")
   }
 
-  const events = await auditoriaService.listSystem(50)
+  const events = await auditService.listSystem(50)
 
   return (
     <section className="mx-auto max-w-6xl flex flex-col gap-8">

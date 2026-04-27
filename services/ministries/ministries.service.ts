@@ -1,5 +1,5 @@
 import { createSupabaseAdminClient } from "@/lib/supabase/admin"
-import { auditoriaService } from "@/services/auditoria/auditoria.service"
+import { auditService } from "@/services/audit/audit.service"
 import type {
   CreateMinistryInput,
   UpdateMinistryInput,
@@ -30,7 +30,7 @@ export const ministriesService = {
       .single()
     if (error) throw error
 
-    await auditoriaService.logSystem({
+    await auditService.logSystem({
       entity: "MINISTRY",
       action: "MINISTRY_CREATED",
       user_id: userId,
@@ -51,7 +51,7 @@ export const ministriesService = {
       .single()
     if (error) throw error
 
-    await auditoriaService.logSystem({
+    await auditService.logSystem({
       entity: "MINISTRY",
       action: "MINISTRY_UPDATED",
       user_id: userId,
@@ -119,7 +119,7 @@ export const ministriesService = {
       .single()
     if (error) throw error
 
-    await auditoriaService.logSystem({
+    await auditService.logSystem({
       entity: "MINISTRY_ASSIGNMENT",
       action: "MINISTER_ASSIGNED",
       user_id: assignedBy,
@@ -139,7 +139,7 @@ export const ministriesService = {
       .is("unassigned_at", null)
     if (error) throw error
 
-    await auditoriaService.logSystem({
+    await auditService.logSystem({
       entity: "MINISTRY_ASSIGNMENT",
       action: "MINISTER_UNASSIGNED",
       user_id: userId,

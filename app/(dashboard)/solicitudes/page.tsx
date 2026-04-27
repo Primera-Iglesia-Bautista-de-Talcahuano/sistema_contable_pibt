@@ -4,10 +4,10 @@ import { canViewWorkflow } from "@/lib/permissions/rbac"
 import { intentionsService } from "@/services/intentions/intentions.service"
 import { ministriesService } from "@/services/ministries/ministries.service"
 import { budgetService } from "@/services/budget/budget.service"
-import { SolicitudesClient } from "@/components/solicitudes/solicitudes-client"
+import { IntentionsClient } from "@/components/intentions/intentions-client"
 import type { ComponentProps } from "react"
 
-type SolicitudesProps = ComponentProps<typeof SolicitudesClient>
+type SolicitudesProps = ComponentProps<typeof IntentionsClient>
 
 export default async function SolicitudesPage() {
   const user = await getCurrentUser()
@@ -27,7 +27,7 @@ export default async function SolicitudesPage() {
       : []
 
     return (
-      <SolicitudesClient
+      <IntentionsClient
         role="MINISTER"
         intentions={intentions as unknown as SolicitudesProps["intentions"]}
         ministry={(assignment?.ministries ?? null) as unknown as SolicitudesProps["ministry"]}
@@ -40,7 +40,7 @@ export default async function SolicitudesPage() {
   const intentions = await intentionsService.list()
 
   return (
-    <SolicitudesClient
+    <IntentionsClient
       role={user.role}
       intentions={intentions as unknown as SolicitudesProps["intentions"]}
       ministry={null}

@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server"
 import { getCurrentUser } from "@/lib/supabase/server"
 import { canCreateOrEditMovements } from "@/lib/permissions/rbac"
-import { movimientosService } from "@/services/movimientos/movimientos.service"
-import { anularMovimientoSchema } from "@/lib/validators/movimiento"
+import { movementsService } from "@/services/movements/movements.service"
+import { cancelMovementSchema } from "@/lib/validators/movement"
 import { processMovimientoIntegrations } from "@/services/google/movement-postprocess"
 
 type Params = { params: Promise<{ id: string }> }
@@ -16,7 +16,7 @@ export async function POST(request: Request, { params }: Params) {
   try {
     const { id } = await params
     const body: unknown = await request.json()
-    const parsed = anularMovimientoSchema.safeParse(body)
+    const parsed = cancelMovementSchema.safeParse(body)
     if (!parsed.success) {
       return NextResponse.json(
         { message: "Datos invalidos", errors: parsed.error.flatten() },
@@ -24,7 +24,7 @@ export async function POST(request: Request, { params }: Params) {
       )
     }
 
-    const result = await movimientosService.cancel(id, parsed.data, user.id)
+    const result = await movementsService.cancel(id, parsed.data, user.id)
     void processMovimientoIntegrations(result.id, user.id).catch(() => {
       // Mantener regla de negocio: si falla integración externa, movimiento queda guardado.
     })
