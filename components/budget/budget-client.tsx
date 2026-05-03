@@ -4,7 +4,8 @@ import { useState } from "react"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
-import { Plus, Calendar, ChevronDown, Unlock, Lock } from "lucide-react"
+import Link from "next/link"
+import { Plus, Calendar, ChevronDown, Unlock, Lock, List } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -317,6 +318,13 @@ function PeriodCard({
               Cerrar
             </Button>
           )}
+          <Link
+            href={`/budget/${period.id}`}
+            className="inline-flex shrink-0 items-center gap-1 rounded-[min(var(--radius-md),10px)] border border-border bg-background px-2.5 h-8 text-sm font-medium shadow-xs hover:bg-muted hover:text-foreground transition-colors"
+          >
+            <List className="size-3.5" />
+            Gestionar ítems
+          </Link>
           <Button variant="ghost" size="sm" onClick={handleToggle}>
             <ChevronDown
               className={`size-4 transition-transform ${expanded ? "rotate-180" : ""}`}

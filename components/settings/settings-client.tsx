@@ -19,6 +19,7 @@ export function SettingsClient({ initialSettings }: { initialSettings: AppSettin
     defaultValues: {
       tesoreria_notification_email: initialSettings.tesoreria_notification_email,
       voucher_email: initialSettings.voucher_email,
+      budget_notification_email: initialSettings.budget_notification_email,
       reminder_interval_days: String(initialSettings.reminder_interval_days),
       budget_period_start_month: String(initialSettings.budget_period_start_month)
     }
@@ -56,6 +57,21 @@ export function SettingsClient({ initialSettings }: { initialSettings: AppSettin
               Recibe alertas de nuevas solicitudes y recordatorios de pendientes.
             </p>
             <FieldError errors={[form.formState.errors.tesoreria_notification_email]} />
+          </Field>
+
+          <Field>
+            <FieldLabel htmlFor="budget-email">Email notificaciones — Cambios de presupuesto</FieldLabel>
+            <Input
+              id="budget-email"
+              type="email"
+              placeholder="finanzas@pibtalcahuano.com"
+              {...form.register("budget_notification_email")}
+            />
+            <p className="text-xs text-muted-foreground">
+              Recibe un correo cada vez que se agrega, modifica o elimina un ítem en un presupuesto
+              aprobado. Si está vacío, se usa el email de Tesorería.
+            </p>
+            <FieldError errors={[form.formState.errors.budget_notification_email]} />
           </Field>
 
           <Field>

@@ -1,5 +1,6 @@
 import { Resend } from "resend"
 
+import { BudgetChangeEmail } from "@/emails/budget-change-email"
 import { IntentionNotificationEmail } from "@/emails/intention-notification-email"
 import { IntentionReviewEmail } from "@/emails/intention-review-email"
 import { ReminderEmail } from "@/emails/reminder-email"
@@ -107,6 +108,35 @@ export async function sendSettlementReviewNotification(
       minister,
       action,
       detailUrl: `${BASE_URL}/requests/${settlement.id}`
+    }),
+    headers: TRANSACTIONAL_HEADERS
+  })
+}
+
+export async function sendBudgetChangeNotification(params: {
+  action: "CREATED" | "UPDATED" | "DELETED"
+  item: { description: string; amount: number; ministry_name?: string | null; notes?: string | null }
+  periodId: string
+  periodName: string
+  changedByName: string
+}): Promise<void> {
+  const settings = await settingsService.getAll(createSupabaseAdminClient())
+  const to = settings.budget_notification_email || settings.tesoreria_notification_email
+  if (!to) return
+
+  const resend = new Resend(process.env.RESEND_API_KEY)
+  const actionLabel = params.action === "CREATED" ? "agregado" : params.action === "UPDATED" ? "modificado" : "eliminado"
+
+  await resend.emails.send({
+    from: FROM_EMAIL,
+    to,
+    subject: `[Presupuesto] Ítem ${actionLabel} — ${params.periodName}`,
+    react: BudgetChangeEmail({
+      action: params.action,
+      item: params.item,
+      periodName: params.periodName,
+      changedByName: params.changedByName,
+      budgetUrl: `${BASE_URL}/budget/${params.periodId}`
     }),
     headers: TRANSACTIONAL_HEADERS
   })

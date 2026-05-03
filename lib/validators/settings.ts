@@ -3,6 +3,7 @@ import { z } from "zod"
 export const updateSettingsSchema = z.object({
   tesoreria_notification_email: z.string().email("Email inválido").optional().or(z.literal("")),
   voucher_email: z.string().email("Email inválido").optional().or(z.literal("")),
+  budget_notification_email: z.string().email("Email inválido").optional().or(z.literal("")),
   reminder_interval_days: z.coerce
     .number()
     .int()
