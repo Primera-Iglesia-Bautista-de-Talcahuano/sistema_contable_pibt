@@ -20,12 +20,10 @@ const isLocal =
 const describeIfLocal = isLocal && SUPABASE_URL && SECRET_KEY ? describe : describe.skip
 
 describeIfLocal("RLS: unauthenticated client", () => {
-  // Publishable key = anon role, no session = RLS default-deny applies
-  const anon = createClient<Database>(SUPABASE_URL, PUBLISHABLE_KEY)
-
+  // createClient inside each test to avoid throwing at collection time when keys are empty
   it("cannot read movements table", async () => {
+    const anon = createClient<Database>(SUPABASE_URL, PUBLISHABLE_KEY)
     const { data, error } = await anon.from("movements").select("id").limit(1)
-    // Default-deny RLS: either returns empty array or an auth error, never actual rows
     if (error) {
       expect(error.message).toMatch(/permission denied|JWT/i)
     } else {
@@ -34,6 +32,7 @@ describeIfLocal("RLS: unauthenticated client", () => {
   })
 
   it("cannot read users table", async () => {
+    const anon = createClient<Database>(SUPABASE_URL, PUBLISHABLE_KEY)
     const { data, error } = await anon.from("users").select("id").limit(1)
     if (error) {
       expect(error.message).toMatch(/permission denied|JWT/i)
@@ -43,6 +42,7 @@ describeIfLocal("RLS: unauthenticated client", () => {
   })
 
   it("cannot read role_permissions table", async () => {
+    const anon = createClient<Database>(SUPABASE_URL, PUBLISHABLE_KEY)
     const { data, error } = await anon.from("role_permissions").select("*").limit(1)
     if (error) {
       expect(error.message).toMatch(/permission denied|JWT/i)
@@ -53,16 +53,15 @@ describeIfLocal("RLS: unauthenticated client", () => {
 })
 
 describeIfLocal("RLS: admin client bypasses all policies", () => {
-  // Secret key = service_role, bypasses RLS
-  const admin = createClient<Database>(SUPABASE_URL, SECRET_KEY)
-
   it("can read role_permissions table", async () => {
+    const admin = createClient<Database>(SUPABASE_URL, SECRET_KEY)
     const { data, error } = await admin.from("role_permissions").select("*").limit(1)
     expect(error).toBeNull()
     expect(Array.isArray(data)).toBe(true)
   })
 
   it("can read users table", async () => {
+    const admin = createClient<Database>(SUPABASE_URL, SECRET_KEY)
     const { error } = await admin.from("users").select("id").limit(1)
     expect(error).toBeNull()
   })
