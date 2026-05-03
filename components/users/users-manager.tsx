@@ -164,7 +164,6 @@ export function UsersManager({ initialUsers }: { initialUsers: UserRow[] }) {
       },
       error: (e: Error) => e.message
     })
-
   }
 
   const editForm = useForm<UpdateUserInput>({
