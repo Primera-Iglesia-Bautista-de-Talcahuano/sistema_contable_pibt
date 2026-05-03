@@ -90,9 +90,7 @@ export const movementsService = {
       .from("movements")
       .insert({
         folio,
-        // z.string().date() guarantees "YYYY-MM-DD" input; new Date() parses it as UTC midnight,
-        // which is the intended behavior — display code must read in UTC (not local time).
-        movement_date: new Date(input.movement_date).toISOString(),
+        movement_date: input.movement_date,
         movement_type: input.movement_type,
         amount: input.amount,
         category: input.category.trim(),
@@ -137,7 +135,7 @@ export const movementsService = {
     const { data: updated, error } = await db
       .from("movements")
       .update({
-        movement_date: new Date(input.movement_date).toISOString(),
+        movement_date: input.movement_date,
         movement_type: input.movement_type,
         amount: input.amount,
         category: input.category.trim(),

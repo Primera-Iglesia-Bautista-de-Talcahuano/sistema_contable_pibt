@@ -95,12 +95,8 @@ export const settlementsService = {
 
     if (input.action === "APPROVED") {
       const settlement = await this.getById(db, id)
-      const intention = settlement.budget_intentions as unknown as {
-        ministry_id: string
-        amount: number
-        ministries: { name: string }
-      }
-      const ministry = intention.ministries
+      const intention = settlement.budget_intentions
+      const ministry = intention?.ministries
 
       // Movement INSERT requires service_role: movements_insert RLS only allows ADMIN/BURSAR,
       // but FINANCE reviewers must also be able to approve. Admin client is used here explicitly.
@@ -113,7 +109,7 @@ export const settlementsService = {
         .from("movements")
         .insert({
           folio,
-          movement_date: now,
+          movement_date: now.slice(0, 10),
           movement_type: "EXPENSE",
           amount: settlement.amount,
           category: "Rendición Ministerio",
@@ -159,9 +155,7 @@ export const settlementsService = {
       new_value: { status: input.action, message: input.message, movement_id: movementId }
     })
 
-    const ministerUser = (
-      current as unknown as { users: { email: string; full_name: string } | null }
-    ).users
+    const ministerUser = current?.users
     if (ministerUser?.email) {
       await sendSettlementReviewNotification(data, ministerUser, input.action).catch(() => null)
     }

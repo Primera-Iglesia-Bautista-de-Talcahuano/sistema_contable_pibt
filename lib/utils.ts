@@ -6,11 +6,15 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatDate(value: string | Date): string {
-  return new Date(value).toLocaleDateString("es-CL", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric"
-  })
+  // Date-only strings (YYYY-MM-DD) must be parsed as local midnight, not UTC midnight,
+  // to avoid showing the previous day in negative-offset timezones.
+  const d =
+    value instanceof Date
+      ? value
+      : typeof value === "string" && value.length === 10
+        ? new Date(`${value}T00:00`)
+        : new Date(value)
+  return d.toLocaleDateString("es-CL", { day: "2-digit", month: "2-digit", year: "numeric" })
 }
 
 export function formatDateTime(value: string | Date): string {
@@ -24,6 +28,7 @@ export function formatDateTime(value: string | Date): string {
 }
 
 export function toDateInput(value: string | Date): string {
+  if (typeof value === "string" && value.length === 10) return value
   return new Date(value).toISOString().slice(0, 10)
 }
 

@@ -27,25 +27,12 @@ export const dashboardService = {
   async getSummary(period: DashboardPeriod = {}) {
     const admin = createSupabaseAdminClient()
 
-    let pFrom: string | null = null
-    let pTo: string | null = null
-
-    if (period.from) {
-      const d = new Date(period.from)
-      if (!Number.isNaN(d.getTime())) pFrom = d.toISOString()
-    }
-    if (period.to) {
-      const d = new Date(period.to)
-      if (!Number.isNaN(d.getTime())) {
-        d.setHours(23, 59, 59, 999)
-        pTo = d.toISOString()
-      }
-    }
+    const pFrom = period.from ?? undefined
+    const pTo = period.to ?? undefined
 
     // Run aggregation RPC and recent-movements query in parallel
     const [rpcResponse, recentResponse] = await Promise.all([
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      admin.rpc("get_dashboard_summary" as any, { p_from: pFrom, p_to: pTo }),
+      admin.rpc("get_dashboard_summary", { p_from: pFrom, p_to: pTo }),
       admin
         .from("movements")
         .select(

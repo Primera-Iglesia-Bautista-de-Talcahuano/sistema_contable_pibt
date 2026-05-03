@@ -128,9 +128,7 @@ export const intentionsService = {
       new_value: { status: input.action, message: input.message }
     })
 
-    const ministerUser = (
-      current as unknown as { users: { email: string; full_name: string } | null }
-    ).users
+    const ministerUser = current?.users
     if (ministerUser?.email) {
       await sendIntentionReviewNotification(data, ministerUser, input.action).catch(() => null)
     }
@@ -167,9 +165,7 @@ export const intentionsService = {
     })
 
     const intention = await this.getById(db, intentionId)
-    const ministerUser = (
-      intention as unknown as { users: { email: string; full_name: string } | null }
-    ).users
+    const ministerUser = intention.users
     if (ministerUser?.email) {
       await sendTransferNotification(intention, ministerUser).catch(() => null)
     }

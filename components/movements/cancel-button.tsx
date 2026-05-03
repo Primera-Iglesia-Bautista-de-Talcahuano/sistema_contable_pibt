@@ -36,7 +36,7 @@ export function CancelButton({
   const [isOpen, setIsOpen] = useState(false)
   const [motivo, setMotivo] = useState("")
 
-  const handleAnular = useCallback(async () => {
+  const handleAnular = useCallback(() => {
     if (!motivo.trim()) return
 
     setLoading(true)
@@ -53,8 +53,7 @@ export function CancelButton({
       error: (e: Error) => e.message
     })
 
-    await promise.catch(() => {})
-    setLoading(false)
+    void promise.finally(() => setLoading(false))
   }, [motivo, movement.id, onSuccess, router])
 
   return (

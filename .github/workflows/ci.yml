@@ -39,6 +39,20 @@ jobs:
       - name: TypeScript Typecheck
         run: pnpm run typecheck
 
+      - name: Admin client whitelist check
+        run: |
+          # createSupabaseAdminClient bypasses RLS — only whitelisted files may import it.
+          ALLOWED="lib/supabase/admin.ts|services/audit/audit.service.ts|services/users/users.service.ts|services/dashboard/dashboard.service.ts|lib/utils/folio.ts|app/api/reminders/route.ts|services/email/workflow-emails.service.ts|services/google/sheets-sync.ts|services/settlements/settlements.service.ts"
+          VIOLATIONS=$(grep -rl "createSupabaseAdminClient" --include="*.ts" --include="*.tsx" . \
+            | grep -v "node_modules\|\.next\|\.worktrees" \
+            | grep -vE "$ALLOWED") || true
+          if [ -n "$VIOLATIONS" ]; then
+            echo "❌ Admin client imported outside whitelist:"
+            echo "$VIOLATIONS"
+            exit 1
+          fi
+          echo "✅ Admin client whitelist OK"
+
   test:
     name: Tests
     runs-on: ubuntu-latest
