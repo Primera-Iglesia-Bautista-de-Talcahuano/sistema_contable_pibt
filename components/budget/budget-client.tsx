@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useForm } from "react-hook-form"
+import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import { Plus, Calendar, ChevronDown, Unlock, Lock } from "lucide-react"
@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dialog"
 import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyMedia } from "@/components/ui/empty"
 import { Field, FieldLabel, FieldError } from "@/components/ui/field"
+import { DatePicker } from "@/components/ui/date-picker"
 import { formatDate, formatCLP } from "@/lib/utils"
 import { createBudgetPeriodSchema } from "@/lib/validators/budget"
 import type { CreateBudgetPeriodInput } from "@/lib/validators/budget"
@@ -142,13 +143,43 @@ export function BudgetClient({
               </Field>
               <div className="grid grid-cols-2 gap-3">
                 <Field>
-                  <FieldLabel htmlFor="start-date">Fecha inicio *</FieldLabel>
-                  <Input id="start-date" type="date" {...form.register("start_date")} />
+                  <FieldLabel>Fecha inicio *</FieldLabel>
+                  <Controller
+                    control={form.control}
+                    name="start_date"
+                    render={({ field }) => (
+                      <DatePicker
+                        value={field.value ? new Date(field.value + "T00:00:00") : undefined}
+                        onChange={(date) =>
+                          field.onChange(
+                            date
+                              ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`
+                              : ""
+                          )
+                        }
+                      />
+                    )}
+                  />
                   <FieldError errors={[form.formState.errors.start_date]} />
                 </Field>
                 <Field>
-                  <FieldLabel htmlFor="end-date">Fecha fin *</FieldLabel>
-                  <Input id="end-date" type="date" {...form.register("end_date")} />
+                  <FieldLabel>Fecha fin *</FieldLabel>
+                  <Controller
+                    control={form.control}
+                    name="end_date"
+                    render={({ field }) => (
+                      <DatePicker
+                        value={field.value ? new Date(field.value + "T00:00:00") : undefined}
+                        onChange={(date) =>
+                          field.onChange(
+                            date
+                              ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`
+                              : ""
+                          )
+                        }
+                      />
+                    )}
+                  />
                   <FieldError errors={[form.formState.errors.end_date]} />
                 </Field>
               </div>

@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { useForm, type Resolver } from "react-hook-form"
+import { useForm, Controller, type Resolver } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import { Plus, AlertTriangle, Clock, CheckCircle, XCircle, FileText } from "lucide-react"
@@ -26,6 +26,7 @@ import {
   ItemActions
 } from "@/components/ui/item"
 import { Field, FieldLabel, FieldError } from "@/components/ui/field"
+import { DatePicker } from "@/components/ui/date-picker"
 import { formatDate, formatCLP } from "@/lib/utils"
 import { createIntentionSchema } from "@/lib/validators/intention"
 import type { CreateIntentionInput } from "@/lib/validators/intention"
@@ -212,8 +213,23 @@ export function IntentionsClient({
                   <FieldError errors={[form.formState.errors.purpose]} />
                 </Field>
                 <Field>
-                  <FieldLabel htmlFor="int-date">Fecha en que se necesita</FieldLabel>
-                  <Input id="int-date" type="date" {...form.register("date_needed")} />
+                  <FieldLabel>Fecha en que se necesita</FieldLabel>
+                  <Controller
+                    control={form.control}
+                    name="date_needed"
+                    render={({ field }) => (
+                      <DatePicker
+                        value={field.value ? new Date(field.value + "T00:00:00") : undefined}
+                        onChange={(date) =>
+                          field.onChange(
+                            date
+                              ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`
+                              : ""
+                          )
+                        }
+                      />
+                    )}
+                  />
                   <FieldError errors={[form.formState.errors.date_needed]} />
                 </Field>
                 <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>

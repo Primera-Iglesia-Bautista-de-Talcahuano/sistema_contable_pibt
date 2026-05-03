@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { useForm, type Resolver } from "react-hook-form"
+import { useForm, Controller, type Resolver } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import {
@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/dialog"
 import { Separator } from "@/components/ui/separator"
 import { Field, FieldLabel, FieldError } from "@/components/ui/field"
+import { DatePicker } from "@/components/ui/date-picker"
 import { formatDate, formatDateTime, formatCLP } from "@/lib/utils"
 import {
   reviewIntentionSchema,
@@ -349,7 +350,22 @@ export function IntentionDetailClient({
                     </Field>
                     <Field>
                       <FieldLabel>Fecha de transferencia *</FieldLabel>
-                      <Input type="date" {...transferForm.register("transfer_date")} />
+                      <Controller
+                        control={transferForm.control}
+                        name="transfer_date"
+                        render={({ field }) => (
+                          <DatePicker
+                            value={field.value ? new Date(field.value + "T00:00:00") : undefined}
+                            onChange={(date) =>
+                              field.onChange(
+                                date
+                                  ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`
+                                  : ""
+                              )
+                            }
+                          />
+                        )}
+                      />
                       <FieldError errors={[transferForm.formState.errors.transfer_date]} />
                     </Field>
                     <Field>
@@ -472,7 +488,22 @@ export function IntentionDetailClient({
                     </Field>
                     <Field>
                       <FieldLabel>Fecha del gasto *</FieldLabel>
-                      <Input type="date" {...settlementForm.register("expense_date")} />
+                      <Controller
+                        control={settlementForm.control}
+                        name="expense_date"
+                        render={({ field }) => (
+                          <DatePicker
+                            value={field.value ? new Date(field.value + "T00:00:00") : undefined}
+                            onChange={(date) =>
+                              field.onChange(
+                                date
+                                  ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`
+                                  : ""
+                              )
+                            }
+                          />
+                        )}
+                      />
                       <FieldError errors={[settlementForm.formState.errors.expense_date]} />
                     </Field>
                     <Button
