@@ -1,12 +1,15 @@
 import { updateSettings } from "../settings"
 
 const mockGetCurrentUser = jest.fn()
+const mockDb = {}
+const mockCreateSupabaseServerClient = jest.fn(() => Promise.resolve(mockDb))
 const mockCan = jest.fn()
 const mockSettingsUpdate = jest.fn()
 const mockRevalidatePath = jest.fn()
 
 jest.mock("@/lib/supabase/server", () => ({
-  getCurrentUser: () => mockGetCurrentUser()
+  getCurrentUser: () => mockGetCurrentUser(),
+  createSupabaseServerClient: () => mockCreateSupabaseServerClient()
 }))
 
 jest.mock("@/lib/permissions/rbac", () => ({
@@ -54,7 +57,7 @@ describe("updateSettings", () => {
 
     const data = await updateSettings(input)
 
-    expect(mockSettingsUpdate).toHaveBeenCalledWith(input, mockUser.id)
+    expect(mockSettingsUpdate).toHaveBeenCalledWith(mockDb, input, mockUser.id)
     expect(mockRevalidatePath).toHaveBeenCalledWith("/configuration")
     expect(data).toEqual(result)
   })

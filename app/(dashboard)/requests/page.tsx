@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation"
-import { getCurrentUser } from "@/lib/supabase/server"
+import { getCurrentUser, createSupabaseServerClient } from "@/lib/supabase/server"
 import { PERMISSIONS, can } from "@/lib/permissions/rbac"
 import { intentionsService } from "@/services/intentions/intentions.service"
 import { ministriesService } from "@/services/ministries/ministries.service"
@@ -10,9 +10,11 @@ export default async function RequestsPage() {
   const user = await getCurrentUser()
   if (!user || !can(user.permissions, PERMISSIONS.VIEW_WORKFLOW)) redirect("/dashboard")
 
+  const db = await createSupabaseServerClient()
+
   if (can(user.permissions, PERMISSIONS.SUBMIT_INTENTIONS)) {
-    const assignment = await ministriesService.getMinistryForUser(user.id)
-    const activePeriod = await budgetService.getActivePeriod()
+    const assignment = await ministriesService.getMinistryForUser(db, user.id)
+    const activePeriod = await budgetService.getActivePeriod(db)
 
     const budgetSummary =
       assignment && activePeriod
@@ -20,7 +22,7 @@ export default async function RequestsPage() {
         : null
 
     const intentions = assignment
-      ? await intentionsService.list({ ministryId: assignment.ministry_id })
+      ? await intentionsService.list(db, { ministryId: assignment.ministry_id })
       : []
 
     return (
@@ -34,7 +36,7 @@ export default async function RequestsPage() {
     )
   }
 
-  const intentions = await intentionsService.list()
+  const intentions = await intentionsService.list(db)
 
   return (
     <IntentionsClient

@@ -1,7 +1,7 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
-import { getCurrentUser } from "@/lib/supabase/server"
+import { getCurrentUser, createSupabaseServerClient } from "@/lib/supabase/server"
 import { PERMISSIONS, can } from "@/lib/permissions/rbac"
 import { invoicesService } from "@/services/invoices/invoices.service"
 import type { CreateInvoiceInput } from "@/lib/validators/invoice"
@@ -12,7 +12,8 @@ export async function createInvoice(input: CreateInvoiceInput) {
     throw new Error("Sin permisos para crear boletas")
   }
 
-  const created = await invoicesService.create(input, user.id)
+  const db = await createSupabaseServerClient()
+  const created = await invoicesService.create(db, input, user.id)
   revalidatePath("/rendiciones")
   return created
 }
@@ -23,7 +24,8 @@ export async function updateInvoiceStatus(id: string, status: "PENDING" | "SETTL
     throw new Error("Sin permisos para actualizar boletas")
   }
 
-  const updated = await invoicesService.updateStatus(id, status, user.id)
+  const db = await createSupabaseServerClient()
+  const updated = await invoicesService.updateStatus(db, id, status, user.id)
   revalidatePath("/rendiciones")
   return updated
 }

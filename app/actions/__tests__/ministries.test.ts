@@ -1,6 +1,8 @@
 import { createMinistry, getMinistryAssignments, assignMinister } from "../ministries"
 
 const mockGetCurrentUser = jest.fn()
+const mockDb = {}
+const mockCreateSupabaseServerClient = jest.fn(() => Promise.resolve(mockDb))
 const mockCan = jest.fn()
 const mockCreate = jest.fn()
 const mockGetAssignments = jest.fn()
@@ -8,7 +10,8 @@ const mockAssign = jest.fn()
 const mockRevalidatePath = jest.fn()
 
 jest.mock("@/lib/supabase/server", () => ({
-  getCurrentUser: () => mockGetCurrentUser()
+  getCurrentUser: () => mockGetCurrentUser(),
+  createSupabaseServerClient: () => mockCreateSupabaseServerClient()
 }))
 
 jest.mock("@/lib/permissions/rbac", () => ({
@@ -47,7 +50,7 @@ describe("createMinistry", () => {
 
     const data = await createMinistry({ name: "Test" })
 
-    expect(mockCreate).toHaveBeenCalledWith({ name: "Test" }, mockUser.id)
+    expect(mockCreate).toHaveBeenCalledWith(mockDb, { name: "Test" }, mockUser.id)
     expect(mockRevalidatePath).toHaveBeenCalledWith("/ministries")
     expect(data).toEqual(created)
   })
@@ -70,7 +73,7 @@ describe("getMinistryAssignments", () => {
 
     const data = await getMinistryAssignments("m-1")
 
-    expect(mockGetAssignments).toHaveBeenCalledWith("m-1")
+    expect(mockGetAssignments).toHaveBeenCalledWith(mockDb, "m-1")
     expect(data).toEqual(assignments)
   })
 })
@@ -86,7 +89,7 @@ describe("assignMinister", () => {
 
     const data = await assignMinister("m-1", { user_id: "u-2" })
 
-    expect(mockAssign).toHaveBeenCalledWith("m-1", { user_id: "u-2" }, mockUser.id)
+    expect(mockAssign).toHaveBeenCalledWith(mockDb, "m-1", { user_id: "u-2" }, mockUser.id)
     expect(mockRevalidatePath).toHaveBeenCalledWith("/ministries")
     expect(data).toEqual(result)
   })

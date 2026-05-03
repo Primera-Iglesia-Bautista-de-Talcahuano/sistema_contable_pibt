@@ -1,13 +1,16 @@
 import { createInvoice, updateInvoiceStatus } from "../invoices"
 
 const mockGetCurrentUser = jest.fn()
+const mockDb = {}
+const mockCreateSupabaseServerClient = jest.fn(() => Promise.resolve(mockDb))
 const mockCan = jest.fn()
 const mockCreate = jest.fn()
 const mockUpdateStatus = jest.fn()
 const mockRevalidatePath = jest.fn()
 
 jest.mock("@/lib/supabase/server", () => ({
-  getCurrentUser: () => mockGetCurrentUser()
+  getCurrentUser: () => mockGetCurrentUser(),
+  createSupabaseServerClient: () => mockCreateSupabaseServerClient()
 }))
 
 jest.mock("@/lib/permissions/rbac", () => ({
@@ -51,7 +54,7 @@ describe("createInvoice", () => {
 
     const data = await createInvoice(invoiceInput)
 
-    expect(mockCreate).toHaveBeenCalledWith(invoiceInput, mockUser.id)
+    expect(mockCreate).toHaveBeenCalledWith(mockDb, invoiceInput, mockUser.id)
     expect(mockRevalidatePath).toHaveBeenCalledWith("/rendiciones")
     expect(data).toEqual(created)
   })
@@ -74,7 +77,7 @@ describe("updateInvoiceStatus", () => {
 
     const data = await updateInvoiceStatus("inv-1", "SETTLED")
 
-    expect(mockUpdateStatus).toHaveBeenCalledWith("inv-1", "SETTLED", mockUser.id)
+    expect(mockUpdateStatus).toHaveBeenCalledWith(mockDb, "inv-1", "SETTLED", mockUser.id)
     expect(mockRevalidatePath).toHaveBeenCalledWith("/rendiciones")
     expect(data).toEqual(updated)
   })

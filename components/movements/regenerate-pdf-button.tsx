@@ -10,7 +10,7 @@ export function RegeneratePdfButton({ movement }: { movement: { id: string } }) 
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
-  async function onClick() {
+  function onClick() {
     setLoading(true)
     const promise = regeneratePdf(movement.id)
 
@@ -23,8 +23,7 @@ export function RegeneratePdfButton({ movement }: { movement: { id: string } }) 
       error: (e: Error) => e.message
     })
 
-    await promise.catch(() => {})
-    setLoading(false)
+    void promise.finally(() => setLoading(false))
   }
 
   return (

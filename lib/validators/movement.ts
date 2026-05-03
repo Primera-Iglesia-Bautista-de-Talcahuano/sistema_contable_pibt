@@ -13,7 +13,7 @@ export const movementBaseSchema = z.object({
   payment_method: z.string().optional().nullable(),
   support_number: z.string().optional().nullable(),
   notes: z.string().optional().nullable(),
-  attachment_url: z.string().url().optional().nullable()
+  attachment_url: z.string().min(1).optional().nullable()
 })
 
 export const createMovementSchema = movementBaseSchema

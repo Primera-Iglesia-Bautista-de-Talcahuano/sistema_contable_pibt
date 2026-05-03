@@ -164,8 +164,6 @@ export function UsersManager({ initialUsers }: { initialUsers: UserRow[] }) {
       },
       error: (e: Error) => e.message
     })
-
-    return promise.catch(() => {})
   }
 
   const editForm = useForm<UpdateUserInput>({
@@ -194,8 +192,6 @@ export function UsersManager({ initialUsers }: { initialUsers: UserRow[] }) {
       },
       error: (e: Error) => e.message
     })
-
-    return promise.catch(() => {})
   }
 
   const handleDelete = () => {

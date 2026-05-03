@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server"
-import { getCurrentUser } from "@/lib/supabase/server"
+import { NextResponse, after } from "next/server"
+import { getCurrentUser, createSupabaseServerClient } from "@/lib/supabase/server"
 import { PERMISSIONS, can } from "@/lib/permissions/rbac"
 import { movementsService } from "@/services/movements/movements.service"
 import { updateMovementSchema } from "@/lib/validators/movement"
@@ -14,7 +14,8 @@ export async function GET(_: Request, { params }: Params) {
   }
 
   const { id } = await params
-  const row = await movementsService.findById(id)
+  const db = await createSupabaseServerClient()
+  const row = await movementsService.findById(db, id)
   if (!row) {
     return NextResponse.json({ message: "Movement not found" }, { status: 404 })
   }
@@ -39,9 +40,14 @@ export async function PUT(request: Request, { params }: Params) {
       )
     }
 
-    const updated = await movementsService.update(id, parsed.data, user.id)
-    void processMovementIntegrations(updated.id, user.id).catch(() => {
-      // Mantener regla de negocio: si falla integración externa, movimiento queda guardado.
+    const db = await createSupabaseServerClient()
+    const updated = await movementsService.update(db, id, parsed.data, user.id)
+    after(async () => {
+      try {
+        await processMovementIntegrations(updated.id, user.id)
+      } catch (error) {
+        console.error("processMovementIntegrations failed", { movementId: updated.id, error })
+      }
     })
     return NextResponse.json(updated)
   } catch (error) {

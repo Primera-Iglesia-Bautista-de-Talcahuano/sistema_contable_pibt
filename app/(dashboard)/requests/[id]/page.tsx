@@ -1,5 +1,5 @@
 import { notFound, redirect } from "next/navigation"
-import { getCurrentUser } from "@/lib/supabase/server"
+import { getCurrentUser, createSupabaseServerClient } from "@/lib/supabase/server"
 import { PERMISSIONS, can } from "@/lib/permissions/rbac"
 import { intentionsService } from "@/services/intentions/intentions.service"
 import { settlementsService } from "@/services/settlements/settlements.service"
@@ -11,10 +11,11 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
   if (!user || !can(user.permissions, PERMISSIONS.VIEW_WORKFLOW)) redirect("/dashboard")
 
   const { id } = await params
+  const db = await createSupabaseServerClient()
   let intention
 
   try {
-    intention = await intentionsService.getById(id)
+    intention = await intentionsService.getById(db, id)
   } catch {
     notFound()
   }
@@ -23,16 +24,16 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
   const canReview = can(user.permissions, PERMISSIONS.REVIEW_INTENTIONS)
 
   if (canSubmit) {
-    const assignment = await ministriesService.getMinistryForUser(user.id)
+    const assignment = await ministriesService.getMinistryForUser(db, user.id)
     if (!assignment || assignment.ministry_id !== intention.ministry_id) {
       redirect("/requests")
     }
   }
 
   const [comments, transfer, settlements] = await Promise.all([
-    intentionsService.getComments(id, "INTENTION"),
-    intentionsService.getTransfer(id),
-    settlementsService.list({ intentionId: id })
+    intentionsService.getComments(db, id, "INTENTION"),
+    intentionsService.getTransfer(db, id),
+    settlementsService.list(db, { intentionId: id })
   ])
 
   return (

@@ -6,6 +6,7 @@ import { ReminderEmail } from "@/emails/reminder-email"
 import { SettlementReviewEmail } from "@/emails/settlement-review-email"
 import { TransferNotificationEmail } from "@/emails/transfer-notification-email"
 import { settingsService } from "@/services/settings/settings.service"
+import { createSupabaseAdminClient } from "@/lib/supabase/admin"
 
 const ORG_SHORT = "Sistema Contable PIBT"
 const FROM_EMAIL = process.env.RESEND_FROM_EMAIL ?? "Sistema contable PIBT <hola@pibtalcahuano.com>"
@@ -22,7 +23,7 @@ export async function sendIntentionNotification(
   intention: { id: string; amount: number; description: string; token: string },
   isOverBudget: boolean
 ): Promise<void> {
-  const settings = await settingsService.getAll()
+  const settings = await settingsService.getAll(createSupabaseAdminClient())
   const to = settings.tesoreria_notification_email
   if (!to) return
 
@@ -45,7 +46,7 @@ export async function sendIntentionReviewNotification(
   minister: { email: string; full_name: string },
   action: "APPROVED" | "REJECTED"
 ): Promise<void> {
-  const settings = await settingsService.getAll()
+  const settings = await settingsService.getAll(createSupabaseAdminClient())
   const to = settings.voucher_email || minister.email
   const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -69,7 +70,7 @@ export async function sendTransferNotification(
   intention: { id: string; amount: number; description: string },
   minister: { email: string; full_name: string }
 ): Promise<void> {
-  const settings = await settingsService.getAll()
+  const settings = await settingsService.getAll(createSupabaseAdminClient())
   const to = settings.voucher_email || minister.email
   const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -91,7 +92,7 @@ export async function sendSettlementReviewNotification(
   minister: { email: string; full_name: string },
   action: "APPROVED" | "REJECTED"
 ): Promise<void> {
-  const settings = await settingsService.getAll()
+  const settings = await settingsService.getAll(createSupabaseAdminClient())
   const to = settings.voucher_email || minister.email
   const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -116,7 +117,7 @@ export async function sendReminderEmail(summary: {
   settlements: number
   missing_transfers: number
 }): Promise<void> {
-  const settings = await settingsService.getAll()
+  const settings = await settingsService.getAll(createSupabaseAdminClient())
   const to = settings.tesoreria_notification_email
   if (!to) return
 

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { updateInvoiceSchema } from "@/lib/validators/invoice"
 import { invoicesService } from "@/services/invoices/invoices.service"
-import { getCurrentUser } from "@/lib/supabase/server"
+import { getCurrentUser, createSupabaseServerClient } from "@/lib/supabase/server"
 import { PERMISSIONS, can } from "@/lib/permissions/rbac"
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -21,7 +21,8 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       )
     }
 
-    const updated = await invoicesService.updateStatus(id, parsed.data.status, user.id)
+    const db = await createSupabaseServerClient()
+    const updated = await invoicesService.updateStatus(db, id, parsed.data.status, user.id)
     return NextResponse.json(updated)
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unexpected error"

@@ -1,6 +1,8 @@
 import { createMovement, updateMovement, cancelMovement, regeneratePdf } from "../movements"
 
 const mockGetCurrentUser = jest.fn()
+const mockDb = {}
+const mockCreateSupabaseServerClient = jest.fn(() => Promise.resolve(mockDb))
 const mockCan = jest.fn()
 const mockCreate = jest.fn()
 const mockUpdate = jest.fn()
@@ -9,7 +11,8 @@ const mockProcessIntegrations = jest.fn()
 const mockRevalidatePath = jest.fn()
 
 jest.mock("@/lib/supabase/server", () => ({
-  getCurrentUser: () => mockGetCurrentUser()
+  getCurrentUser: () => mockGetCurrentUser(),
+  createSupabaseServerClient: () => mockCreateSupabaseServerClient()
 }))
 
 jest.mock("@/lib/permissions/rbac", () => ({
@@ -31,6 +34,12 @@ jest.mock("@/services/google/movement-postprocess", () => ({
 
 jest.mock("next/cache", () => ({
   revalidatePath: (...args: unknown[]) => mockRevalidatePath(...args)
+}))
+
+jest.mock("next/server", () => ({
+  after: (cb: () => Promise<void> | void) => {
+    void Promise.resolve().then(cb)
+  }
 }))
 
 const mockUser = { id: "user-1", permissions: ["CREATE_MOVEMENT"] }
@@ -61,7 +70,7 @@ describe("createMovement", () => {
 
     const data = await createMovement(movementInput)
 
-    expect(mockCreate).toHaveBeenCalledWith(movementInput, mockUser.id)
+    expect(mockCreate).toHaveBeenCalledWith(mockDb, movementInput, mockUser.id)
     expect(mockRevalidatePath).toHaveBeenCalledWith("/movements")
     expect(data).toEqual(created)
   })
@@ -85,7 +94,12 @@ describe("updateMovement", () => {
 
     const data = await updateMovement("mv-1", movementInput)
 
-    expect(mockUpdate).toHaveBeenCalledWith("mv-1", { ...movementInput, id: "mv-1" }, mockUser.id)
+    expect(mockUpdate).toHaveBeenCalledWith(
+      mockDb,
+      "mv-1",
+      { ...movementInput, id: "mv-1" },
+      mockUser.id
+    )
     expect(mockRevalidatePath).toHaveBeenCalledWith("/movements/mv-1")
     expect(mockRevalidatePath).toHaveBeenCalledWith("/movements")
     expect(data).toEqual(updated)
@@ -104,7 +118,12 @@ describe("cancelMovement", () => {
 
     const data = await cancelMovement("mv-1", { cancellation_reason: "Test" })
 
-    expect(mockCancel).toHaveBeenCalledWith("mv-1", { cancellation_reason: "Test" }, mockUser.id)
+    expect(mockCancel).toHaveBeenCalledWith(
+      mockDb,
+      "mv-1",
+      { cancellation_reason: "Test" },
+      mockUser.id
+    )
     expect(mockRevalidatePath).toHaveBeenCalledWith("/movements/mv-1")
     expect(data).toEqual(cancelled)
   })

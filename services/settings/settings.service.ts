@@ -1,6 +1,9 @@
-import { createSupabaseAdminClient } from "@/lib/supabase/admin"
+import type { SupabaseClient } from "@supabase/supabase-js"
+import type { Database } from "@/types/database.types"
 import { auditService } from "@/services/audit/audit.service"
 import type { UpdateSettingsInput } from "@/lib/validators/settings"
+
+type DB = SupabaseClient<Database>
 
 export type AppSettings = {
   tesoreria_notification_email: string
@@ -10,9 +13,8 @@ export type AppSettings = {
 }
 
 export const settingsService = {
-  async getAll(): Promise<AppSettings> {
-    const admin = createSupabaseAdminClient()
-    const { data, error } = await admin.from("app_settings").select("key, value")
+  async getAll(db: DB): Promise<AppSettings> {
+    const { data, error } = await db.from("app_settings").select("key, value")
     if (error) throw error
 
     const map = Object.fromEntries((data ?? []).map((r) => [r.key, r.value ?? ""]))
@@ -24,8 +26,7 @@ export const settingsService = {
     }
   },
 
-  async update(input: UpdateSettingsInput, userId: string) {
-    const admin = createSupabaseAdminClient()
+  async update(db: DB, input: UpdateSettingsInput, userId: string) {
     const now = new Date().toISOString()
 
     const entries = Object.entries(input).filter(([, v]) => v !== undefined) as [
@@ -33,12 +34,15 @@ export const settingsService = {
       string | number
     ][]
 
-    for (const [key, value] of entries) {
-      await admin
-        .from("app_settings")
-        .update({ value: String(value), updated_by: userId, updated_at: now })
-        .eq("key", key)
-    }
+    await db.from("app_settings").upsert(
+      entries.map(([key, value]) => ({
+        key,
+        value: String(value),
+        updated_by: userId,
+        updated_at: now
+      })),
+      { onConflict: "key" }
+    )
 
     await auditService.logSystem({
       entity: "APP_SETTINGS",
@@ -47,6 +51,6 @@ export const settingsService = {
       new_value: input
     })
 
-    return this.getAll()
+    return this.getAll(db)
   }
 }

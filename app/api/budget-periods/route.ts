@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { getCurrentUser } from "@/lib/supabase/server"
+import { getCurrentUser, createSupabaseServerClient } from "@/lib/supabase/server"
 import { PERMISSIONS, can } from "@/lib/permissions/rbac"
 import { budgetService } from "@/services/budget/budget.service"
 import { createBudgetPeriodSchema } from "@/lib/validators/budget"
@@ -9,7 +9,8 @@ export async function GET() {
   if (!user || !can(user.permissions, PERMISSIONS.MANAGE_BUDGETS)) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
   }
-  const data = await budgetService.listPeriods()
+  const db = await createSupabaseServerClient()
+  const data = await budgetService.listPeriods(db)
   return NextResponse.json(data)
 }
 
@@ -28,7 +29,8 @@ export async function POST(request: Request) {
         { status: 400 }
       )
     }
-    const data = await budgetService.createPeriod(parsed.data, user.id)
+    const db = await createSupabaseServerClient()
+    const data = await budgetService.createPeriod(db, parsed.data, user.id)
     return NextResponse.json(data, { status: 201 })
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unexpected error"

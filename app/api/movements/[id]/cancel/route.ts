@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server"
-import { getCurrentUser } from "@/lib/supabase/server"
+import { NextResponse, after } from "next/server"
+import { getCurrentUser, createSupabaseServerClient } from "@/lib/supabase/server"
 import { PERMISSIONS, can } from "@/lib/permissions/rbac"
 import { movementsService } from "@/services/movements/movements.service"
 import { cancelMovementSchema } from "@/lib/validators/movement"
@@ -24,9 +24,14 @@ export async function POST(request: Request, { params }: Params) {
       )
     }
 
-    const result = await movementsService.cancel(id, parsed.data, user.id)
-    void processMovementIntegrations(result.id, user.id).catch(() => {
-      // Mantener regla de negocio: si falla integración externa, movimiento queda guardado.
+    const db = await createSupabaseServerClient()
+    const result = await movementsService.cancel(db, id, parsed.data, user.id)
+    after(async () => {
+      try {
+        await processMovementIntegrations(result.id, user.id)
+      } catch (error) {
+        console.error("processMovementIntegrations failed", { movementId: result.id, error })
+      }
     })
     return NextResponse.json(result)
   } catch (error) {

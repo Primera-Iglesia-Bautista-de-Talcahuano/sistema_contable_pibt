@@ -4,6 +4,7 @@ import { sendForgotPasswordEmail } from "@/services/email/resend.service"
 import { wrapAuthLink } from "@/services/auth/link-wrapper"
 import { getSiteUrl } from "@/lib/utils"
 import { forgotPasswordSchema } from "@/lib/validators/auth"
+import { checkRateLimit } from "@/lib/rate-limit"
 
 export async function POST(request: Request) {
   try {
@@ -14,6 +15,15 @@ export async function POST(request: Request) {
     }
 
     const email = parsed.data.email.toLowerCase().trim()
+
+    const ip = request.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown"
+    const [ipLimit, emailLimit] = await Promise.all([
+      checkRateLimit(`forgot-password:ip:${ip}`, 5, 60),
+      checkRateLimit(`forgot-password:email:${email}`, 5, 3600)
+    ])
+    if (!ipLimit.allowed || !emailLimit.allowed) {
+      return NextResponse.json({ ok: true })
+    }
     const admin = createSupabaseAdminClient()
 
     const { data: authUsers } = await admin.auth.admin.listUsers({ perPage: 1000 })

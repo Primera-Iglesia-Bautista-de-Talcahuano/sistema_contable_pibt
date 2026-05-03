@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { getCurrentUser } from "@/lib/supabase/server"
+import { getCurrentUser, createSupabaseServerClient } from "@/lib/supabase/server"
 import { PERMISSIONS, can } from "@/lib/permissions/rbac"
 import { movementsService } from "@/services/movements/movements.service"
 import { MovementsTable } from "@/components/movements/movements-table"
@@ -27,11 +27,12 @@ export default async function MovementsPage({ searchParams }: Props) {
   const status = params.status ?? "ALL"
   const page = Math.max(1, Number(params.page ?? "1") || 1)
 
+  const db = await createSupabaseServerClient()
   const {
     data: rows,
     count,
     pageSize
-  } = await movementsService.list({
+  } = await movementsService.list(db, {
     search,
     movement_type,
     status,
@@ -60,11 +61,7 @@ export default async function MovementsPage({ searchParams }: Props) {
           <p className="text-sm text-muted-foreground">Registro de ingresos y egresos</p>
         </div>
         {canWrite && (
-          <Button
-            render={<Link href="/movements/new" />}
-            nativeButton={false}
-            className="gap-2"
-          >
+          <Button render={<Link href="/movements/new" />} nativeButton={false} className="gap-2">
             <Plus data-icon="inline-start" />
             Nuevo Movimiento
           </Button>

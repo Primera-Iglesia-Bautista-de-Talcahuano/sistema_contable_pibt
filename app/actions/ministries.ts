@@ -1,7 +1,7 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
-import { getCurrentUser } from "@/lib/supabase/server"
+import { getCurrentUser, createSupabaseServerClient } from "@/lib/supabase/server"
 import { PERMISSIONS, can } from "@/lib/permissions/rbac"
 import { ministriesService } from "@/services/ministries/ministries.service"
 import type { CreateMinistryInput, AssignMinisterInput } from "@/lib/validators/ministry"
@@ -15,7 +15,8 @@ function assertMinistriesAccess(user: Awaited<ReturnType<typeof getCurrentUser>>
 
 export async function createMinistry(input: CreateMinistryInput) {
   const user = assertMinistriesAccess(await getCurrentUser())
-  const data = await ministriesService.create(input, user.id)
+  const db = await createSupabaseServerClient()
+  const data = await ministriesService.create(db, input, user.id)
   revalidatePath("/ministries")
   return data
 }
@@ -25,12 +26,14 @@ export async function getMinistryAssignments(ministryId: string) {
   if (!user || !can(user.permissions, PERMISSIONS.MANAGE_MINISTRIES)) {
     throw new Error("Sin permisos")
   }
-  return ministriesService.getAssignments(ministryId)
+  const db = await createSupabaseServerClient()
+  return ministriesService.getAssignments(db, ministryId)
 }
 
 export async function assignMinister(ministryId: string, input: AssignMinisterInput) {
   const user = assertMinistriesAccess(await getCurrentUser())
-  const data = await ministriesService.assign(ministryId, input, user.id)
+  const db = await createSupabaseServerClient()
+  const data = await ministriesService.assign(db, ministryId, input, user.id)
   revalidatePath("/ministries")
   return data
 }

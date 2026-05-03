@@ -1,4 +1,5 @@
-import { createSupabaseAdminClient } from "@/lib/supabase/admin"
+import type { SupabaseClient } from "@supabase/supabase-js"
+import type { Database } from "@/types/database.types"
 import { auditService } from "@/services/audit/audit.service"
 import type {
   CreateMinistryInput,
@@ -6,24 +7,23 @@ import type {
   AssignMinisterInput
 } from "@/lib/validators/ministry"
 
+type DB = SupabaseClient<Database>
+
 export const ministriesService = {
-  async list() {
-    const admin = createSupabaseAdminClient()
-    const { data, error } = await admin.from("ministries").select("*").order("name")
+  async list(db: DB) {
+    const { data, error } = await db.from("ministries").select("*").order("name").limit(500)
     if (error) throw error
     return data
   },
 
-  async getById(id: string) {
-    const admin = createSupabaseAdminClient()
-    const { data, error } = await admin.from("ministries").select("*").eq("id", id).single()
+  async getById(db: DB, id: string) {
+    const { data, error } = await db.from("ministries").select("*").eq("id", id).single()
     if (error) throw error
     return data
   },
 
-  async create(input: CreateMinistryInput, userId: string) {
-    const admin = createSupabaseAdminClient()
-    const { data, error } = await admin
+  async create(db: DB, input: CreateMinistryInput, userId: string) {
+    const { data, error } = await db
       .from("ministries")
       .insert({ name: input.name, description: input.description ?? null, created_by: userId })
       .select()
@@ -41,9 +41,8 @@ export const ministriesService = {
     return data
   },
 
-  async update(id: string, input: UpdateMinistryInput, userId: string) {
-    const admin = createSupabaseAdminClient()
-    const { data, error } = await admin
+  async update(db: DB, id: string, input: UpdateMinistryInput, userId: string) {
+    const { data, error } = await db
       .from("ministries")
       .update({ ...input, updated_at: new Date().toISOString() })
       .eq("id", id)
@@ -62,9 +61,8 @@ export const ministriesService = {
     return data
   },
 
-  async getAssignments(ministryId: string) {
-    const admin = createSupabaseAdminClient()
-    const { data, error } = await admin
+  async getAssignments(db: DB, ministryId: string) {
+    const { data, error } = await db
       .from("ministry_assignments")
       .select("*, users(id, full_name, email)")
       .eq("ministry_id", ministryId)
@@ -73,9 +71,8 @@ export const ministriesService = {
     return data
   },
 
-  async getCurrentAssignment(ministryId: string) {
-    const admin = createSupabaseAdminClient()
-    const { data, error } = await admin
+  async getCurrentAssignment(db: DB, ministryId: string) {
+    const { data, error } = await db
       .from("ministry_assignments")
       .select("*, users(id, full_name, email)")
       .eq("ministry_id", ministryId)
@@ -85,9 +82,8 @@ export const ministriesService = {
     return data
   },
 
-  async getMinistryForUser(userId: string) {
-    const admin = createSupabaseAdminClient()
-    const { data, error } = await admin
+  async getMinistryForUser(db: DB, userId: string) {
+    const { data, error } = await db
       .from("ministry_assignments")
       .select("*, ministries(*)")
       .eq("user_id", userId)
@@ -97,17 +93,15 @@ export const ministriesService = {
     return data
   },
 
-  async assign(ministryId: string, input: AssignMinisterInput, assignedBy: string) {
-    const admin = createSupabaseAdminClient()
-
+  async assign(db: DB, ministryId: string, input: AssignMinisterInput, assignedBy: string) {
     // Close any existing active assignment
-    await admin
+    await db
       .from("ministry_assignments")
       .update({ unassigned_at: new Date().toISOString() })
       .eq("ministry_id", ministryId)
       .is("unassigned_at", null)
 
-    const { data, error } = await admin
+    const { data, error } = await db
       .from("ministry_assignments")
       .insert({
         ministry_id: ministryId,
@@ -130,9 +124,8 @@ export const ministriesService = {
     return data
   },
 
-  async unassign(ministryId: string, userId: string) {
-    const admin = createSupabaseAdminClient()
-    const { error } = await admin
+  async unassign(db: DB, ministryId: string, userId: string) {
+    const { error } = await db
       .from("ministry_assignments")
       .update({ unassigned_at: new Date().toISOString() })
       .eq("ministry_id", ministryId)

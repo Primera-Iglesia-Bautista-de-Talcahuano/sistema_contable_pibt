@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation"
-import { getCurrentUser } from "@/lib/supabase/server"
+import { getCurrentUser, createSupabaseServerClient } from "@/lib/supabase/server"
 import { PERMISSIONS, can } from "@/lib/permissions/rbac"
 import { budgetService } from "@/services/budget/budget.service"
 import { ministriesService } from "@/services/ministries/ministries.service"
@@ -9,9 +9,10 @@ export default async function BudgetPage() {
   const user = await getCurrentUser()
   if (!user || !can(user.permissions, PERMISSIONS.MANAGE_BUDGETS)) redirect("/dashboard")
 
+  const db = await createSupabaseServerClient()
   const [periods, ministries] = await Promise.all([
-    budgetService.listPeriods(),
-    ministriesService.list()
+    budgetService.listPeriods(db),
+    ministriesService.list(db)
   ])
 
   return <BudgetClient initialPeriods={periods} ministries={ministries} />

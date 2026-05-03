@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { getCurrentUser } from "@/lib/supabase/server"
+import { getCurrentUser, createSupabaseServerClient } from "@/lib/supabase/server"
 import { PERMISSIONS, can } from "@/lib/permissions/rbac"
 import { settlementsService } from "@/services/settlements/settlements.service"
 import { createSettlementSchema, settlementFiltersSchema } from "@/lib/validators/settlement"
@@ -19,7 +19,8 @@ export async function GET(request: Request) {
     )
   }
 
-  const data = await settlementsService.list({
+  const db = await createSupabaseServerClient()
+  const data = await settlementsService.list(db, {
     intentionId: parsed.data.intention_id,
     status: parsed.data.status
   })
@@ -44,7 +45,8 @@ export async function POST(request: Request) {
       )
     }
 
-    const data = await settlementsService.create(parsed.data, user.id)
+    const db = await createSupabaseServerClient()
+    const data = await settlementsService.create(db, parsed.data, user.id)
     return NextResponse.json(data, { status: 201 })
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unexpected error"

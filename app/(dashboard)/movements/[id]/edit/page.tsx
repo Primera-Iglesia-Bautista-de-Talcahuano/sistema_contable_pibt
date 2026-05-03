@@ -2,7 +2,7 @@ type Props = { params: Promise<{ id: string }> }
 import { notFound, redirect } from "next/navigation"
 import { MovementForm } from "@/components/movements/movement-form"
 import { movementsService } from "@/services/movements/movements.service"
-import { getCurrentUser } from "@/lib/supabase/server"
+import { getCurrentUser, createSupabaseServerClient } from "@/lib/supabase/server"
 import { PERMISSIONS, can } from "@/lib/permissions/rbac"
 
 export default async function EditMovementPage({ params }: Props) {
@@ -12,7 +12,8 @@ export default async function EditMovementPage({ params }: Props) {
     redirect(`/movements/${id}`)
   }
 
-  const movement = await movementsService.findById(id).catch(() => null)
+  const db = await createSupabaseServerClient()
+  const movement = await movementsService.findById(db, id).catch(() => null)
   if (!movement) notFound()
   if (movement.status === "CANCELLED") redirect(`/movements/${id}`)
 

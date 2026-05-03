@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { getCurrentUser } from "@/lib/supabase/server"
+import { getCurrentUser, createSupabaseServerClient } from "@/lib/supabase/server"
 import { PERMISSIONS, can } from "@/lib/permissions/rbac"
 import { ministriesService } from "@/services/ministries/ministries.service"
 import { updateMinistrySchema } from "@/lib/validators/ministry"
@@ -10,7 +10,8 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
   }
   const { id } = await params
-  const data = await ministriesService.getById(id)
+  const db = await createSupabaseServerClient()
+  const data = await ministriesService.getById(db, id)
   return NextResponse.json(data)
 }
 
@@ -30,7 +31,8 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
         { status: 400 }
       )
     }
-    const data = await ministriesService.update(id, parsed.data, user.id)
+    const db = await createSupabaseServerClient()
+    const data = await ministriesService.update(db, id, parsed.data, user.id)
     return NextResponse.json(data)
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unexpected error"

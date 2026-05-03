@@ -1,8 +1,7 @@
-import { createSupabaseAdminClient } from "@/lib/supabase/admin"
+import type { SupabaseClient } from "@supabase/supabase-js"
+import type { Database } from "@/types/database.types"
 import { auditService } from "@/services/audit/audit.service"
-import { ministriesService } from "@/services/ministries/ministries.service"
 import { budgetService } from "@/services/budget/budget.service"
-import { movementsService } from "@/services/movements/movements.service"
 import {
   sendIntentionNotification,
   sendIntentionReviewNotification,
@@ -15,10 +14,11 @@ import type {
   AddCommentInput
 } from "@/lib/validators/intention"
 
+type DB = SupabaseClient<Database>
+
 export const intentionsService = {
-  async list(filters?: { ministryId?: string; status?: string }) {
-    const admin = createSupabaseAdminClient()
-    let query = admin
+  async list(db: DB, filters?: { ministryId?: string; status?: string }) {
+    let query = db
       .from("budget_intentions")
       .select(
         "*, ministries(id, name), budget_periods(id, name), users!budget_intentions_requested_by_fkey(id, full_name, email)"
@@ -34,9 +34,8 @@ export const intentionsService = {
     return data
   },
 
-  async getById(id: string) {
-    const admin = createSupabaseAdminClient()
-    const { data, error } = await admin
+  async getById(db: DB, id: string) {
+    const { data, error } = await db
       .from("budget_intentions")
       .select(
         "*, ministries(id, name), budget_periods(id, name), users!budget_intentions_requested_by_fkey(id, full_name, email)"
@@ -47,9 +46,8 @@ export const intentionsService = {
     return data
   },
 
-  async getByToken(token: string) {
-    const admin = createSupabaseAdminClient()
-    const { data, error } = await admin
+  async getByToken(db: DB, token: string) {
+    const { data, error } = await db
       .from("budget_intentions")
       .select(
         "*, ministries(id, name), budget_periods(id, name), users!budget_intentions_requested_by_fkey(id, full_name, email)"
@@ -60,13 +58,12 @@ export const intentionsService = {
     return data
   },
 
-  async create(input: CreateIntentionInput, userId: string, ministryId: string) {
-    const admin = createSupabaseAdminClient()
-
+  async create(db: DB, input: CreateIntentionInput, userId: string, ministryId: string) {
+    // getBudgetSummary uses service_role internally — no db needed
     const summary = await budgetService.getBudgetSummary(ministryId, input.period_id)
     const isOverBudget = input.amount > summary.remaining
 
-    const { data, error } = await admin
+    const { data, error } = await db
       .from("budget_intentions")
       .insert({
         ministry_id: ministryId,
@@ -95,11 +92,10 @@ export const intentionsService = {
     return data
   },
 
-  async review(id: string, input: ReviewIntentionInput, reviewerId: string) {
-    const admin = createSupabaseAdminClient()
+  async review(db: DB, id: string, input: ReviewIntentionInput, reviewerId: string) {
     const now = new Date().toISOString()
 
-    const { data: current } = await admin
+    const { data: current } = await db
       .from("budget_intentions")
       .select("status, users!budget_intentions_requested_by_fkey(email, full_name)")
       .eq("id", id)
@@ -109,7 +105,7 @@ export const intentionsService = {
       return { alreadyActioned: true }
     }
 
-    const { data, error } = await admin
+    const { data, error } = await db
       .from("budget_intentions")
       .update({
         status: input.action,
@@ -132,9 +128,7 @@ export const intentionsService = {
       new_value: { status: input.action, message: input.message }
     })
 
-    const ministerUser = (
-      current as unknown as { users: { email: string; full_name: string } | null }
-    ).users
+    const ministerUser = current?.users
     if (ministerUser?.email) {
       await sendIntentionReviewNotification(data, ministerUser, input.action).catch(() => null)
     }
@@ -142,10 +136,13 @@ export const intentionsService = {
     return { alreadyActioned: false, data }
   },
 
-  async registerTransfer(intentionId: string, input: RegisterTransferInput, userId: string) {
-    const admin = createSupabaseAdminClient()
-
-    const { data, error } = await admin
+  async registerTransfer(
+    db: DB,
+    intentionId: string,
+    input: RegisterTransferInput,
+    userId: string
+  ) {
+    const { data, error } = await db
       .from("intention_transfers")
       .insert({
         intention_id: intentionId,
@@ -167,10 +164,8 @@ export const intentionsService = {
       new_value: { amount: input.amount, transfer_date: input.transfer_date }
     })
 
-    const intention = await this.getById(intentionId)
-    const ministerUser = (
-      intention as unknown as { users: { email: string; full_name: string } | null }
-    ).users
+    const intention = await this.getById(db, intentionId)
+    const ministerUser = intention.users
     if (ministerUser?.email) {
       await sendTransferNotification(intention, ministerUser).catch(() => null)
     }
@@ -178,9 +173,8 @@ export const intentionsService = {
     return data
   },
 
-  async getTransfer(intentionId: string) {
-    const admin = createSupabaseAdminClient()
-    const { data, error } = await admin
+  async getTransfer(db: DB, intentionId: string) {
+    const { data, error } = await db
       .from("intention_transfers")
       .select("*")
       .eq("intention_id", intentionId)
@@ -190,13 +184,13 @@ export const intentionsService = {
   },
 
   async addComment(
+    db: DB,
     entityId: string,
     entityType: "INTENTION" | "SETTLEMENT",
     input: AddCommentInput,
     userId: string
   ) {
-    const admin = createSupabaseAdminClient()
-    const { data, error } = await admin
+    const { data, error } = await db
       .from("request_comments")
       .insert({
         entity_type: entityType,
@@ -210,9 +204,8 @@ export const intentionsService = {
     return data
   },
 
-  async getComments(entityId: string, entityType: "INTENTION" | "SETTLEMENT") {
-    const admin = createSupabaseAdminClient()
-    const { data, error } = await admin
+  async getComments(db: DB, entityId: string, entityType: "INTENTION" | "SETTLEMENT") {
+    const { data, error } = await db
       .from("request_comments")
       .select("*, users(id, full_name, role)")
       .eq("entity_id", entityId)
@@ -222,9 +215,8 @@ export const intentionsService = {
     return data
   },
 
-  async getPendingCount(ministryId?: string) {
-    const admin = createSupabaseAdminClient()
-    let query = admin
+  async getPendingCount(db: DB, ministryId?: string) {
+    let query = db
       .from("budget_intentions")
       .select("id", { count: "exact", head: true })
       .eq("status", "PENDING")
@@ -236,18 +228,14 @@ export const intentionsService = {
     return count ?? 0
   },
 
-  async getMissingTransfersCount() {
-    const admin = createSupabaseAdminClient()
-    const { data, error } = await admin
-      .from("budget_intentions")
-      .select("id")
-      .eq("status", "APPROVED")
+  async getMissingTransfersCount(db: DB) {
+    const { data, error } = await db.from("budget_intentions").select("id").eq("status", "APPROVED")
 
     if (error) throw error
     if (!data || data.length === 0) return 0
 
     const approvedIds = data.map((d) => d.id)
-    const { data: transfers, error: tErr } = await admin
+    const { data: transfers, error: tErr } = await db
       .from("intention_transfers")
       .select("intention_id")
       .in("intention_id", approvedIds)
@@ -257,7 +245,3 @@ export const intentionsService = {
     return approvedIds.filter((id) => !transferredIds.has(id)).length
   }
 }
-
-// Avoid circular dependency — import movementsService only in settlement service
-export { movementsService }
-export { ministriesService }

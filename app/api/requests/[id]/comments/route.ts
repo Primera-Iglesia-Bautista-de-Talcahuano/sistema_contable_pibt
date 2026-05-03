@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { getCurrentUser } from "@/lib/supabase/server"
+import { getCurrentUser, createSupabaseServerClient } from "@/lib/supabase/server"
 import { PERMISSIONS, can } from "@/lib/permissions/rbac"
 import { intentionsService } from "@/services/intentions/intentions.service"
 import { addCommentSchema } from "@/lib/validators/intention"
@@ -11,7 +11,8 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
   }
 
   const { id } = await params
-  const data = await intentionsService.getComments(id, "INTENTION")
+  const db = await createSupabaseServerClient()
+  const data = await intentionsService.getComments(db, id, "INTENTION")
   return NextResponse.json(data)
 }
 
@@ -32,7 +33,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       )
     }
 
-    const data = await intentionsService.addComment(id, "INTENTION", parsed.data, user.id)
+    const db = await createSupabaseServerClient()
+    const data = await intentionsService.addComment(db, id, "INTENTION", parsed.data, user.id)
     return NextResponse.json(data, { status: 201 })
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unexpected error"

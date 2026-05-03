@@ -738,6 +738,24 @@ export type Database = {
           },
         ]
       }
+      rate_limits: {
+        Row: {
+          count: number
+          key: string
+          window_start: string
+        }
+        Insert: {
+          count?: number
+          key: string
+          window_start?: string
+        }
+        Update: {
+          count?: number
+          key?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
       request_comments: {
         Row: {
           created_at: string
@@ -870,6 +888,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_and_increment_rate_limit: {
+        Args: { p_key: string; p_limit: number; p_window_seconds: number }
+        Returns: {
+          allowed: boolean
+          remaining: number
+        }[]
+      }
       create_initial_admin: {
         Args: { p_email: string; p_full_name: string; p_password: string }
         Returns: string
@@ -883,20 +908,21 @@ export type Database = {
         }
         Returns: string
       }
-      get_dashboard_summary: {
-        Args: { p_from?: string; p_to?: string }
-        Returns: Json
-      }
+      get_dashboard_summary:
+        | { Args: { p_from?: string; p_to?: string }; Returns: Json }
+        | { Args: { p_from?: string; p_to?: string }; Returns: Json }
       get_ministry_budget_summary: {
         Args: { p_ministry_id: string; p_period_id: string }
         Returns: Json
       }
+      get_my_active_ministries: { Args: never; Returns: string[] }
       get_my_role: {
         Args: never
         Returns: Database["public"]["Enums"]["user_role"]
       }
       get_pending_reminders: { Args: never; Returns: Json }
       increment_and_get_folio: { Args: never; Returns: number }
+      prune_rate_limits: { Args: never; Returns: undefined }
     }
     Enums: {
       budget_period_status: "DRAFT" | "ACTIVE" | "CLOSED"

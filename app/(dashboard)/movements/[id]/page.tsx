@@ -1,13 +1,14 @@
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import { movementsService } from "@/services/movements/movements.service"
-import { getCurrentUser } from "@/lib/supabase/server"
+import { getCurrentUser, createSupabaseServerClient } from "@/lib/supabase/server"
 import { PERMISSIONS, can } from "@/lib/permissions/rbac"
 import { CancelButton } from "@/components/movements/cancel-button"
 import { RegeneratePdfButton } from "@/components/movements/regenerate-pdf-button"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { cn, formatDate, formatDateTime, formatCLP } from "@/lib/utils"
+import { attachmentHref } from "@/lib/storage/attachments"
 import {
   ChevronLeft,
   Edit,
@@ -26,7 +27,8 @@ export default async function MovementDetailPage({ params }: Props) {
   const user = await getCurrentUser()
   const canWrite = can(user?.permissions, PERMISSIONS.CREATE_MOVEMENT) ?? false
 
-  const row = await movementsService.findById(id).catch(() => null)
+  const db = await createSupabaseServerClient()
+  const row = await movementsService.findById(db, id).catch(() => null)
   if (!row) notFound()
 
   const createdBy = row.created_by as { full_name: string; email: string } | null
@@ -155,7 +157,7 @@ export default async function MovementDetailPage({ params }: Props) {
                   Comprobante adjunto
                 </p>
                 <Link
-                  href={row.attachment_url}
+                  href={attachmentHref("movement-attachments", row.attachment_url) ?? "#"}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 text-sm font-semibold text-primary hover:underline"

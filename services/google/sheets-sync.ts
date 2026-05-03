@@ -1,12 +1,13 @@
 import { postToAppsScript } from "@/services/google/client"
 import type { AppsScriptResponse, MovementIntegrationPayload } from "@/services/google/types"
 import { movementsService } from "@/services/movements/movements.service"
+import { createSupabaseAdminClient } from "@/lib/supabase/admin"
 
 export async function syncMovementToSheet(
   /* eslint-disable @typescript-eslint/no-unused-vars */
   _movement: MovementIntegrationPayload
 ): Promise<AppsScriptResponse> {
-  const { data: allMovements } = await movementsService.list({
+  const { data: allMovements } = await movementsService.list(createSupabaseAdminClient(), {
     status: "ACTIVE",
     pageSize: 10000
   })

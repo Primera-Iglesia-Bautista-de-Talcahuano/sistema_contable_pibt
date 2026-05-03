@@ -5,7 +5,7 @@ export const createSettlementSchema = z.object({
   amount: z.coerce.number().positive("El monto debe ser mayor a 0"),
   description: z.string().min(5, "La descripción debe tener al menos 5 caracteres"),
   expense_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Formato de fecha inválido"),
-  attachment_url: z.string().url("URL de adjunto inválida").optional()
+  attachment_url: z.string().min(1).optional()
 })
 
 export const reviewSettlementSchema = z.object({

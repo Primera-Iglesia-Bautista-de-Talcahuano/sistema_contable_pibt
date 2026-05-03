@@ -90,10 +90,7 @@ export function MovementForm(props: Props) {
           .from("movement-attachments")
           .upload(path, supportFile, { upsert: false })
         if (uploadError) throw uploadError
-        const { data: urlData } = supabase.storage
-          .from("movement-attachments")
-          .getPublicUrl(uploadData.path)
-        attachment_url = urlData.publicUrl
+        attachment_url = uploadData.path
       } catch {
         setError("Error al subir el comprobante. Intente nuevamente.")
         return

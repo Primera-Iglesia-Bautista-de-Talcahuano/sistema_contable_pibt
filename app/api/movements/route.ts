@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server"
+import { NextResponse, after } from "next/server"
 import { createMovementSchema, movementFiltersSchema } from "@/lib/validators/movement"
 import { movementsService } from "@/services/movements/movements.service"
-import { getCurrentUser } from "@/lib/supabase/server"
+import { getCurrentUser, createSupabaseServerClient } from "@/lib/supabase/server"
 import { PERMISSIONS, can } from "@/lib/permissions/rbac"
 import { processMovementIntegrations } from "@/services/google/movement-postprocess"
 
@@ -20,7 +20,8 @@ export async function GET(request: Request) {
     )
   }
 
-  const { data } = await movementsService.list({
+  const db = await createSupabaseServerClient()
+  const { data } = await movementsService.list(db, {
     search: parsed.data.search,
     movement_type: parsed.data.movement_type,
     status: parsed.data.status
@@ -45,9 +46,15 @@ export async function POST(request: Request) {
       )
     }
 
-    const created = await movementsService.create(parsed.data, user.id)
-    void processMovementIntegrations(created.id, user.id).catch(() => {
-      // Mantener regla de negocio: si falla integración externa, movimiento queda guardado.
+    const db = await createSupabaseServerClient()
+    const created = await movementsService.create(db, parsed.data, user.id)
+    // Run external integrations after response. Movement stays saved on failure.
+    after(async () => {
+      try {
+        await processMovementIntegrations(created.id, user.id)
+      } catch (error) {
+        console.error("processMovementIntegrations failed", { movementId: created.id, error })
+      }
     })
     return NextResponse.json(created, { status: 201 })
   } catch (error) {

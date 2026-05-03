@@ -1,7 +1,7 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
-import { getCurrentUser } from "@/lib/supabase/server"
+import { getCurrentUser, createSupabaseServerClient } from "@/lib/supabase/server"
 import { PERMISSIONS, can } from "@/lib/permissions/rbac"
 import { settingsService } from "@/services/settings/settings.service"
 import type { UpdateSettingsInput } from "@/lib/validators/settings"
@@ -12,7 +12,8 @@ export async function updateSettings(input: UpdateSettingsInput) {
     throw new Error("Sin permisos para actualizar configuración")
   }
 
-  const data = await settingsService.update(input, user.id)
+  const db = await createSupabaseServerClient()
+  const data = await settingsService.update(db, input, user.id)
   revalidatePath("/configuration")
   return data
 }

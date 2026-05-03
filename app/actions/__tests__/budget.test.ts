@@ -7,6 +7,8 @@ import {
 } from "../budget"
 
 const mockGetCurrentUser = jest.fn()
+const mockDb = {}
+const mockCreateSupabaseServerClient = jest.fn(() => Promise.resolve(mockDb))
 const mockCan = jest.fn()
 const mockCreatePeriod = jest.fn()
 const mockReleasePeriod = jest.fn()
@@ -16,7 +18,8 @@ const mockUpsertBudget = jest.fn()
 const mockRevalidatePath = jest.fn()
 
 jest.mock("@/lib/supabase/server", () => ({
-  getCurrentUser: () => mockGetCurrentUser()
+  getCurrentUser: () => mockGetCurrentUser(),
+  createSupabaseServerClient: () => mockCreateSupabaseServerClient()
 }))
 
 jest.mock("@/lib/permissions/rbac", () => ({
@@ -74,7 +77,7 @@ describe("createBudgetPeriod", () => {
     const periodInput = { name: "2026", start_date: "2026-05-01", end_date: "2027-04-30" }
     const data = await createBudgetPeriod(periodInput)
 
-    expect(mockCreatePeriod).toHaveBeenCalledWith(periodInput, mockUser.id)
+    expect(mockCreatePeriod).toHaveBeenCalledWith(mockDb, periodInput, mockUser.id)
     expect(mockRevalidatePath).toHaveBeenCalledWith("/budget")
     expect(data).toEqual(period)
   })
@@ -91,7 +94,7 @@ describe("releaseBudgetPeriod", () => {
 
     const data = await releaseBudgetPeriod("p-1")
 
-    expect(mockReleasePeriod).toHaveBeenCalledWith("p-1", mockUser.id)
+    expect(mockReleasePeriod).toHaveBeenCalledWith(mockDb, "p-1", mockUser.id)
     expect(mockRevalidatePath).toHaveBeenCalledWith("/budget")
     expect(data).toEqual(period)
   })
@@ -109,7 +112,7 @@ describe("upsertMinistryBudget", () => {
 
     const data = await upsertMinistryBudget(input)
 
-    expect(mockUpsertBudget).toHaveBeenCalledWith(input, mockUser.id)
+    expect(mockUpsertBudget).toHaveBeenCalledWith(mockDb, input, mockUser.id)
     expect(mockRevalidatePath).toHaveBeenCalledWith("/budget")
     expect(data).toEqual(budget)
   })

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { getCurrentUser } from "@/lib/supabase/server"
+import { getCurrentUser, createSupabaseServerClient } from "@/lib/supabase/server"
 import { PERMISSIONS, can } from "@/lib/permissions/rbac"
 import { intentionsService } from "@/services/intentions/intentions.service"
 import { registerTransferSchema } from "@/lib/validators/intention"
@@ -15,7 +15,8 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
   }
 
   const { id } = await params
-  const data = await intentionsService.getTransfer(id)
+  const db = await createSupabaseServerClient()
+  const data = await intentionsService.getTransfer(db, id)
   return NextResponse.json(data)
 }
 
@@ -36,7 +37,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       )
     }
 
-    const data = await intentionsService.registerTransfer(id, parsed.data, user.id)
+    const db = await createSupabaseServerClient()
+    const data = await intentionsService.registerTransfer(db, id, parsed.data, user.id)
     return NextResponse.json(data, { status: 201 })
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unexpected error"

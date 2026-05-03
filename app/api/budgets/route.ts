@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { getCurrentUser } from "@/lib/supabase/server"
+import { getCurrentUser, createSupabaseServerClient } from "@/lib/supabase/server"
 import { PERMISSIONS, can } from "@/lib/permissions/rbac"
 import { budgetService } from "@/services/budget/budget.service"
 import { upsertMinistryBudgetSchema } from "@/lib/validators/budget"
@@ -14,7 +14,8 @@ export async function GET(request: Request) {
   if (!periodId) {
     return NextResponse.json({ message: "period_id required" }, { status: 400 })
   }
-  const data = await budgetService.listBudgetsByPeriod(periodId)
+  const db = await createSupabaseServerClient()
+  const data = await budgetService.listBudgetsByPeriod(db, periodId)
   return NextResponse.json(data)
 }
 
@@ -33,7 +34,8 @@ export async function POST(request: Request) {
         { status: 400 }
       )
     }
-    const data = await budgetService.upsertMinistryBudget(parsed.data, user.id)
+    const db = await createSupabaseServerClient()
+    const data = await budgetService.upsertMinistryBudget(db, parsed.data, user.id)
     return NextResponse.json(data, { status: 201 })
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unexpected error"

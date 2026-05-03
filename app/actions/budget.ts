@@ -1,7 +1,7 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
-import { getCurrentUser } from "@/lib/supabase/server"
+import { getCurrentUser, createSupabaseServerClient } from "@/lib/supabase/server"
 import { PERMISSIONS, can } from "@/lib/permissions/rbac"
 import { budgetService } from "@/services/budget/budget.service"
 import type { CreateBudgetPeriodInput, UpsertMinistryBudgetInput } from "@/lib/validators/budget"
@@ -15,21 +15,24 @@ function assertBudgetAccess(user: Awaited<ReturnType<typeof getCurrentUser>>) {
 
 export async function createBudgetPeriod(input: CreateBudgetPeriodInput) {
   const user = assertBudgetAccess(await getCurrentUser())
-  const data = await budgetService.createPeriod(input, user.id)
+  const db = await createSupabaseServerClient()
+  const data = await budgetService.createPeriod(db, input, user.id)
   revalidatePath("/budget")
   return data
 }
 
 export async function releaseBudgetPeriod(id: string) {
   const user = assertBudgetAccess(await getCurrentUser())
-  const data = await budgetService.releasePeriod(id, user.id)
+  const db = await createSupabaseServerClient()
+  const data = await budgetService.releasePeriod(db, id, user.id)
   revalidatePath("/budget")
   return data
 }
 
 export async function closeBudgetPeriod(id: string) {
   const user = assertBudgetAccess(await getCurrentUser())
-  const data = await budgetService.closePeriod(id, user.id)
+  const db = await createSupabaseServerClient()
+  const data = await budgetService.closePeriod(db, id, user.id)
   revalidatePath("/budget")
   return data
 }
@@ -39,12 +42,14 @@ export async function listBudgetsByPeriod(periodId: string) {
   if (!user || !can(user.permissions, PERMISSIONS.MANAGE_BUDGETS)) {
     throw new Error("Sin permisos")
   }
-  return budgetService.listBudgetsByPeriod(periodId)
+  const db = await createSupabaseServerClient()
+  return budgetService.listBudgetsByPeriod(db, periodId)
 }
 
 export async function upsertMinistryBudget(input: UpsertMinistryBudgetInput) {
   const user = assertBudgetAccess(await getCurrentUser())
-  const data = await budgetService.upsertMinistryBudget(input, user.id)
+  const db = await createSupabaseServerClient()
+  const data = await budgetService.upsertMinistryBudget(db, input, user.id)
   revalidatePath("/budget")
   return data
 }

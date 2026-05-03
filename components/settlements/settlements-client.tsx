@@ -5,6 +5,7 @@ import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { cn, formatDate, formatCLP } from "@/lib/utils"
+import { attachmentHref } from "@/lib/storage/attachments"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -98,10 +99,7 @@ export function SettlementsClient({ initialInvoices }: { initialInvoices: Invoic
             .from("invoice-attachments")
             .upload(path, attachedFile, { upsert: false })
           if (uploadError) throw uploadError
-          const { data: urlData } = supabase.storage
-            .from("invoice-attachments")
-            .getPublicUrl(uploadData.path)
-          attachment_url = urlData.publicUrl
+          attachment_url = uploadData.path
         }
 
         const created = await createInvoice({
@@ -476,7 +474,10 @@ export function SettlementsClient({ initialInvoices }: { initialInvoices: Invoic
                     </p>
                     {selectedInvoice.attachment_url ? (
                       <a
-                        href={selectedInvoice.attachment_url}
+                        href={
+                          attachmentHref("invoice-attachments", selectedInvoice.attachment_url) ??
+                          "#"
+                        }
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline truncate"

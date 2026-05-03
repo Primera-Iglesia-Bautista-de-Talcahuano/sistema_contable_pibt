@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { getCurrentUser } from "@/lib/supabase/server"
+import { getCurrentUser, createSupabaseServerClient } from "@/lib/supabase/server"
 import { PERMISSIONS, can } from "@/lib/permissions/rbac"
 import { intentionsService } from "@/services/intentions/intentions.service"
 import { ministriesService } from "@/services/ministries/ministries.service"
@@ -18,10 +18,12 @@ export async function GET(request: Request) {
     )
   }
 
+  const db = await createSupabaseServerClient()
+
   if (can(user.permissions, PERMISSIONS.SUBMIT_INTENTIONS)) {
-    const assignment = await ministriesService.getMinistryForUser(user.id)
+    const assignment = await ministriesService.getMinistryForUser(db, user.id)
     if (!assignment) return NextResponse.json([])
-    const data = await intentionsService.list({
+    const data = await intentionsService.list(db, {
       ministryId: assignment.ministry_id,
       status: parsed.data.status
     })
@@ -32,7 +34,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
   }
 
-  const data = await intentionsService.list({
+  const data = await intentionsService.list(db, {
     ministryId: parsed.data.ministry_id,
     status: parsed.data.status
   })
@@ -46,7 +48,8 @@ export async function POST(request: Request) {
   }
 
   try {
-    const assignment = await ministriesService.getMinistryForUser(user.id)
+    const db = await createSupabaseServerClient()
+    const assignment = await ministriesService.getMinistryForUser(db, user.id)
     if (!assignment) {
       return NextResponse.json({ message: "No ministry assigned to your account" }, { status: 400 })
     }
@@ -60,7 +63,7 @@ export async function POST(request: Request) {
       )
     }
 
-    const data = await intentionsService.create(parsed.data, user.id, assignment.ministry_id)
+    const data = await intentionsService.create(db, parsed.data, user.id, assignment.ministry_id)
     return NextResponse.json(data, { status: 201 })
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unexpected error"

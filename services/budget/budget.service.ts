@@ -1,3 +1,5 @@
+import type { SupabaseClient } from "@supabase/supabase-js"
+import type { Database } from "@/types/database.types"
 import { createSupabaseAdminClient } from "@/lib/supabase/admin"
 import { auditService } from "@/services/audit/audit.service"
 import type {
@@ -6,11 +8,11 @@ import type {
   UpsertMinistryBudgetInput
 } from "@/lib/validators/budget"
 
-export const budgetService = {
+type DB = SupabaseClient<Database>
 
-  async listPeriods() {
-    const admin = createSupabaseAdminClient()
-    const { data, error } = await admin
+export const budgetService = {
+  async listPeriods(db: DB) {
+    const { data, error } = await db
       .from("budget_periods")
       .select("*")
       .order("start_date", { ascending: false })
@@ -18,16 +20,14 @@ export const budgetService = {
     return data
   },
 
-  async getPeriodById(id: string) {
-    const admin = createSupabaseAdminClient()
-    const { data, error } = await admin.from("budget_periods").select("*").eq("id", id).single()
+  async getPeriodById(db: DB, id: string) {
+    const { data, error } = await db.from("budget_periods").select("*").eq("id", id).single()
     if (error) throw error
     return data
   },
 
-  async getActivePeriod() {
-    const admin = createSupabaseAdminClient()
-    const { data, error } = await admin
+  async getActivePeriod(db: DB) {
+    const { data, error } = await db
       .from("budget_periods")
       .select("*")
       .eq("status", "ACTIVE")
@@ -36,9 +36,8 @@ export const budgetService = {
     return data
   },
 
-  async createPeriod(input: CreateBudgetPeriodInput, userId: string) {
-    const admin = createSupabaseAdminClient()
-    const { data, error } = await admin
+  async createPeriod(db: DB, input: CreateBudgetPeriodInput, userId: string) {
+    const { data, error } = await db
       .from("budget_periods")
       .insert({ ...input, created_by: userId })
       .select()
@@ -56,9 +55,8 @@ export const budgetService = {
     return data
   },
 
-  async updatePeriod(id: string, input: UpdateBudgetPeriodInput, userId: string) {
-    const admin = createSupabaseAdminClient()
-    const { data, error } = await admin
+  async updatePeriod(db: DB, id: string, input: UpdateBudgetPeriodInput, userId: string) {
+    const { data, error } = await db
       .from("budget_periods")
       .update({ ...input, updated_at: new Date().toISOString() })
       .eq("id", id)
@@ -77,10 +75,9 @@ export const budgetService = {
     return data
   },
 
-  async releasePeriod(id: string, userId: string) {
-    const admin = createSupabaseAdminClient()
+  async releasePeriod(db: DB, id: string, userId: string) {
     const now = new Date().toISOString()
-    const { data, error } = await admin
+    const { data, error } = await db
       .from("budget_periods")
       .update({ status: "ACTIVE", released_at: now, released_by: userId, updated_at: now })
       .eq("id", id)
@@ -89,7 +86,7 @@ export const budgetService = {
     if (error) throw error
 
     // Also release all DRAFT budgets in this period
-    await admin
+    await db
       .from("ministry_budgets")
       .update({ status: "RELEASED", released_at: now, released_by: userId, updated_at: now })
       .eq("period_id", id)
@@ -105,10 +102,9 @@ export const budgetService = {
     return data
   },
 
-  async closePeriod(id: string, userId: string) {
-    const admin = createSupabaseAdminClient()
+  async closePeriod(db: DB, id: string, userId: string) {
     const now = new Date().toISOString()
-    const { data, error } = await admin
+    const { data, error } = await db
       .from("budget_periods")
       .update({ status: "CLOSED", updated_at: now })
       .eq("id", id)
@@ -126,10 +122,8 @@ export const budgetService = {
     return data
   },
 
-
-  async listBudgetsByPeriod(periodId: string) {
-    const admin = createSupabaseAdminClient()
-    const { data, error } = await admin
+  async listBudgetsByPeriod(db: DB, periodId: string) {
+    const { data, error } = await db
       .from("ministry_budgets")
       .select("*, ministries(id, name)")
       .eq("period_id", periodId)
@@ -138,11 +132,10 @@ export const budgetService = {
     return data
   },
 
-  async upsertMinistryBudget(input: UpsertMinistryBudgetInput, userId: string) {
-    const admin = createSupabaseAdminClient()
+  async upsertMinistryBudget(db: DB, input: UpsertMinistryBudgetInput, userId: string) {
     const now = new Date().toISOString()
 
-    const { data, error } = await admin
+    const { data, error } = await db
       .from("ministry_budgets")
       .upsert(
         {
@@ -173,6 +166,8 @@ export const budgetService = {
     return data
   },
 
+  // get_ministry_budget_summary RPC is service_role only (granted in M11 migration).
+  // Uses admin client internally — callers do not need to pass db.
   async getBudgetSummary(ministryId: string, periodId: string) {
     const admin = createSupabaseAdminClient()
     const { data, error } = await admin.rpc("get_ministry_budget_summary", {

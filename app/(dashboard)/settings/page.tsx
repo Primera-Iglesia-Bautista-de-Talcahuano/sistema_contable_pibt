@@ -12,7 +12,7 @@ export default async function SettingsPage() {
 
   const supabase = await createSupabaseServerClient()
   const [settings, permMap] = await Promise.all([
-    settingsService.getAll(),
+    settingsService.getAll(supabase),
     getPermissionMap(supabase)
   ])
 

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { createInvoiceSchema } from "@/lib/validators/invoice"
 import { invoicesService } from "@/services/invoices/invoices.service"
-import { getCurrentUser } from "@/lib/supabase/server"
+import { getCurrentUser, createSupabaseServerClient } from "@/lib/supabase/server"
 import { PERMISSIONS, can } from "@/lib/permissions/rbac"
 
 export async function GET() {
@@ -10,7 +10,8 @@ export async function GET() {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
   }
 
-  const rows = await invoicesService.list()
+  const db = await createSupabaseServerClient()
+  const rows = await invoicesService.list(db)
   return NextResponse.json(rows)
 }
 
@@ -30,7 +31,8 @@ export async function POST(request: Request) {
       )
     }
 
-    const created = await invoicesService.create(parsed.data, user.id)
+    const db = await createSupabaseServerClient()
+    const created = await invoicesService.create(db, parsed.data, user.id)
     return NextResponse.json(created, { status: 201 })
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unexpected error"

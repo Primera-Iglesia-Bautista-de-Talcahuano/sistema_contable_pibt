@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { getCurrentUser } from "@/lib/supabase/server"
+import { getCurrentUser, createSupabaseServerClient } from "@/lib/supabase/server"
 import { PERMISSIONS, can } from "@/lib/permissions/rbac"
 import { settlementsService } from "@/services/settlements/settlements.service"
 import { reviewSettlementSchema } from "@/lib/validators/settlement"
@@ -21,7 +21,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       )
     }
 
-    const result = await settlementsService.review(id, parsed.data, user.id)
+    const db = await createSupabaseServerClient()
+    const result = await settlementsService.review(db, id, parsed.data, user.id)
 
     if (result.alreadyActioned) {
       return NextResponse.json(

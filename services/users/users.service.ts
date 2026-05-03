@@ -12,6 +12,7 @@ export const usersService = {
       .from("users")
       .select("id, full_name, email, role, status, created_at, updated_at")
       .order("created_at", { ascending: true })
+      .limit(500)
 
     if (error) throw error
     return data

@@ -1,6 +1,8 @@
 import { createRequest, reviewRequest, addComment } from "../requests"
 
 const mockGetCurrentUser = jest.fn()
+const mockDb = {}
+const mockCreateSupabaseServerClient = jest.fn(() => Promise.resolve(mockDb))
 const mockCan = jest.fn()
 const mockGetMinistryForUser = jest.fn()
 const mockCreate = jest.fn()
@@ -10,7 +12,8 @@ const mockAddComment = jest.fn()
 const mockRevalidatePath = jest.fn()
 
 jest.mock("@/lib/supabase/server", () => ({
-  getCurrentUser: () => mockGetCurrentUser()
+  getCurrentUser: () => mockGetCurrentUser(),
+  createSupabaseServerClient: () => mockCreateSupabaseServerClient()
 }))
 
 jest.mock("@/lib/permissions/rbac", () => ({
@@ -77,7 +80,7 @@ describe("createRequest", () => {
 
     const data = await createRequest(requestInput)
 
-    expect(mockCreate).toHaveBeenCalledWith(requestInput, mockUser.id, "m-1")
+    expect(mockCreate).toHaveBeenCalledWith(mockDb, requestInput, mockUser.id, "m-1")
     expect(mockRevalidatePath).toHaveBeenCalledWith("/requests")
     expect(data).toEqual(created)
   })
@@ -131,6 +134,7 @@ describe("addComment", () => {
     const data = await addComment("req-1", { message: "ok" })
 
     expect(mockAddComment).toHaveBeenCalledWith(
+      mockDb,
       "req-1",
       "INTENTION",
       { message: "ok" },

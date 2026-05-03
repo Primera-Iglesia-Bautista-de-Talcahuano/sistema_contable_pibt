@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { getCurrentUser } from "@/lib/supabase/server"
+import { getCurrentUser, createSupabaseServerClient } from "@/lib/supabase/server"
 import { PERMISSIONS, can } from "@/lib/permissions/rbac"
 import { budgetService } from "@/services/budget/budget.service"
 
@@ -11,7 +11,8 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
 
   try {
     const { id } = await params
-    const data = await budgetService.releasePeriod(id, user.id)
+    const db = await createSupabaseServerClient()
+    const data = await budgetService.releasePeriod(db, id, user.id)
     return NextResponse.json(data)
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unexpected error"

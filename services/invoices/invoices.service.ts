@@ -1,11 +1,13 @@
-import { createSupabaseAdminClient } from "@/lib/supabase/admin"
+import type { SupabaseClient } from "@supabase/supabase-js"
+import type { Database } from "@/types/database.types"
 import { auditService } from "@/services/audit/audit.service"
 import type { CreateInvoiceInput } from "@/lib/validators/invoice"
 
+type DB = SupabaseClient<Database>
+
 export const invoicesService = {
-  async list() {
-    const admin = createSupabaseAdminClient()
-    const { data, error } = await admin
+  async list(db: DB) {
+    const { data, error } = await db
       .from("invoices")
       .select(
         "id, number, date, amount, description, status, attachment_url, created_by_id, created_at, updated_at"
@@ -16,9 +18,8 @@ export const invoicesService = {
     return data
   },
 
-  async create(input: CreateInvoiceInput, userId: string) {
-    const admin = createSupabaseAdminClient()
-    const { data, error } = await admin
+  async create(db: DB, input: CreateInvoiceInput, userId: string) {
+    const { data, error } = await db
       .from("invoices")
       .insert({
         number: input.number,
@@ -43,17 +44,15 @@ export const invoicesService = {
     return data
   },
 
-  async updateStatus(id: string, status: "PENDING" | "SETTLED", userId: string) {
-    const admin = createSupabaseAdminClient()
-
-    const { data: current, error: fetchError } = await admin
+  async updateStatus(db: DB, id: string, status: "PENDING" | "SETTLED", userId: string) {
+    const { data: current, error: fetchError } = await db
       .from("invoices")
       .select("status, number")
       .eq("id", id)
       .single()
     if (fetchError) throw fetchError
 
-    const { data, error } = await admin
+    const { data, error } = await db
       .from("invoices")
       .update({ status, updated_at: new Date().toISOString() })
       .eq("id", id)

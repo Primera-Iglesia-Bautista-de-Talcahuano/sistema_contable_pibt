@@ -1,10 +1,15 @@
-import { createSupabaseAdminClient } from "@/lib/supabase/admin"
+import type { SupabaseClient } from "@supabase/supabase-js"
+import type { Database } from "@/types/database.types"
 import { auditService } from "@/services/audit/audit.service"
+import { increment_and_get_folio } from "@/lib/utils/folio"
+import { sanitizePostgrestSearch } from "@/lib/utils/postgrest"
 import type {
   CancelMovementInput,
   CreateMovementInput,
   UpdateMovementInput
 } from "@/lib/validators/movement"
+
+type DB = SupabaseClient<Database>
 
 function normalizeOptional(value?: string | null) {
   if (!value) return null
@@ -23,14 +28,13 @@ type ListFilters = {
 }
 
 export const movementsService = {
-  async list(filters: ListFilters = {}) {
-    const admin = createSupabaseAdminClient()
+  async list(db: DB, filters: ListFilters = {}) {
     const pageSize = filters.pageSize ?? PAGE_SIZE
     const page = Math.max(1, filters.page ?? 1)
     const from = (page - 1) * pageSize
     const to = from + pageSize - 1
 
-    let query = admin
+    let query = db
       .from("movements")
       .select(
         "id, folio, folio_display, movement_date, movement_type, amount, category, concept, reference_person, received_by, delivered_by, beneficiary, payment_method, support_number, notes, cancellation_reason, status, created_by_id, created_at, users!created_by_id(id, full_name, email)",
@@ -47,10 +51,12 @@ export const movementsService = {
       query = query.eq("status", filters.status)
     }
     if (filters.search?.trim()) {
-      const s = filters.search.trim()
-      query = query.or(
-        `folio_display.ilike.%${s}%,concept.ilike.%${s}%,category.ilike.%${s}%,reference_person.ilike.%${s}%,beneficiary.ilike.%${s}%`
-      )
+      const s = sanitizePostgrestSearch(filters.search)
+      if (s) {
+        query = query.or(
+          `folio_display.ilike.%${s}%,concept.ilike.%${s}%,category.ilike.%${s}%,reference_person.ilike.%${s}%,beneficiary.ilike.%${s}%`
+        )
+      }
     }
 
     const { data, error, count } = await query
@@ -58,9 +64,8 @@ export const movementsService = {
     return { data: data ?? [], count: count ?? 0, page, pageSize }
   },
 
-  async findById(id: string) {
-    const admin = createSupabaseAdminClient()
-    const { data, error } = await admin
+  async findById(db: DB, id: string) {
+    const { data, error } = await db
       .from("movements")
       .select(
         `*,
@@ -77,20 +82,15 @@ export const movementsService = {
     return data
   },
 
-  async create(input: CreateMovementInput, userId: string) {
-    const admin = createSupabaseAdminClient()
+  async create(db: DB, input: CreateMovementInput, userId: string) {
+    // folio RPC is service_role only — uses admin client internally via folio utility
+    const folio = await increment_and_get_folio()
 
-    const { data: folioData, error: folioError } = await admin.rpc("increment_and_get_folio")
-    if (folioError) throw folioError
-    const folio = folioData as number
-
-    const { data: movement, error } = await admin
+    const { data: movement, error } = await db
       .from("movements")
       .insert({
         folio,
-        // z.string().date() guarantees "YYYY-MM-DD" input; new Date() parses it as UTC midnight,
-        // which is the intended behavior — display code must read in UTC (not local time).
-        movement_date: new Date(input.movement_date).toISOString(),
+        movement_date: input.movement_date,
         movement_type: input.movement_type,
         amount: input.amount,
         category: input.category.trim(),
@@ -121,10 +121,8 @@ export const movementsService = {
     return movement
   },
 
-  async update(id: string, input: UpdateMovementInput, userId: string) {
-    const admin = createSupabaseAdminClient()
-
-    const { data: previous, error: fetchError } = await admin
+  async update(db: DB, id: string, input: UpdateMovementInput, userId: string) {
+    const { data: previous, error: fetchError } = await db
       .from("movements")
       .select()
       .eq("id", id)
@@ -134,10 +132,10 @@ export const movementsService = {
     if (!previous) throw new Error("Movimiento no encontrado")
     if (previous.status === "CANCELLED") throw new Error("No se puede editar un movimiento anulado")
 
-    const { data: updated, error } = await admin
+    const { data: updated, error } = await db
       .from("movements")
       .update({
-        movement_date: new Date(input.movement_date).toISOString(),
+        movement_date: input.movement_date,
         movement_type: input.movement_type,
         amount: input.amount,
         category: input.category.trim(),
@@ -171,10 +169,8 @@ export const movementsService = {
     return updated
   },
 
-  async cancel(id: string, input: CancelMovementInput, userId: string) {
-    const admin = createSupabaseAdminClient()
-
-    const { data: previous, error: fetchError } = await admin
+  async cancel(db: DB, id: string, input: CancelMovementInput, userId: string) {
+    const { data: previous, error: fetchError } = await db
       .from("movements")
       .select()
       .eq("id", id)
@@ -185,7 +181,7 @@ export const movementsService = {
     if (previous.status === "CANCELLED") return previous
 
     const now = new Date().toISOString()
-    const { data: cancelled, error } = await admin
+    const { data: cancelled, error } = await db
       .from("movements")
       .update({
         status: "CANCELLED",
