@@ -1,5 +1,5 @@
 import { cache } from "react"
-import { cacheTag, cacheLife } from "next/cache"
+import { unstable_cache, revalidateTag } from "next/cache"
 import { createServerClient } from "@supabase/ssr"
 import { cookies } from "next/headers"
 import type { Database } from "@/types/database.types"
@@ -32,18 +32,23 @@ export async function createSupabaseServerClient() {
   )
 }
 
-// Cached across requests per role. Tag-invalidated when permissions change.
-async function getPermissionsForRole(role: UserRole): Promise<string[]> {
-  "use cache"
-  cacheTag("role-permissions")
-  cacheLife("days")
-  const admin = createSupabaseAdminClient()
-  const { data } = await admin
-    .from("role_permissions")
-    .select("permission")
-    .eq("role", role)
-    .eq("enabled", true)
-  return (data ?? []).map((p) => p.permission)
+// Cached across requests per role for 24 h. Tag-invalidated when permissions change.
+const getPermissionsForRole = unstable_cache(
+  async (role: UserRole) => {
+    const admin = createSupabaseAdminClient()
+    const { data } = await admin
+      .from("role_permissions")
+      .select("permission")
+      .eq("role", role)
+      .eq("enabled", true)
+    return (data ?? []).map((p) => p.permission)
+  },
+  ["role-permissions"],
+  { tags: ["role-permissions"], revalidate: 86400 }
+)
+
+export function revalidateRolePermissions() {
+  revalidateTag("role-permissions", "days")
 }
 
 // cache() deduplicates calls within a single React render tree (one request).
