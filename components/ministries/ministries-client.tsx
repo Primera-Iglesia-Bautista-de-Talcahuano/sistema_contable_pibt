@@ -25,9 +25,15 @@ import {
   ItemActions
 } from "@/components/ui/item"
 import { Field, FieldLabel, FieldError } from "@/components/ui/field"
+import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
 import { createMinistrySchema } from "@/lib/validators/ministry"
-import type { CreateMinistryInput } from "@/lib/validators/ministry"
-import { createMinistry } from "@/app/actions/ministries"
+import { createMinistry, assignMinister } from "@/app/actions/ministries"
+import { z } from "zod"
+
+const createMinistryFormSchema = createMinistrySchema.extend({
+  minister_id: z.string().optional()
+})
+type CreateMinistryForm = z.infer<typeof createMinistryFormSchema>
 
 type Ministry = {
   id: string
@@ -42,32 +48,51 @@ type CurrentAssignment = {
   users: { full_name: string } | null
 }
 
+type Minister = {
+  id: string
+  full_name: string
+  email: string
+}
+
 type Props = {
   initialMinistries: Ministry[]
   initialCurrentAssignments: CurrentAssignment[]
+  ministers: Minister[]
 }
 
-export function MinistriesClient({ initialMinistries, initialCurrentAssignments }: Props) {
+export function MinistriesClient({ initialMinistries, initialCurrentAssignments, ministers }: Props) {
   const [ministries, setMinistries] = useState<Ministry[]>(initialMinistries)
-  const [currentAssignments] = useState<CurrentAssignment[]>(initialCurrentAssignments)
+  const [currentAssignments, setCurrentAssignments] =
+    useState<CurrentAssignment[]>(initialCurrentAssignments)
   const [open, setOpen] = useState(false)
 
-  const form = useForm<CreateMinistryInput>({
-    resolver: zodResolver(createMinistrySchema),
-    defaultValues: { name: "", description: "" }
+  const form = useForm<CreateMinistryForm>({
+    resolver: zodResolver(createMinistryFormSchema),
+    defaultValues: { name: "", description: "", minister_id: "" }
   })
 
   function getMinister(ministryId: string) {
     return currentAssignments.find((a) => a.ministry_id === ministryId)?.users ?? null
   }
 
-  async function handleCreate(values: CreateMinistryInput) {
+  async function handleCreate(values: CreateMinistryForm) {
     try {
       const created = await createMinistry({
         name: values.name.trim(),
         description: values.description?.trim() || undefined
       })
-      setMinistries((prev) => [created as unknown as Ministry, ...prev])
+      const newMinistry = created as unknown as Ministry
+
+      if (values.minister_id) {
+        await assignMinister(newMinistry.id, { user_id: values.minister_id })
+        const selectedMinister = ministers.find((u) => u.id === values.minister_id)
+        setCurrentAssignments((prev) => [
+          ...prev,
+          { ministry_id: newMinistry.id, users: selectedMinister ?? null }
+        ])
+      }
+
+      setMinistries((prev) => [newMinistry, ...prev])
       form.reset()
       setOpen(false)
       toast.success("Ministerio creado")
@@ -118,6 +143,30 @@ export function MinistriesClient({ initialMinistries, initialCurrentAssignments 
                   {...form.register("description")}
                 />
                 <FieldError errors={[form.formState.errors.description]} />
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="minister_id">Ministro</FieldLabel>
+                <NativeSelect
+                  id="minister_id"
+                  className="w-full"
+                  {...form.register("minister_id")}
+                  defaultValue=""
+                >
+                  <NativeSelectOption value="">Sin asignar</NativeSelectOption>
+                  {ministers.map((u) => (
+                    <NativeSelectOption key={u.id} value={u.id}>
+                      {u.full_name} — {u.email}
+                    </NativeSelectOption>
+                  ))}
+                </NativeSelect>
+                {ministers.length === 0 && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    No hay usuarios con rol ministro.{" "}
+                    <a href="/users" className="underline underline-offset-2">
+                      Crear uno
+                    </a>
+                  </p>
+                )}
               </Field>
               <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
                 {form.formState.isSubmitting ? "Creando..." : "Crear ministerio"}
