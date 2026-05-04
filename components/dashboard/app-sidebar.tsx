@@ -9,7 +9,6 @@ import {
   Briefcase,
   Users,
   ClipboardList,
-  CalendarDays,
   Receipt,
   Church,
   PiggyBank,
@@ -75,12 +74,6 @@ const NAV_GROUPS: NavGroup[] = [
   {
     label: "Gestión",
     links: [
-      {
-        href: "/events",
-        label: "Eventos",
-        icon: CalendarDays,
-        roles: ["ADMIN", "BURSAR", "FINANCE"]
-      },
       { href: "/ministries", label: "Ministerios", icon: Church, roles: ["ADMIN", "BURSAR"] },
       {
         href: "/requests",
