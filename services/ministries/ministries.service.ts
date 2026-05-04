@@ -61,10 +61,19 @@ export const ministriesService = {
     return data
   },
 
+  async listCurrentAssignments(db: DB) {
+    const { data, error } = await db
+      .from("ministry_assignments")
+      .select("id, ministry_id, user_id, assigned_at, users!user_id(id, full_name, email)")
+      .is("unassigned_at", null)
+    if (error) throw error
+    return data
+  },
+
   async getAssignments(db: DB, ministryId: string) {
     const { data, error } = await db
       .from("ministry_assignments")
-      .select("*, users(id, full_name, email)")
+      .select("*, users!user_id(id, full_name, email)")
       .eq("ministry_id", ministryId)
       .order("assigned_at", { ascending: false })
     if (error) throw error
@@ -74,7 +83,7 @@ export const ministriesService = {
   async getCurrentAssignment(db: DB, ministryId: string) {
     const { data, error } = await db
       .from("ministry_assignments")
-      .select("*, users(id, full_name, email)")
+      .select("*, users!user_id(id, full_name, email)")
       .eq("ministry_id", ministryId)
       .is("unassigned_at", null)
       .maybeSingle()

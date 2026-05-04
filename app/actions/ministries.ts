@@ -4,7 +4,11 @@ import { revalidatePath } from "next/cache"
 import { getCurrentUser, createSupabaseServerClient } from "@/lib/supabase/server"
 import { PERMISSIONS, can } from "@/lib/permissions/rbac"
 import { ministriesService } from "@/services/ministries/ministries.service"
-import type { CreateMinistryInput, AssignMinisterInput } from "@/lib/validators/ministry"
+import type {
+  CreateMinistryInput,
+  UpdateMinistryInput,
+  AssignMinisterInput
+} from "@/lib/validators/ministry"
 
 function assertMinistriesAccess(user: Awaited<ReturnType<typeof getCurrentUser>>) {
   if (!user || !can(user.permissions, PERMISSIONS.MANAGE_MINISTRIES)) {
@@ -36,4 +40,19 @@ export async function assignMinister(ministryId: string, input: AssignMinisterIn
   const data = await ministriesService.assign(db, ministryId, input, user.id)
   revalidatePath("/ministries")
   return data
+}
+
+export async function updateMinistry(id: string, input: UpdateMinistryInput) {
+  const user = assertMinistriesAccess(await getCurrentUser())
+  const db = await createSupabaseServerClient()
+  const data = await ministriesService.update(db, id, input, user.id)
+  revalidatePath("/ministries")
+  return data
+}
+
+export async function unassignMinister(ministryId: string) {
+  const user = assertMinistriesAccess(await getCurrentUser())
+  const db = await createSupabaseServerClient()
+  await ministriesService.unassign(db, ministryId, user.id)
+  revalidatePath("/ministries")
 }
