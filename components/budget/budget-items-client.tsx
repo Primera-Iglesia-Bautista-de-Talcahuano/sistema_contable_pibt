@@ -210,46 +210,42 @@ export function BudgetItemsClient({
 
   return (
     <div className="space-y-4">
-      {/* Toolbar: primary action + secondary exports */}
-      <div className="flex flex-col gap-2 print:hidden sm:flex-row sm:flex-wrap sm:items-center">
-        <div className="flex items-center gap-2">
-          {!readonly && (
-            <Dialog open={createOpen} onOpenChange={(o) => setCreateOpen(o)}>
-              <DialogTrigger
-                render={
-                  <Button size="sm">
-                    <Plus className="size-4" />
-                    Nuevo ítem
-                  </Button>
-                }
+      {/* Toolbar */}
+      <div className="flex flex-wrap items-center gap-2 print:hidden">
+        {!readonly && (
+          <Dialog open={createOpen} onOpenChange={(o) => setCreateOpen(o)}>
+            <DialogTrigger
+              render={
+                <Button size="sm">
+                  <Plus className="size-3.5" />
+                  Nuevo ítem
+                </Button>
+              }
+            />
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Nuevo ítem de presupuesto</DialogTitle>
+              </DialogHeader>
+              <BudgetItemForm
+                periodId={period.id}
+                ministries={ministries}
+                onSuccess={(item) => handleItemCreated(item as BudgetItem)}
               />
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Nuevo ítem de presupuesto</DialogTitle>
-                </DialogHeader>
-                <BudgetItemForm
-                  periodId={period.id}
-                  ministries={ministries}
-                  onSuccess={(item) => handleItemCreated(item as BudgetItem)}
-                />
-              </DialogContent>
-            </Dialog>
-          )}
-          <Button size="sm" variant="outline" onClick={handleExportExcel}>
-            <FileSpreadsheet className="size-4" />
-            Exportar Excel
-          </Button>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button size="sm" variant="outline" onClick={() => window.print()}>
-            <Printer className="size-4" />
-            Imprimir / PDF
-          </Button>
-          <Button size="sm" variant="outline" disabled title="Disponible próximamente">
-            <Upload className="size-4" />
-            Importar desde Excel
-          </Button>
-        </div>
+            </DialogContent>
+          </Dialog>
+        )}
+        <Button size="sm" variant="outline" onClick={handleExportExcel}>
+          <FileSpreadsheet className="size-3.5" />
+          Exportar Excel
+        </Button>
+        <Button size="sm" variant="outline" onClick={() => window.print()}>
+          <Printer className="size-3.5" />
+          Imprimir / PDF
+        </Button>
+        <Button size="sm" variant="outline" disabled title="Disponible próximamente">
+          <Upload className="size-3.5" />
+          Importar desde Excel
+        </Button>
       </div>
 
       {/* Active period banner */}
@@ -663,6 +659,11 @@ function BudgetItemForm({
   const isEdit = !!editId
   const schema = isEdit ? updateBudgetItemSchema : createBudgetItemSchema
 
+  // Determine initial selected ministry ID to know if description should be shown
+  const initialMinistryId = defaultValues?.ministry_id ?? null
+  const [selectedMinistryId, setSelectedMinistryId] = useState<string | null>(initialMinistryId)
+  const hasMinistry = !!selectedMinistryId
+
   const form = useForm({
     resolver: zodResolver(schema),
     defaultValues: isEdit
@@ -680,6 +681,19 @@ function BudgetItemForm({
           notes: ""
         }
   })
+
+  function handleMinistryChange(e: React.ChangeEvent<HTMLSelectElement>) {
+    const value = e.target.value || null
+    setSelectedMinistryId(value)
+    form.setValue("ministry_id" as never, (value ?? "") as never)
+    if (value) {
+      const ministry = ministries.find((m) => m.id === value)
+      if (ministry) form.setValue("description" as never, ministry.name as never)
+    } else {
+      // Clear description when removing ministry so user must type one
+      form.setValue("description" as never, "" as never)
+    }
+  }
 
   async function handleSubmit(values: CreateBudgetItemInput | UpdateBudgetItemInput) {
     try {
@@ -699,24 +713,14 @@ function BudgetItemForm({
 
   return (
     <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 pt-1">
-      <Field>
-        <FieldLabel htmlFor="item-desc">Descripción *</FieldLabel>
-        <Input id="item-desc" placeholder="Ej: Equipos de sonido" {...form.register("description")} />
-        <FieldError errors={[form.formState.errors.description]} />
-      </Field>
-
-      <Field>
-        <FieldLabel htmlFor="item-amount">Monto (CLP) *</FieldLabel>
-        <Input id="item-amount" type="number" min={0} step={1000} placeholder="0" {...form.register("amount")} />
-        <FieldError errors={[form.formState.errors.amount]} />
-      </Field>
-
+      {/* Ministry first — determines whether description is needed */}
       <Field>
         <FieldLabel htmlFor="item-ministry">Ministerio</FieldLabel>
         <NativeSelect
           id="item-ministry"
-          {...form.register("ministry_id")}
           className="w-full"
+          defaultValue={defaultValues?.ministry_id ?? ""}
+          onChange={handleMinistryChange}
         >
           <NativeSelectOption value="">Sin ministerio (gasto general)</NativeSelectOption>
           {ministries.map((m) => (
@@ -728,9 +732,39 @@ function BudgetItemForm({
         <FieldError errors={[form.formState.errors.ministry_id]} />
       </Field>
 
+      {/* Description: only required when no ministry is selected */}
+      {!hasMinistry && (
+        <Field>
+          <FieldLabel htmlFor="item-desc">Descripción *</FieldLabel>
+          <Input
+            id="item-desc"
+            placeholder="Ej: Equipos de sonido"
+            {...form.register("description")}
+          />
+          <FieldError errors={[form.formState.errors.description]} />
+        </Field>
+      )}
+
+      <Field>
+        <FieldLabel htmlFor="item-amount">Monto (CLP) *</FieldLabel>
+        <Input
+          id="item-amount"
+          type="number"
+          min={0}
+          step={1000}
+          placeholder="0"
+          {...form.register("amount")}
+        />
+        <FieldError errors={[form.formState.errors.amount]} />
+      </Field>
+
       <Field>
         <FieldLabel htmlFor="item-notes">Notas</FieldLabel>
-        <Input id="item-notes" placeholder="Observaciones opcionales" {...form.register("notes")} />
+        <Input
+          id="item-notes"
+          placeholder="Observaciones opcionales"
+          {...form.register("notes")}
+        />
         <FieldError errors={[form.formState.errors.notes]} />
       </Field>
 

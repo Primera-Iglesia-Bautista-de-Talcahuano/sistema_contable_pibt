@@ -49,28 +49,28 @@ export default async function BudgetDetailPage({ params }: { params: Promise<{ i
       </div>
 
       {/* Screen header */}
-      <div className="flex items-start gap-4 print:hidden">
+      <div className="print:hidden">
         <Link
           href="/budget"
-          className="mt-1 flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          className="mb-3 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
-          <ArrowLeft className="size-4" />
-          Volver
+          <ArrowLeft className="size-3.5" />
+          Volver a presupuestos
         </Link>
-        <div className="flex-1 min-w-0">
-          <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-2xl font-semibold truncate">{period.name}</h1>
-            <span
-              className={`shrink-0 text-xs px-2 py-0.5 rounded font-medium ${STATUS_COLORS[period.status]}`}
-            >
-              {STATUS_LABELS[period.status]}
-            </span>
-          </div>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            {formatDate(period.start_date)} – {formatDate(period.end_date)} · Total:{" "}
-            <span className="font-medium text-foreground">{formatCLP(totalAmount)}</span>
-          </p>
+        <div className="flex flex-wrap items-center gap-2">
+          <h1 className="text-xl font-semibold">{period.name}</h1>
+          <span
+            className={`text-xs px-2 py-0.5 rounded font-medium ${STATUS_COLORS[period.status]}`}
+          >
+            {STATUS_LABELS[period.status]}
+          </span>
         </div>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {formatDate(period.start_date)} – {formatDate(period.end_date)}
+          <span className="mx-1.5">·</span>
+          Total:{" "}
+          <span className="font-medium text-foreground">{formatCLP(totalAmount)}</span>
+        </p>
       </div>
 
       <BudgetItemsClient
