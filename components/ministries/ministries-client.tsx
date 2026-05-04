@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
+import Link from "next/link"
 import { Plus, Users, ChevronDown, UserPlus, UserMinus, Pencil } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -301,7 +302,9 @@ function MinistryItem({
     }
   }
 
-  const availableUsers = users.filter((u) => u.id !== currentAssignment?.user_id)
+  const availableUsers = users.filter(
+    (u) => u.role === "MINISTER" && u.id !== currentAssignment?.user_id
+  )
 
   return (
     <Item>
@@ -420,39 +423,51 @@ function MinistryItem({
               )}
             </div>
 
-            <form onSubmit={assignForm.handleSubmit(handleAssign)} className="space-y-2">
+            <div className="space-y-2">
               <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 {currentAssignment ? "Cambiar ministro" : "Asignar ministro"}
               </p>
-              <div className="flex gap-2">
-                <div className="flex-1">
-                  <NativeSelect
-                    className="w-full"
-                    {...assignForm.register("user_id")}
-                    defaultValue=""
-                  >
-                    <NativeSelectOption value="" disabled>
-                      Seleccionar usuario…
-                    </NativeSelectOption>
-                    {availableUsers.map((u) => (
-                      <NativeSelectOption key={u.id} value={u.id}>
-                        {u.full_name} — {u.email}
-                      </NativeSelectOption>
-                    ))}
-                  </NativeSelect>
-                  <FieldError errors={[assignForm.formState.errors.user_id]} />
+              {availableUsers.length === 0 ? (
+                <div className="flex items-center justify-between rounded-md border border-dashed px-3 py-2 text-sm text-muted-foreground">
+                  <span>No hay ministros disponibles para asignar</span>
+                  <Button size="sm" variant="ghost" render={<Link href="/users" />}>
+                    <UserPlus className="size-4" />
+                    Crear ministro
+                  </Button>
                 </div>
-                <Button size="sm" type="submit" disabled={assignForm.formState.isSubmitting}>
-                  <UserPlus className="size-4" />
-                  Asignar
-                </Button>
-              </div>
-              <Input
-                placeholder="Notas opcionales"
-                className="text-sm"
-                {...assignForm.register("notes")}
-              />
-            </form>
+              ) : (
+                <form onSubmit={assignForm.handleSubmit(handleAssign)} className="space-y-2">
+                  <div className="flex gap-2">
+                    <div className="flex-1">
+                      <NativeSelect
+                        className="w-full"
+                        {...assignForm.register("user_id")}
+                        defaultValue=""
+                      >
+                        <NativeSelectOption value="" disabled>
+                          Seleccionar ministro…
+                        </NativeSelectOption>
+                        {availableUsers.map((u) => (
+                          <NativeSelectOption key={u.id} value={u.id}>
+                            {u.full_name} — {u.email}
+                          </NativeSelectOption>
+                        ))}
+                      </NativeSelect>
+                      <FieldError errors={[assignForm.formState.errors.user_id]} />
+                    </div>
+                    <Button size="sm" type="submit" disabled={assignForm.formState.isSubmitting}>
+                      <UserPlus className="size-4" />
+                      Asignar
+                    </Button>
+                  </div>
+                  <Input
+                    placeholder="Notas opcionales"
+                    className="text-sm"
+                    {...assignForm.register("notes")}
+                  />
+                </form>
+              )}
+            </div>
 
             <div className="space-y-1">
               <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
