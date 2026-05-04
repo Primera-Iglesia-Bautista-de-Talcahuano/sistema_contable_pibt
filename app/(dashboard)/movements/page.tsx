@@ -3,10 +3,8 @@ import { getCurrentUser, createSupabaseServerClient } from "@/lib/supabase/serve
 import { PERMISSIONS, can } from "@/lib/permissions/rbac"
 import { movementsService } from "@/services/movements/movements.service"
 import { MovementsTable } from "@/components/movements/movements-table"
+import { MovementsFilters } from "@/components/movements/movements-filters"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { NativeSelect } from "@/components/ui/native-select"
 import { Plus, ChevronLeft, ChevronRight } from "lucide-react"
 
 type Props = {
@@ -68,64 +66,11 @@ export default async function MovementsPage({ searchParams }: Props) {
         )}
       </div>
 
-      <form
-        className="rounded-xl bg-card border border-border p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end"
-        method="get"
-      >
-        <div className="flex flex-col gap-1.5">
-          <Label
-            htmlFor="search"
-            className="text-[11px] uppercase tracking-[0.05em] text-muted-foreground"
-          >
-            Buscar
-          </Label>
-          <Input id="search" name="search" defaultValue={search} placeholder="Folio, concepto..." />
-        </div>
-        <div className="flex flex-col gap-1.5">
-          <Label
-            htmlFor="movement_type"
-            className="text-[11px] uppercase tracking-[0.05em] text-muted-foreground"
-          >
-            Tipo
-          </Label>
-          <NativeSelect
-            id="movement_type"
-            name="movement_type"
-            defaultValue={movement_type}
-            className="w-full"
-          >
-            <option value="ALL">Todos los tipos</option>
-            <option value="INCOME">Ingreso</option>
-            <option value="EXPENSE">Egreso</option>
-          </NativeSelect>
-        </div>
-        <div className="flex flex-col gap-1.5">
-          <Label
-            htmlFor="status"
-            className="text-[11px] uppercase tracking-[0.05em] text-muted-foreground"
-          >
-            Estado
-          </Label>
-          <NativeSelect id="status" name="status" defaultValue={status} className="w-full">
-            <option value="ALL">Todos los estados</option>
-            <option value="ACTIVE">Activo</option>
-            <option value="CANCELLED">Anulado</option>
-          </NativeSelect>
-        </div>
-        <div className="flex gap-2">
-          <Button type="submit" className="h-10 flex-1">
-            Aplicar filtros
-          </Button>
-          <Button
-            render={<Link href="/movements" />}
-            nativeButton={false}
-            variant="outline"
-            className="h-10 px-4"
-          >
-            Limpiar
-          </Button>
-        </div>
-      </form>
+      <MovementsFilters
+        initialSearch={search}
+        initialMovementType={movement_type}
+        initialStatus={status}
+      />
 
       <MovementsTable
         canWrite={canWrite}
