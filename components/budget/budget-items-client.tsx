@@ -210,72 +210,65 @@ export function BudgetItemsClient({
 
   return (
     <div className="space-y-4">
-      {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-2 print:hidden">
-        {!readonly && (
-          <Dialog
-            open={createOpen}
-            onOpenChange={(o) => setCreateOpen(o)}
-          >
-            <DialogTrigger
-              render={
-                <Button size="sm">
-                  <Plus className="size-4" />
-                  Nuevo ítem
-                </Button>
-              }
-            />
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Nuevo ítem de presupuesto</DialogTitle>
-              </DialogHeader>
-              <BudgetItemForm
-                periodId={period.id}
-                ministries={ministries}
-                onSuccess={(item) => handleItemCreated(item as BudgetItem)}
+      {/* Toolbar: primary action + secondary exports */}
+      <div className="flex flex-col gap-2 print:hidden sm:flex-row sm:flex-wrap sm:items-center">
+        <div className="flex items-center gap-2">
+          {!readonly && (
+            <Dialog open={createOpen} onOpenChange={(o) => setCreateOpen(o)}>
+              <DialogTrigger
+                render={
+                  <Button size="sm">
+                    <Plus className="size-4" />
+                    Nuevo ítem
+                  </Button>
+                }
               />
-            </DialogContent>
-          </Dialog>
-        )}
-
-        <Button size="sm" variant="outline" onClick={handleExportExcel}>
-          <FileSpreadsheet className="size-4" />
-          Exportar Excel
-        </Button>
-        <Button size="sm" variant="outline" onClick={() => window.print()}>
-          <Printer className="size-4" />
-          Imprimir / PDF
-        </Button>
-        <Button size="sm" variant="outline" disabled title="Disponible próximamente">
-          <Upload className="size-4" />
-          Importar desde Excel
-        </Button>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Nuevo ítem de presupuesto</DialogTitle>
+                </DialogHeader>
+                <BudgetItemForm
+                  periodId={period.id}
+                  ministries={ministries}
+                  onSuccess={(item) => handleItemCreated(item as BudgetItem)}
+                />
+              </DialogContent>
+            </Dialog>
+          )}
+          <Button size="sm" variant="outline" onClick={handleExportExcel}>
+            <FileSpreadsheet className="size-4" />
+            Exportar Excel
+          </Button>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button size="sm" variant="outline" onClick={() => window.print()}>
+            <Printer className="size-4" />
+            Imprimir / PDF
+          </Button>
+          <Button size="sm" variant="outline" disabled title="Disponible próximamente">
+            <Upload className="size-4" />
+            Importar desde Excel
+          </Button>
+        </div>
       </div>
 
       {/* Active period banner */}
       {isActive && (
         <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-800/40 dark:bg-amber-900/20 dark:text-amber-300 print:hidden">
           <Info className="mt-0.5 size-4 shrink-0" />
-          <span>Este presupuesto está aprobado. Todos los cambios quedan registrados en auditoría.</span>
+          <span>
+            Este presupuesto está aprobado. Todos los cambios quedan registrados en auditoría.
+          </span>
         </div>
       )}
 
-      {/* Items table */}
+      {/* Items list */}
       {items.length === 0 ? (
         <Card className="p-8 text-center text-sm text-muted-foreground">
           No hay ítems en este presupuesto. Agrega el primero con el botón de arriba.
         </Card>
       ) : (
-        <div className="space-y-1">
-          {/* Header */}
-          <div className="grid grid-cols-[1.5rem_1fr_160px_120px_80px] gap-3 px-4 py-1 text-xs font-medium text-muted-foreground print:grid-cols-[1fr_160px_120px]">
-            <span className="print:hidden" />
-            <span>Descripción</span>
-            <span>Ministerio</span>
-            <span className="text-right">Monto</span>
-            <span className="print:hidden" />
-          </div>
-
+        <div className="space-y-2">
           {items.map((item) => (
             <ItemRow
               key={item.id}
@@ -293,12 +286,9 @@ export function BudgetItemsClient({
           ))}
 
           {/* Total */}
-          <div className="grid grid-cols-[1.5rem_1fr_160px_120px_80px] gap-3 border-t px-4 py-2 print:grid-cols-[1fr_160px_120px]">
-            <span className="print:hidden" />
-            <span className="text-sm font-semibold">Total</span>
-            <span />
-            <span className="text-right text-sm font-semibold">{formatCLP(total)}</span>
-            <span className="print:hidden" />
+          <div className="flex items-center justify-between border-t px-4 py-3 mt-1">
+            <span className="text-sm font-semibold">Total presupuestado</span>
+            <span className="text-base font-bold">{formatCLP(total)}</span>
           </div>
         </div>
       )}
@@ -350,40 +340,50 @@ function ItemRow({
 
   return (
     <Card className="overflow-hidden">
-      <div className="grid grid-cols-[1.5rem_1fr_160px_120px_80px] items-center gap-3 px-4 py-2.5 print:grid-cols-[1fr_160px_120px]">
+      {/* Main item row */}
+      <div className="flex items-start gap-3 px-4 py-3">
         {/* Expand toggle */}
         <button
           type="button"
           onClick={onToggleExpand}
-          className="text-muted-foreground hover:text-foreground transition-colors print:hidden"
+          className="mt-0.5 shrink-0 text-muted-foreground hover:text-foreground transition-colors print:hidden"
           aria-label={expanded ? "Colapsar asignaciones" : "Ver asignaciones"}
         >
           {expanded ? <ChevronDown className="size-4" /> : <ChevronRight className="size-4" />}
         </button>
 
-        {/* Description + notes */}
-        <div>
-          <p className="text-sm font-medium leading-snug">{item.description}</p>
-          {item.notes && <p className="text-xs text-muted-foreground">{item.notes}</p>}
-          {item.budget_item_allocations.length > 0 && (
-            <p className="text-xs text-muted-foreground print:hidden">
-              {item.budget_item_allocations.length} asignación(es)
-              {allocated && ` · ${formatCLP(Math.round(allocated.totalAmount))} (${allocated.totalPct.toFixed(0)}%)`}
-            </p>
-          )}
+        {/* Content */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between gap-2">
+            <p className="text-sm font-medium leading-snug">{item.description}</p>
+            <span className="shrink-0 text-sm font-semibold tabular-nums">
+              {formatCLP(Number(item.amount))}
+            </span>
+          </div>
+
+          {/* Ministry + meta */}
+          <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5">
+            {item.ministries ? (
+              <span className="text-xs text-muted-foreground">{item.ministries.name}</span>
+            ) : (
+              <span className="text-xs italic text-muted-foreground">Gasto general</span>
+            )}
+            {item.notes && (
+              <span className="text-xs text-muted-foreground">· {item.notes}</span>
+            )}
+            {item.budget_item_allocations.length > 0 && (
+              <span className="text-xs text-muted-foreground print:hidden">
+                · {item.budget_item_allocations.length} asignación(es)
+                {allocated &&
+                  ` (${allocated.totalPct.toFixed(0)}% asignado)`}
+              </span>
+            )}
+          </div>
         </div>
-
-        {/* Ministry */}
-        <span className="text-sm text-muted-foreground">
-          {item.ministries?.name ?? <span className="italic">General</span>}
-        </span>
-
-        {/* Amount */}
-        <span className="text-right text-sm font-medium">{formatCLP(Number(item.amount))}</span>
 
         {/* Actions */}
         {!readonly && (
-          <div className="flex items-center justify-end gap-1 print:hidden">
+          <div className="flex shrink-0 items-center gap-1 print:hidden">
             <Dialog open={editOpen} onOpenChange={setEditOpen}>
               <DialogTrigger
                 render={
@@ -424,15 +424,14 @@ function ItemRow({
             </Button>
           </div>
         )}
-        {readonly && <span className="print:hidden" />}
       </div>
 
       {/* Allocations panel */}
       {expanded && (
-        <div className="border-t bg-muted/30 px-6 py-3 space-y-3 print:hidden">
-          <div className="flex items-center justify-between">
+        <div className="border-t bg-muted/30 px-4 py-3 space-y-3 print:hidden">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-              Asignaciones del ítem
+              Asignaciones
             </p>
             {!readonly && (
               <AllocationCreateButton
@@ -448,18 +447,11 @@ function ItemRow({
 
           {item.budget_item_allocations.length === 0 ? (
             <p className="text-xs text-muted-foreground">
-              Sin asignaciones. Agrega sub-ítems para distribuir el monto entre ministerios o áreas.
+              Sin asignaciones. Puedes distribuir este ítem entre ministerios o áreas.
             </p>
           ) : (
             <>
               <div className="space-y-1">
-                <div className="grid grid-cols-[1fr_120px_80px_80px_60px] gap-2 text-xs text-muted-foreground font-medium px-1">
-                  <span>Ministerio / Descripción</span>
-                  <span>Tipo</span>
-                  <span className="text-right">Valor</span>
-                  <span className="text-right">Monto efectivo</span>
-                  <span />
-                </div>
                 {item.budget_item_allocations.map((alloc) => {
                   const effectiveAmount =
                     alloc.allocation_type === "PERCENTAGE"
@@ -489,7 +481,7 @@ function ItemRow({
                     }
                   >
                     {formatCLP(Math.round(allocated.totalAmount))} ({allocated.totalPct.toFixed(1)}%)
-                    {allocated.totalPct > 100 && " ⚠ excede el 100%"}
+                    {allocated.totalPct > 100 && " · ⚠ excede el monto"}
                     {allocated.totalPct < 100 &&
                       ` · sin asignar: ${formatCLP(Math.round(Number(item.amount) - allocated.totalAmount))}`}
                   </span>
@@ -536,25 +528,32 @@ function AllocationRow({
   }
 
   return (
-    <div className="grid grid-cols-[1fr_120px_80px_80px_60px] items-center gap-2 rounded px-1 py-1 text-sm hover:bg-muted/50">
-      <div>
-        <span className="font-medium">{alloc.ministries?.name ?? <em>Sin ministerio</em>}</span>
+    <div className="flex items-start gap-2 rounded-md px-2 py-2 text-sm hover:bg-muted/50">
+      {/* Info */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <span className="font-medium text-sm">
+            {alloc.ministries?.name ?? <em className="font-normal">Sin ministerio</em>}
+          </span>
+          <span className="text-xs text-muted-foreground shrink-0">
+            {alloc.allocation_type === "PERCENTAGE"
+              ? `${Number(alloc.value).toFixed(1)}%`
+              : formatCLP(Number(alloc.value))}
+          </span>
+        </div>
         {alloc.description && (
-          <span className="text-muted-foreground"> · {alloc.description}</span>
+          <p className="text-xs text-muted-foreground truncate">{alloc.description}</p>
         )}
       </div>
-      <span className="text-xs text-muted-foreground">
-        {alloc.allocation_type === "PERCENTAGE" ? "Porcentaje" : "Monto fijo"}
-      </span>
-      <span className="text-right text-xs">
-        {alloc.allocation_type === "PERCENTAGE"
-          ? `${Number(alloc.value).toFixed(1)}%`
-          : formatCLP(Number(alloc.value))}
-      </span>
-      <span className="text-right text-xs font-medium">{formatCLP(Math.round(effectiveAmount))}</span>
 
+      {/* Effective amount */}
+      <span className="shrink-0 text-sm font-semibold tabular-nums">
+        {formatCLP(Math.round(effectiveAmount))}
+      </span>
+
+      {/* Actions */}
       {!readonly && (
-        <div className="flex items-center justify-end gap-1">
+        <div className="flex shrink-0 items-center gap-0.5">
           <Dialog open={editOpen} onOpenChange={setEditOpen}>
             <DialogTrigger
               render={

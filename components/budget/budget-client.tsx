@@ -291,47 +291,51 @@ function PeriodCard({
 
   return (
     <Card className="overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-3">
-        <div className="flex items-center gap-3">
-          <div>
-            <p className="font-semibold">{period.name}</p>
-            <p className="text-xs text-muted-foreground">
-              {formatDate(period.start_date)} – {formatDate(period.end_date)}
-            </p>
+      {/* Info row */}
+      <div className="flex items-start justify-between gap-3 px-4 pt-3 pb-2">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <p className="font-semibold truncate">{period.name}</p>
+            <span
+              className={`shrink-0 text-xs px-2 py-0.5 rounded font-medium ${STATUS_COLORS[period.status]}`}
+            >
+              {STATUS_LABELS[period.status]}
+            </span>
           </div>
-          <span
-            className={`text-xs px-2 py-0.5 rounded font-medium ${STATUS_COLORS[period.status]}`}
-          >
-            {STATUS_LABELS[period.status]}
-          </span>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            {formatDate(period.start_date)} – {formatDate(period.end_date)}
+          </p>
         </div>
-        <div className="flex items-center gap-2">
-          {period.status === "DRAFT" && (
-            <Button size="sm" variant="outline" onClick={onRelease}>
-              <Unlock className="size-3.5" />
-              Liberar
-            </Button>
-          )}
-          {period.status === "ACTIVE" && (
-            <Button size="sm" variant="outline" onClick={onClose}>
-              <Lock className="size-3.5" />
-              Cerrar
-            </Button>
-          )}
-          <Link
-            href={`/budget/${period.id}`}
-            className="inline-flex shrink-0 items-center gap-1 rounded-[min(var(--radius-md),10px)] border border-border bg-background px-2.5 h-8 text-sm font-medium shadow-xs hover:bg-muted hover:text-foreground transition-colors"
-          >
-            <List className="size-3.5" />
-            Gestionar ítems
-          </Link>
-          <Button variant="ghost" size="sm" onClick={handleToggle}>
-            <ChevronDown
-              className={`size-4 transition-transform ${expanded ? "rotate-180" : ""}`}
-            />
-          </Button>
-        </div>
+        <Button variant="ghost" size="icon-sm" className="shrink-0 mt-0.5" onClick={handleToggle}>
+          <ChevronDown
+            className={`size-4 transition-transform ${expanded ? "rotate-180" : ""}`}
+          />
+        </Button>
       </div>
+
+      {/* Action row */}
+      <div className="flex flex-wrap items-center gap-2 px-4 pb-3">
+        <Link
+          href={`/budget/${period.id}`}
+          className="inline-flex items-center gap-1.5 rounded-[min(var(--radius-md),10px)] bg-primary px-3 h-8 text-sm font-medium text-primary-foreground hover:bg-primary/80 transition-colors"
+        >
+          <List className="size-3.5" />
+          Gestionar ítems
+        </Link>
+        {period.status === "DRAFT" && (
+          <Button size="sm" variant="outline" onClick={onRelease}>
+            <Unlock className="size-3.5" />
+            Liberar
+          </Button>
+        )}
+        {period.status === "ACTIVE" && (
+          <Button size="sm" variant="outline" onClick={onClose}>
+            <Lock className="size-3.5" />
+            Cerrar
+          </Button>
+        )}
+      </div>
+
       {expanded && (
         <div className="border-t px-4 py-3 space-y-2">
           {loading && <p className="text-xs text-muted-foreground">Cargando...</p>}
@@ -341,9 +345,9 @@ function PeriodCard({
               .map((ministry) => {
                 const existing = budgetByMinistry[ministry.id]
                 return (
-                  <div key={ministry.id} className="flex items-center gap-3 py-1">
-                    <span className="text-sm flex-1">{ministry.name}</span>
-                    <div className="flex items-center gap-2">
+                  <div key={ministry.id} className="flex flex-wrap items-center gap-2 py-1">
+                    <span className="text-sm flex-1 min-w-0 truncate">{ministry.name}</span>
+                    <div className="flex items-center gap-2 shrink-0">
                       {existing && (
                         <span className="text-xs text-muted-foreground">
                           {formatCLP(existing.amount)}
@@ -353,7 +357,7 @@ function PeriodCard({
                         type="number"
                         min={0}
                         step={1000}
-                        className="w-36 text-sm h-8"
+                        className="w-32 text-sm h-8"
                         placeholder="Monto CLP"
                         value={amounts[ministry.id] ?? ""}
                         onChange={(e) =>
