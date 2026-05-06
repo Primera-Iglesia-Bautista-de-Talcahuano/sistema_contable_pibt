@@ -5,11 +5,6 @@ import { KeyRound } from "lucide-react"
 export default function ProfilePage() {
   return (
     <div className="max-w-xl space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Mi perfil</h1>
-        <p className="text-sm text-muted-foreground mt-1">Gestiona la seguridad de tu cuenta.</p>
-      </div>
-
       <Card className="p-6 space-y-4">
         <div className="flex items-center gap-3">
           <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10">

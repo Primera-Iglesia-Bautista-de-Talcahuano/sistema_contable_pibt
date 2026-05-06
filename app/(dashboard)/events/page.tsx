@@ -62,17 +62,7 @@ export default function EventsPage() {
 
   return (
     <section className="mx-auto max-w-6xl flex flex-col gap-8">
-      {/* Header */}
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="flex flex-col gap-0.5">
-          <h1 className="font-heading text-3xl font-bold tracking-tight text-foreground">
-            Eventos
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Registrar eventos separados de movimientos contables.
-          </p>
-        </div>
-
+      <div className="flex justify-end">
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger
             render={
