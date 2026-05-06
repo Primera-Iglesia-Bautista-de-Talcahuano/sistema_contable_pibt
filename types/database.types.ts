@@ -149,6 +149,105 @@ export type Database = {
           },
         ]
       }
+      budget_item_allocations: {
+        Row: {
+          allocation_type: string
+          created_at: string
+          description: string | null
+          id: string
+          item_id: string
+          ministry_id: string | null
+          updated_at: string
+          value: number
+        }
+        Insert: {
+          allocation_type: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          item_id: string
+          ministry_id?: string | null
+          updated_at?: string
+          value: number
+        }
+        Update: {
+          allocation_type?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          item_id?: string
+          ministry_id?: string | null
+          updated_at?: string
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "budget_item_allocations_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "budget_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "budget_item_allocations_ministry_id_fkey"
+            columns: ["ministry_id"]
+            isOneToOne: false
+            referencedRelation: "ministries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      budget_items: {
+        Row: {
+          amount: number
+          created_at: string
+          created_by: string | null
+          description: string
+          id: string
+          ministry_id: string | null
+          notes: string | null
+          period_id: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          created_by?: string | null
+          description: string
+          id?: string
+          ministry_id?: string | null
+          notes?: string | null
+          period_id: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          id?: string
+          ministry_id?: string | null
+          notes?: string | null
+          period_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "budget_items_ministry_id_fkey"
+            columns: ["ministry_id"]
+            isOneToOne: false
+            referencedRelation: "ministries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "budget_items_period_id_fkey"
+            columns: ["period_id"]
+            isOneToOne: false
+            referencedRelation: "budget_periods"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       budget_periods: {
         Row: {
           created_at: string

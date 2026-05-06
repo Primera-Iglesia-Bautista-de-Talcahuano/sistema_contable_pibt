@@ -51,20 +51,14 @@ export default async function MovementsPage({ searchParams }: Props) {
 
   return (
     <div className="flex flex-col gap-6 max-w-6xl mx-auto">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="flex flex-col gap-0.5">
-          <h1 className="font-heading text-3xl font-bold tracking-tight text-foreground">
-            Movimientos
-          </h1>
-          <p className="text-sm text-muted-foreground">Registro de ingresos y egresos</p>
-        </div>
-        {canWrite && (
+      {canWrite && (
+        <div className="flex justify-end">
           <Button render={<Link href="/movements/new" />} nativeButton={false} className="gap-2">
             <Plus data-icon="inline-start" />
             Nuevo Movimiento
           </Button>
-        )}
-      </div>
+        </div>
+      )}
 
       <MovementsFilters
         initialSearch={search}

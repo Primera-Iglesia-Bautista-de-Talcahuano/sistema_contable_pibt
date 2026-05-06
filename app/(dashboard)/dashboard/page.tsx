@@ -30,14 +30,7 @@ export default async function DashboardPage({
 
   return (
     <div className="flex flex-col gap-6 max-w-6xl mx-auto">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="flex flex-col gap-0.5">
-          <h1 className="font-heading text-3xl font-bold tracking-tight text-foreground">
-            Dashboard
-          </h1>
-          <p className="text-sm text-muted-foreground">Resumen financiero de actividades</p>
-        </div>
-
+      <div className="flex flex-wrap items-end justify-end gap-4">
         {/* Date filter */}
         <form className="flex flex-wrap items-end gap-3" method="get">
           <div className="flex flex-col gap-1.5">

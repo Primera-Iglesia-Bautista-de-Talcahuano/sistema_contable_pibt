@@ -27,7 +27,9 @@ const PAGE_LABELS: Record<string, string> = {
   "/requests": "Solicitudes",
   "/ministries": "Ministerios",
   "/budget": "Presupuesto",
-  "/settings": "Configuración"
+  "/settings": "Configuración",
+  "/profile": "Mi perfil",
+  "/voucher-book": "Talonario Unificado"
 }
 
 function usePageLabel() {

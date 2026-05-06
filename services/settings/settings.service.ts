@@ -8,6 +8,7 @@ type DB = SupabaseClient<Database>
 export type AppSettings = {
   tesoreria_notification_email: string
   voucher_email: string
+  budget_notification_email: string
   reminder_interval_days: number
   budget_period_start_month: number
 }
@@ -21,6 +22,7 @@ export const settingsService = {
     return {
       tesoreria_notification_email: map["tesoreria_notification_email"] ?? "",
       voucher_email: map["voucher_email"] ?? "",
+      budget_notification_email: map["budget_notification_email"] ?? "",
       reminder_interval_days: parseInt(map["reminder_interval_days"] ?? "2", 10),
       budget_period_start_month: parseInt(map["budget_period_start_month"] ?? "5", 10)
     }
