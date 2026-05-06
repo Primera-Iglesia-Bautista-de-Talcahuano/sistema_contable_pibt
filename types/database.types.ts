@@ -233,13 +233,6 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "budget_items_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "budget_items_ministry_id_fkey"
             columns: ["ministry_id"]
             isOneToOne: false
