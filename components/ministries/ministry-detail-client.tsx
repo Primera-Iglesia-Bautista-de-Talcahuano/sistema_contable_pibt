@@ -5,7 +5,7 @@ import Link from "next/link"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
-import { ArrowLeft, UserPlus, UserMinus, Pencil } from "lucide-react"
+import { ArrowLeft, UserPlus, UserMinus, Pencil, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -21,7 +21,12 @@ import { Separator } from "@/components/ui/separator"
 import { formatDate } from "@/lib/utils"
 import { updateMinistrySchema, assignMinisterSchema } from "@/lib/validators/ministry"
 import type { UpdateMinistryInput, AssignMinisterInput } from "@/lib/validators/ministry"
-import { assignMinister, unassignMinister, updateMinistry } from "@/app/actions/ministries"
+import {
+  assignMinister,
+  unassignMinister,
+  updateMinistry,
+  deleteMinistryAssignment
+} from "@/app/actions/ministries"
 
 type Ministry = {
   id: string
@@ -63,6 +68,7 @@ export function MinistryDetailClient({
   const [assignments, setAssignments] = useState<Assignment[]>(initialAssignments)
   const [current, setCurrent] = useState<Assignment | null>(initialCurrent)
   const [editOpen, setEditOpen] = useState(false)
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
 
   const ministers = users.filter((u) => u.role === "MINISTER")
   const availableMinsters = ministers.filter((u) => u.id !== current?.user_id)
@@ -139,6 +145,18 @@ export function MinistryDetailClient({
       toast.success("Ministerio actualizado")
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Error al actualizar")
+    }
+  }
+
+  async function handleDeleteAssignment(assignmentId: string) {
+    try {
+      await deleteMinistryAssignment(assignmentId)
+      setAssignments((prev) => prev.filter((a) => a.id !== assignmentId))
+      if (current?.id === assignmentId) setCurrent(null)
+      setConfirmDeleteId(null)
+      toast.success("Asignación eliminada")
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Error al eliminar")
     }
   }
 
@@ -319,6 +337,7 @@ export function MinistryDetailClient({
                   <th className="px-4 py-2 text-left font-medium">Ministro</th>
                   <th className="px-4 py-2 text-left font-medium">Desde</th>
                   <th className="px-4 py-2 text-left font-medium">Hasta</th>
+                  <th className="px-4 py-2" />
                 </tr>
               </thead>
               <tbody className="divide-y">
@@ -341,6 +360,38 @@ export function MinistryDetailClient({
                           <span className="size-1.5 rounded-full bg-green-500 inline-block" />
                           Activo
                         </span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      {confirmDeleteId === a.id ? (
+                        <span className="inline-flex items-center gap-2">
+                          <span className="text-xs text-muted-foreground">¿Eliminar?</span>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-7 px-2 text-destructive hover:text-destructive hover:bg-destructive/10"
+                            onClick={() => handleDeleteAssignment(a.id)}
+                          >
+                            Sí
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-7 px-2"
+                            onClick={() => setConfirmDeleteId(null)}
+                          >
+                            No
+                          </Button>
+                        </span>
+                      ) : (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"
+                          onClick={() => setConfirmDeleteId(a.id)}
+                        >
+                          <Trash2 className="size-3.5" />
+                        </Button>
                       )}
                     </td>
                   </tr>

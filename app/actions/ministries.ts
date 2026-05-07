@@ -56,3 +56,10 @@ export async function unassignMinister(ministryId: string) {
   await ministriesService.unassign(db, ministryId, user.id)
   revalidatePath("/ministries")
 }
+
+export async function deleteMinistryAssignment(assignmentId: string) {
+  const user = assertMinistriesAccess(await getCurrentUser())
+  const db = await createSupabaseServerClient()
+  await ministriesService.deleteAssignment(db, assignmentId, user.id)
+  revalidatePath("/ministries")
+}

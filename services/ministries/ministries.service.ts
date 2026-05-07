@@ -148,5 +148,21 @@ export const ministriesService = {
       entity_id: ministryId,
       new_value: { ministry_id: ministryId }
     })
+  },
+
+  async deleteAssignment(db: DB, assignmentId: string, userId: string) {
+    const { error } = await db
+      .from("ministry_assignments")
+      .delete()
+      .eq("id", assignmentId)
+    if (error) throw error
+
+    await auditService.logSystem({
+      entity: "MINISTRY_ASSIGNMENT",
+      action: "ASSIGNMENT_DELETED",
+      user_id: userId,
+      entity_id: assignmentId,
+      new_value: { assignment_id: assignmentId }
+    })
   }
 }
